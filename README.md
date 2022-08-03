@@ -1,2 +1,2 @@
 # Bundestags-Mine
-The repository for the Bundestags-Mine Webapplication.
+The repository for the Bundestags-Mine Webapplication and services.
