@@ -1,0 +1,38 @@
+#dashboardCreateSearchList{
+    position:absolute;
+    height:200px;
+    width:100%;
+    background-color:white;
+    border:0.5px lightgray solid;
+    border-top:0;
+    z-index:101;
+    display:none;
+    overflow-y:auto;
+}
+
+.divide-item {
+    padding-left: 6px;
+    padding-bottom: 2.5px;
+    padding-top: 2.5px;
+    border-bottom:solid 1px lightgray;
+    color:black;
+    font-weight:bold;
+}
+
+.search-item {
+    padding-left: 6px;
+    padding-bottom: 2.5px;
+    padding-top: 2.5px;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+    .search-item:hover {
+        transition: 0.25s;
+        background-color: lightgray;
+        color:white;
+    }
+
+.datepicker{
+
+}

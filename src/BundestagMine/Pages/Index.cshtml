@@ -1,0 +1,950 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!--Author: Kevin Bönisch-->
+    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Kevin Bönisch">
+
+    <!-- Custom styles for this template-->
+    <link href="./css/sb-admin-2.min.css" rel="stylesheet">
+    <!--my css files-->
+    <link href="./css/site.css" rel="stylesheet">
+    <link href="./css/dashboard-create.css" rel="stylesheet">
+    <link href="./css/fancy-hr.css" rel="stylesheet">
+    <link href="./css/page-transition-animation.css" rel="stylesheet">
+    <link href="./css/speech-fulltext.css" rel="stylesheet">
+    <link href="./css/networks.css" rel="stylesheet">
+    <link href="~/css/topic-map-chart.css" rel="stylesheet">
+    <link href="~/css/bar-topic-race-chart.css" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+    <div id="testDiv1" class="display-none"></div>
+    <!--start loader-->
+    <div class="start-loader bg-gradient-light">
+        <h3 class="text-black-50" id="startLoaderStatusMessage">Lädt</h3>
+        <div class="lds-ripple"><div></div><div></div></div>
+        <div class="progress rounded-0" style="height: 20px;">
+            <div class="progress-bar bg-gradient-dark" id="startProgress" role="progressbar" style="width: 0%;"></div>
+        </div>
+        @*<p class="copyright">Copyright &copy; Kevin Bönisch 2022</p>*@
+    </div>
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <ul class="navbar-nav sidebar side-bar-shadow bg-darkprime accordion toggled" id="accordionSidebar">
+            <!-- Sidebar - Brand -->
+            <a class="sidebar-brand p-2 d-flex mt-2 align-items-center selected-nav-item justify-content-center nav-item nav-item-switcher" data-id="homeContent">
+                <img src="~/img/deutscher-bundestag-adler-weiß.png" class="menu-icon " />
+            </a>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Funktionen
+            </div>
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item active nav-item-switcher" data-id="dashboardsContent">
+                <a class="nav-link">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboards</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - text analysis -->
+            <li class="nav-item active nav-item-switcher" data-id="speechContent">
+                <a class="nav-link">
+                    <i class="fas fa-comments"></i>
+                    <span>Text Analyse</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - topic analysis-->
+            <li class="nav-item active nav-item-switcher" data-id="topicAnalysis">
+                <a class="nav-link">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Themen Analyse</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - topic map -->
+            <li class="nav-item active nav-item-switcher" data-id="topicMapContent">
+                <a class="nav-link">
+                    <i class="fas fa-globe"></i>
+                    <span>Themen Landkarte</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - topic bar race -->
+            <li class="nav-item active nav-item-switcher" data-id="topicRaceContent">
+                <a class="nav-link">
+                    <i class="fas fa-flag-checkered"></i>
+                    <span>Themen Rennen</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - Utilities Collapse Menu -->
+            <li class="nav-item">
+                <a class="nav-link nav-item" data-toggle="collapse" data-target="#collapseUtilities"
+                   aria-expanded="true" aria-controls="collapseUtilities">
+                    <i class="fas fa-network-wired"></i>
+                    <span>Netzwerke</span>
+                </a>
+                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" style="z-index:99 !important"
+                     data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Netzwerke</h6>
+                        <a class="collapse-item nav-item-switcher" data-id="networkContent">Kommentare Netzwerk</a>
+                    </div>
+                </div>
+            </li>
+
+            <!-- Nav Item - Info -->
+            <li class="nav-item active nav-item-switcher" data-id="faqContent">
+                <a class="nav-link">
+                    <i class="fas fa-question"></i>
+                    <span>FAQ</span>
+                </a>
+            </li>
+        </ul>
+
+        <!--main content-->
+        <div class="d-flex flex-column w-100 main-content-shadow">
+
+            @*nav burger*@
+            <nav class="navbar navbar-expand static-top bg-warning justify-content-between">
+                <!-- Sidebar Toggle (Topbar) -->
+                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                    <i class="fa fa-bars"></i>
+                </button>
+            </nav>
+
+            @*HOME*@
+            <div id="homeContent" class="h-100 position-relative">
+                <p class="title"> <span class="text__first"><span class="text__word">Bundestags- </span><span class="text__first-bg"></span></span><br /><span class="text__second"><span class="text__word">Mine</span><span class="text__second-bg"></span></span></p>
+                <img class="centered" src="~/img/duetscher-adler-flagge.png" />
+                <div class="speeches-count display-none">
+                    <div>
+                        <p class="mb-0">
+                            <span class="text-white-50">Mehr als </span>
+                            <span class="font-weight-bold protocols header">250</span>
+                            <span class="text-white-50"> Protokolle</span>
+                        </p>
+                        <hr class="mt-1" />
+                        <p class="mb-0">
+                            <span class="text-white-50">Über </span>
+                            <span class="font-weight-bold speeches header"> 26.000</span>
+                            <span class="text-white-50">Reden</span>
+                        </p>
+                        <hr class="mt-1" />
+                        <p class="mb-0">
+                            <span class="text-white-50">Fast </span>
+                            <span class="font-weight-bold deputies header">1000</span>
+                            <span class="text-white-50"> Redner(innen)</span>
+                        </p>
+                        <hr class="mt-1" />
+                        <p class="mb-0">
+                            <span class="text-white-50">Über </span>
+                            <span class="font-weight-bold tokens header">14.000.000</span>
+                            <span class="text-white-50">Tokens</span>
+                        </p>
+                        <hr class="mt-1" />
+                        <p class="mb-0">
+                            <span class="text-white-50">Über </span>
+                            <span class="font-weight-bold gb header">100</span>
+                            <span class="text-white-50">GB an Sitzungsdaten</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!--SPEECHES AND SPEAKER-->
+            <div id="speechContent" class="h-100 display-none position-relative">
+                <div class="flexed m-0 p-0 w-100 h-100">
+                    <!--protocol tree-->
+                    <div class="protocol-tree-content h-100 pl-0 pr-0">
+                        <!--closes or opens the tree-->
+                        <div class="close-open-btn" data-expanded="true" data-toggle="popover" data-content="Protokolle Öffnen/Schließen" data-trigger="hover">
+                            <i class="fas fa-chevron-left"></i>
+                        </div>
+                        <div class="pt-3 pl-3 pr-3 header">
+                            <hr class="mt-3 fancy-hr bg-lightgray" />
+                            <h2>Protokolle</h2>
+                        </div>
+
+                        <div class="protocol-tree mt-2">
+                        </div>
+                    </div>
+
+                    <!--fulltext search btn-->
+                    <div class="fulltext-search-btn" id="fulltextOpenBtn" data-expanded="true" data-toggle="popover" data-content="Volltextsuche öffnen" data-trigger="hover">
+                        <i class="fas fa-search"></i>
+                    </div>
+
+                    <!--fulltext search interface-->
+                    <div class="fulltext-search-container display-none bg-gradient-light" id="fulltextSearchContainer">
+                        <div class="container">
+                            <div class="flexed justify-content-between align-items-center">
+                                <h1>Suche</h1>
+                                <div class="close-btn"><i class="far fa-times-circle"></i></div>
+                            </div>
+                            <p>
+                                Dies ist eine Volltextsuche. Sie durchkämmt alle Reden nach dem eingegeben Begriff,
+                                betrachtet dabei Inhalt samt Redner(in)-Namen und listet alle Reden (max. 500) mit einem Treffer auf.
+                            </p>
+                            <div class="mt-3 flexed">
+                                <input class="search-input form-control" />
+                                <button class="btn btn-dark rounded-0 apply-search-btn"><i class="fas fa-search"></i></button>
+                            </div>
+                            <p class="error-message text-danger"></p>
+                            <p>
+                                Die Suche kann einen Moment dauern. Sie können diese Suchansicht jedoch sicher schließen - die Suche wird weiterhin im Hintergrund stattfinden.
+                                Sobald die Anfrage beendet wurde, werden Sie per Popup informiert.
+                            </p>
+                            <div class="search-results-list">
+                                <div class="search-result-wrapper search-result-template display-none">
+                                    <div class="header">
+                                        <p class="m-0 text-dark">Suchanfrage "<span class="font-weight-bold text-primary searchterm">Template</span>"</p>
+                                        <div class="flexed align-items-center">
+                                            <div class="expander mr-3 text-dark" data-expanded="false">
+                                                <i class="fas fa-chevron-circle-up"></i>
+                                            </div>
+                                            <div class="status dots-bars-6"></div>
+                                            <button class="cancel-request-btn ml-3 btn btn-outline-danger border-0"
+                                                    data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Suche abbrechen">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p class="mb-0 small-font">Suchergebnisse: <span class="count">0</span></p>
+                                    <div class="content mt-3 display-none">
+                                        <div class="speech-result-wrapper speech-result-template display-none">
+                                            <div class="header">
+                                                <p class="mb-0">
+                                                    Legislaturperiode
+                                                    <span class="period">20</span>
+                                                    <i class="fas fa-angle-double-right"></i>
+                                                    Sitzung
+                                                    <span class="protocol">15</span>
+                                                    <i class="fas fa-angle-double-right"></i>
+                                                    <span class="agenda">6</span>
+                                                    <i class="fas fa-angle-double-right"></i>
+                                                    <span class="date">22-01-2022</span>
+                                                </p>
+                                                <div class="flexed align-items-center">
+                                                    <p class="mb-0 name mr-1">Unbekannt</p>
+                                                    <img class="portrait" src="./img/Unbekannt.jpg" onerror="$(this).attr('src', './img/Unbekannt.jpg')" />
+                                                </div>
+                                            </div>
+                                            <p class="text">"... Kein match ..."</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--right contetn-->
+                    <div class="w-100 mt-3 pl-3 pr-3">
+                        <hr class="mt-3 fancy-hr bg-lightgray" />
+                        <h2>Rede Volltext Analyse</h2>
+
+                        <div class="flexed justify-content-center align-items-center">
+                            <div class="fulltext-analysis-div mt-2">
+                                <!--loader-->
+                                <div class="loader display-none"><p>Analyse wird generiert</p><div class="lds-ripple"><div></div><div></div></div></div>
+                                <!--empty message-->
+                                <div class="empty-message">
+                                    <h5>Wählen Sie eine Rede aus, damit diese analysiert werden kann.</h5>
+                                </div>
+                                <!--the actual content-->
+                                <div class="analysis-wrapper display-none">
+                                    <!--header-->
+                                    <div class="header p-2">
+                                        <!--name of the speaker-->
+                                        <div class="name-badge">Rede vom 00.00.0000</div>
+                                        <!--content-->
+                                        <div class="flexed t justify-content-between">
+                                            <!--header card-->
+                                            <div class="w-100 header-content header-card">
+                                                <div class="expanded">
+                                                    <div class="flexed justify-content-between">
+                                                        <label class="m-0 p-0">Name: </label>
+                                                        <label class="m-0 p-0 ml-1 name">Günther Schlierkamp</label>
+                                                    </div>
+                                                    <div class="flexed justify-content-between">
+                                                        <label class="m-0 p-0">Geschlecht: </label>
+                                                        <label class="m-0 p-0 ml-1 gender">Männlich</label>
+                                                    </div>
+                                                    <div class="flexed justify-content-between">
+                                                        <label class="m-0 p-0">Geburtstag: </label>
+                                                        <label class="m-0 p-0 ml-1 bday">05.04.1977</label>
+                                                    </div>
+                                                    <div class="flexed justify-content-between">
+                                                        <label class="m-0 p-0">Religion: </label>
+                                                        <label class="m-0 p-0 ml-1 religion">ohne Angaben</label>
+                                                    </div>
+                                                    <div class="flexed justify-content-between">
+                                                        <label class="m-0 p-0">Familienstand: </label>
+                                                        <label class="m-0 p-0 ml-1 family">verheiratet, 2 Kinder</label>
+                                                    </div>
+                                                </div>
+                                                <div class="not-expanded">
+                                                    <div class="flexed align-items-center justify-content-between"><i class="large-font fas fa-angle-up mr-2"></i> Redner(in) Persönlich</div>
+                                                </div>
+                                            </div>
+                                            <!--portrait-->
+                                            <img class="portrait" onerror="$(this).attr('src', './img/Unbekannt.jpg')" />
+                                            <!--second header card-->
+                                            <div class="w-100 header-content header-card">
+                                                <div class="expanded">
+                                                    <div class="flexed justify-content-between">
+                                                        <label class="m-0 p-0">Fraktion: </label>
+                                                        <label class="m-0 p-0 ml-1 fraction"></label>
+                                                    </div>
+                                                    <div class="flexed justify-content-between">
+                                                        <label class="m-0 p-0">Partei: </label>
+                                                        <label class="m-0 p-0 ml-1 party"></label>
+                                                    </div>
+                                                    <div class="flexed justify-content-between">
+                                                        <label class="m-0 p-0">Im Bundestag seit: </label>
+                                                        <label class="m-0 p-0 ml-1 since"></label>
+                                                    </div>
+                                                    <div class="flexed justify-content-between">
+                                                        <label class="m-0 p-0">Beruf: </label>
+                                                        <label class="m-0 p-0 ml-1 job"></label>
+                                                    </div>
+                                                    <div class="flexed justify-content-between">
+                                                        <label class="m-0 p-0">Akademischer Grad: </label>
+                                                        <label class="m-0 p-0 ml-1 title"></label>
+                                                    </div>
+                                                </div>
+                                                <div class="not-expanded">
+                                                    <div class="flexed align-items-center justify-content-between">Redner(in) Beruflich<i class="large-font fas fa-angle-up ml-2"></i></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--for design puprosess-->
+                                        <div class="design-div"></div>
+                                    </div>
+                                    <!--breadcrumbs-->
+                                    <div class="breadcrumbs card-shadow">
+                                        <div class="ml-2 flexed align-items-center">
+                                            <span class="period"></span>
+                                            <i class="ml-2 mr-2 fas fa-angle-double-right"></i>
+                                            <span class="protocol">P</span>
+                                            <i class="ml-2 mr-2 fas fa-angle-double-right"></i>
+                                            <span class="agenda clickable text-warning font-weight-bold read-more-agenda"></span>
+                                        </div>
+                                        <!--choose some options-->
+                                        <div class="dropdown no-arrow small-options-menu">
+                                            <a class="dropdown-toggle" href="#" role="button" id="fulltextOptions"
+                                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-light"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in pl-2 pr-2"
+                                                 aria-labelledby="fulltextOptions">
+                                                <p class="mb-0 font-weight-bold text-dark">Einstellungen:</p>
+                                                <hr class="bg-lightgray mb-2 mt-0" />
+                                                <div class="flexed justify-content-between align-items-center">
+                                                    <label class="dropdown-item m-0 p-0" href="#">Farbliche Hervorhebung der Sätze</label>
+                                                    <input type="checkbox" class="ml-3 sentiment-color-cb" checked />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--topic header-->
+                                    <div class="topic-header">
+                                        <h6 class="topic-1 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
+                                        <h6 class="topic-2 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
+                                        <h6 class="topic-3 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
+                                    </div>
+                                    <!--analysis content-->
+                                    <div class="analysis-content">
+                                    </div>
+                                    <!--legend-->
+                                    <div class="legend">
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle" style="color:orange"></i> Person
+                                        </span>
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle" style="color:steelblue"></i> Organisation
+                                        </span>
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle" style="color:green"></i> Ort
+                                        </span>
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle" style="color:gray"></i> MISC
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @*topic analysis*@
+            <div id="topicAnalysis" class="h-100 position-relative display-none">
+                <partial name="~/Pages/Shared/TopicAnalysis/_TopicAnalysisView.cshtml" />
+                <partial name="~/Pages/Shared/TopicAnalysis/_TopicAnalysisConfiguratorModal.cshtml" />
+            </div>
+
+            <!-- DASHBOARDS -->
+            <div id="dashboardsContent" class="pb-5 display-none">
+                <!-- Topbar -->
+                <div class="w-100 card-shadow navbar-wrapper bg-darkprime">
+                    <nav class="navbar navbar-expand topbar static-top justify-content-between">
+                        <div class="w-100 text-center">
+                            <a class="btn btn-dark text-light text-center rounded-0" onclick="$('#addDashboardModal').modal('show'); $('#addDashboardModal').find('.error-message').hide();">
+                                Dashboard hinzufügen
+                            </a>
+                        </div>
+                    </nav>
+                </div>
+                <!--dashboard ribbon-->
+                <div class="dashboard-ribbon bg-darkprime card-shadow">
+                </div>
+
+                <!--Set a certain margin to the top resembling the navbar-->
+                <div class="margin-top-navbar"></div>
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid row ml-0 mr-0 pl-0 pr-0">
+                    <section id="dashboardsSection" class="w-100 pl-4 pr-4">
+                        <!--The dashboard template-->
+
+                        <div class="dashboard" id="dashboardTemplate">
+                            <!--header-->
+                            <div class="flexed justify-content-between">
+                                <h4 class="d-title font-weight-bold mb-0">
+                                    <i class="fas fa-fw fa-tachometer-alt text-dark"></i>
+                                    <span class="ml-2 header-name">None</span>
+                                </h4>
+                                <h4>
+                                    <i class="fas fa-database text-dark"></i>
+                                    <span class="ml-2 header-time">01.01.0000 - 01.01.0000</span>
+                                    <a class="ml-2 text-danger delete-dashboard-btn"
+                                       data-toggle="popover" data-content="Dashboard entfernen" data-trigger="hover">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </h4>
+                            </div>
+                            <div class="row mt-4">
+                                <!--Tokens-->
+                                <div class="tokens-div col-lg-6 pl-1 pr-1">
+                                    <div class="chart-shadow bg-light mt-4">
+                                        <hr class="mt-0 fancy-hr bg-transparent" />
+                                        <h2>Token Verteilung</h2>
+
+                                        <!-- Token Chart -->
+                                        <div class="col-xl-12 m-0 bg-transparent col-lg-12 w-100 p-1 token-chart-card">
+                                            <div class="rounded-0">
+                                                <!-- Card Header - Dropdown -->
+                                                <div class="card-header border-0 rounded-0 py-2 bg-transparent d-flex flex-row align-items-center justify-content-between">
+                                                    <p class="m-0 font-weight-bold text-black-50 small-font">
+                                                        Top <span class="minimum"></span> Token nach Häufigkeit.
+                                                    </p>
+                                                </div>
+                                                <!-- Card Body -->
+                                                <div class="position-relative">
+                                                    <div>
+                                                        <canvas class="w-100 p-0 m-0 token-chart"></canvas>
+                                                        <div class="chart-loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--POS-->
+                                <div class="pos-div col-lg-6 pl-1 pr-1">
+                                    <div class="chart-shadow bg-light mt-4">
+                                        <hr class="mt-0 fancy-hr bg-transparent" />
+                                        <h2>POS Verteilung</h2>
+
+                                        <!-- POS Chart -->
+                                        <div class="col-xl-12 col-lg-12 w-100 p-1 pos-chart-card">
+                                            <div class="rounded-0">
+                                                <!-- Card Header - Dropdown -->
+                                                <div class="card-header rounded-0 bg-transparent border-0 py-2 d-flex flex-row align-items-center justify-content-between">
+                                                    <p class="m-0 font-weight-bold text-black-50 small-font">
+                                                        Top <span class="minimum"></span> POS nach Häufigkeit.
+                                                    </p>
+                                                </div>
+                                                <!-- Card Body -->
+                                                <div class="position-relative">
+                                                    <div>
+                                                        <canvas class="w-100 p-0 m-0 pos-chart h-100"></canvas>
+                                                        <div class="chart-loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-4">
+                                <!--Sentiment-->
+                                <div class="sentiment-div col-lg-4 pl-1 pr-1">
+                                    <div class="chart-shadow bg-light mt-4">
+                                        <hr class="mt-0 fancy-hr bg-transparent" />
+                                        <h2>Sentiment Verteilung</h2>
+
+                                        <!-- sentiment radar Chart -->
+                                        <div class="w-100 p-0 sentiment-radar-chart-card h-100 p-1">
+                                            <div class="rounded-0">
+                                                <!-- Card Header - Dropdown -->
+                                                <div class="card-header rounded-0 bg-transparent border-0 py-2 d-flex flex-row align-items-center justify-content-between">
+                                                    <p class="m-0 font-weight-bold text-black-50 small-font">
+                                                        Es werden alle Sentiment angezeigt.
+                                                    </p>
+                                                </div>
+                                                <!-- Card Body -->
+                                                <div class="position-relative h-100">
+                                                    <div>
+                                                        <canvas class="w-100 p-0 m-0 sentiment-radar-chart"></canvas>
+                                                        <div class="chart-loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!--Named Entities-->
+                                <div class="named-entities-div col-lg-8 pl-1 pr-1">
+                                    <div class="bg-light chart-shadow mt-4">
+                                        <hr class="mt-0 fancy-hr bg-transparent" />
+                                        <h2>Named Entity Verteilung</h2>
+
+                                        <!-- named entity Chart -->
+                                        <div class="w-100 p-0 named-entity-chart-card p-1">
+                                            <div>
+                                                <!-- Card Header - Dropdown -->
+                                                <div class="card-header rounded-0 bg-transparent border-0 py-2 d-flex flex-row align-items-center justify-content-between">
+                                                    <p class="m-0 font-weight-bold text-black-50 small-font">
+                                                        Top 20 Named Entity nach Häufigkeit.
+                                                    </p>
+                                                </div>
+                                                <!-- Card Body -->
+                                                <div class="position-relative">
+                                                    <div>
+                                                        <canvas class="w-100 p-0 m-0 named-entity-chart"></canvas>
+                                                        <div class="chart-loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                                                    </div>
+                                                    <div class="mt-4 text-center small">
+                                                        <span class="mr-2">
+                                                            <i class="fas fa-circle" style="color:lightblue"></i> Personen
+                                                        </span>
+                                                        <span class="mr-2">
+                                                            <i class="fas fa-circle" style="color:gold"></i> Organisationen
+                                                        </span>
+                                                        <span class="mr-2">
+                                                            <i class="fas fa-circle" style="color:limegreen"></i> Orte
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--Topic chart-->
+                            <div class="topic-chart-div col-lg-12 display-none">
+                                <div class="bg-light chart-shadow mt-4">
+                                    <hr class="mt-0 fancy-hr bg-transparent" />
+                                    <h2>Themen Landkarte</h2>
+
+                                    <!-- sentiment radar Chart -->
+                                    <div class="w-100 p-0 topic-chart-card h-100 p-1">
+                                        <div class="rounded-0">
+                                            <!-- Card Header - Dropdown -->
+                                            <div class="card-header rounded-0 bg-transparent border-0 d-flex flex-row align-items-center justify-content-between">
+                                                <p class="m-0 font-weight-bold text-black-50 small-font">
+                                                    Es werden nur Themen mit min. 125 Erwähnungen angezeigt.
+                                                </p>
+                                            </div>
+                                            <!-- Card Body -->
+                                            <div class="position-relative h-100">
+                                                <div>
+                                                    <canvas class="w-100 p-0 m-0 topic-chart"></canvas>
+                                                    <div class="chart-loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                                                </div>
+                                                <a class="btn btn-dark rounded-0 zoom-out-btn">
+                                                    Raus-Zoomen
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!--Speaker chart-->
+                            <div class="speaker-chart-div col-lg-12 mt-4 display-none">
+                                <div class="bg-light chart-shadow p-1">
+                                    <hr class="mt-0 fancy-hr bg-transparent" />
+                                    <h2>Redner(innen) Verteilung</h2>
+
+                                    <!-- sentiment radar Chart -->
+                                    <div class="w-100 p-0 speaker-chart-card h-100">
+                                        <div class="rounded-0">
+                                            <!-- Card Header - Dropdown -->
+                                            <div class="card-header border-0 rounded-0 bg-transparent py-2 d-flex flex-row align-items-center justify-content-between">
+                                                <p class="m-0 font-weight-bold text-black-50 small-font">
+                                                    Top 20 Redner(innen) nach Redenanzahl
+                                                </p>
+                                            </div>
+                                            <!-- Card Body -->
+                                            <div class="position-relative h-100">
+                                                <div>
+                                                    <canvas class="w-100 p-0 m-0 speaker-chart"></canvas>
+                                                    <div class="chart-loader">
+                                                        <p class="load-message">Lädt länger - bitte Geduld haben.</p>
+                                                        <div class="lds-ripple"><div></div><div></div></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            @*Topic map Analyse*@
+            <div id="topicMapContent" class="position-relative display-none">
+
+                @*dark background*@
+                <div class="background-div"></div>
+
+                @*loader*@
+                <div class="chart-loader">
+                    <p class="load-message">Generiere Karte</p>
+                    <div class="lds-ripple"><div></div><div></div></div>
+                </div>
+
+                <div class="flexed justify-content-center topic-map-container">
+                    @*change this then change it in code as well!*@
+                    <svg class="topic-chart-svg"></svg>
+                </div>
+
+                @*speaker window*@
+                <div class="topic-speaker-window">
+                    @*portrait*@
+                    <img class="portrait" />
+                    @*design bubble*@
+                    <div class="bubble"></div>
+                    <div class="content h-100 pl-2 pr-2 pt-1 pb-1">
+                        <p class="mb-0"><span class="small-font">Über</span> <b class="ne"></b></p>
+                        <hr class="mt-0" />
+                        <div class="flexed justify-content-center align-items-center position-relative">
+                            <canvas class="p-0 m-0 speaker-topic-sentiment-chart chart"></canvas>
+                            <div class="loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                @*info window*@
+                <div class="topic-map-info">
+                    @*header*@
+                    <div class="flexed justify-content-around align-items-center">
+                        <i class="fas fa-globe ml-2"></i>
+                        <p class="w-100 text-center mb-0"><span class="header font-weight-bold">Bundestag</span></p>
+                        <i class="fas fa-chevron-down mr-2 expander clickable align-self-center" data-expanded="true" data-id="1"></i>
+                    </div>
+                    <div class="content content-1">
+                        <p class="small-font mb-0 text-center">
+                            Die Themen-Landkarte zeigt die Verteilung der jeweiligen Themen in deren Fraktions-Bubbles. <br />
+                            <b>Über was wird von wem am Meisten geredet?</b>
+                        </p>
+                    </div>
+                    <hr class="mt-0 mb-0 ml-1 mr-1" />
+                    @*second header time frame*@
+                    <div class="flexed justify-content-around align-items-center">
+                        <i class="fas fa-calendar-alt ml-2"></i>
+                        <p class="w-100 text-center mb-0"><span class="font-weight-bold year">Gesamt</span></p>
+                        <i class="fas fa-chevron-down mr-2 expander clickable" data-expanded="true" data-id="2"></i>
+                    </div>
+                    <div class="content content-2">
+                        <a class="btn w-100 btn-warning p-0 rounded-0 text-light switch-year-btn">2017</a>
+                        <a class="btn w-100 btn-dark p-0 rounded-0 text-light switch-year-btn">2018</a>
+                        <a class="btn w-100 btn-dark p-0 rounded-0 text-light switch-year-btn">2019</a>
+                        <a class="btn w-100 btn-dark p-0 rounded-0 text-light switch-year-btn">2020</a>
+                        <a class="btn w-100 btn-dark p-0 rounded-0 text-light switch-year-btn">2021</a>
+                        <a class="btn w-100 btn-dark p-0 rounded-0 text-light switch-year-btn">2022</a>
+                        <a class="btn w-100 btn-dark p-0 rounded-0 text-light switch-year-btn">Gesamt</a>
+                    </div>
+                </div>
+            </div>
+
+            <!--NETWORK-->
+            <div id="networkContent" class="position-relative h-100 w-100 display-none">
+                <!-- Create a div where the graph will take place -->
+                <div id="commentNetworkGraph"></div>
+                <div class="network-overlay"></div>
+                <div class="network-start-btn" data-toggle="popover" data-trigger="hover"
+                     data-content="Simulation starten">
+                    <i class="fas fa-play"></i>
+                </div>
+                <div class="chart-loader network-loader display-none"><div class="lds-ripple"><div></div><div></div></div></div>
+
+                <div class="network-options">
+                    <div class="position-relative h-100 w-100">
+                        <p class="mb-0 w-100 text-center bg-darkprime text-light">Filter</p>
+                        <div class="p-2 h-100">
+                            <!--comment threshhold-->
+                            <div class="flexed justify-content-between align-items-center">
+                                <label class="m-0 text-weight-bold">MW </label>
+                                <input type="range" min="0" max="100" class="w-100 comment-threshold-input ml-1 mr-1" value="30"
+                                       data-toggle="popover" data-trigger="hover" data-content="15" />
+                                <i class="far fa-question-circle" data-toggle="popover" data-trigger="hover"
+                                   data-content="Stellen Sie einen Mindestwert für die Anzahl der Kommentare ein.
+                                   Es werden nur Kommentar-Verbindungen zwischen 2 Abgeordneten angezeigt, die über diesem Wert liegen. "></i>
+                            </div>
+                            <hr class="mt-1 mb-1" />
+                            <!--sentiments-->
+                            <div class="flexed justify-content-between align-items-center">
+                                <label class="m-0 text-weight-bold text-danger">NEG </label>
+                                <input type="checkbox" class="w-100 ml-1 mr-1 change-sentiment-inputs" data-type="NEG" checked />
+                                <label class="m-0 text-weight-bold text-primary">NEU </label>
+                                <input type="checkbox" class="w-100 ml-1 mr-1 change-sentiment-inputs" data-type="NEU" checked />
+                                <label class="m-0 text-weight-bold text-success">POS </label>
+                                <input type="checkbox" class="w-100 ml-1 mr-1 change-sentiment-inputs" data-type="POS" checked />
+                                <i class="far fa-question-circle" data-toggle="popover" data-trigger="hover"
+                                   data-content="Legen Sie die Sentiment-Kategorien fest, die angezeigt werden sollen.
+                                   Alle anderen Verbindungen werden ausgeblendet."></i>
+                            </div>
+                            <hr class="mt-1 mb-1" />
+                            <!--party 1-->
+                            <div class="flexed justify-content-between align-items-center">
+                                <label class="m-0 text-weight-bold text-dark">CDU </label>
+                                <input type="checkbox" class="w-100 ml-1 mr-1 change-party-inputs" data-type="CDU" checked />
+                                <label class="m-0 text-weight-bold text-danger">SPD </label>
+                                <input type="checkbox" class="w-100 ml-1 mr-1 change-party-inputs" data-type="SPD" checked />
+                                <label class="m-0 text-weight-bold text-warning">FDP </label>
+                                <input type="checkbox" class="w-100 ml-1 mr-1 change-party-inputs" data-type="FDP" checked />
+                            </div>
+                            <!--party 2-->
+                            <div class="flexed justify-content-between align-items-center">
+                                <label class="m-0 text-weight-bold text-primary">AfD </label>
+                                <input type="checkbox" class="w-100 ml-1 mr-1 change-party-inputs" data-type="AfD" checked />
+                                <label class="m-0 text-weight-bold text-purple">LINKE </label>
+                                <input type="checkbox" class="w-100 ml-1 mr-1 change-party-inputs" data-type="LINKE" checked />
+                                <label class="m-0 text-weight-bold text-success">GRU </label>
+                                <input type="checkbox" class="w-100 ml-1 mr-1 change-party-inputs" data-type="GRU" checked />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @*Topic Race*@
+            <div id="topicRaceContent" class="position-relative h-100 w-100 display-none">
+                <div id="topicBarRaceChart"></div>
+
+                <div class="topic-race-options-container">
+                    <div class="position-relative">
+                        <h5 class="year"></h5>
+                        <div class="loader">
+                            <h5>Lädt...</h5>
+                        </div>
+                        <div class="flexed justify-content-around align-items-center mt-3">
+                            <i class="fas fa-reply replay opt"
+                               data-toggle="popover" data-content="Wiederholung (Geht nur, wenn pausiert ist.)" data-placement="right" data-trigger="hover"></i>
+                            <i class="fas fa-angle-double-left back opt"
+                               data-toggle="popover" data-content="Monat zurück (Geht nur, wenn pausiert ist.)" data-placement="left" data-trigger="hover"></i>
+                            <i class="fas fa-pause pause opt display-none"
+                               data-toggle="popover" data-content="Pausieren" data-placement="bottom" data-trigger="hover"></i>
+                            <i class="fas fa-play play opt"
+                               data-toggle="popover" data-content="Abspielen" data-placement="bottom" data-trigger="hover"></i>
+                            <i class="fas fa-angle-double-right forward opt"
+                               data-toggle="popover" data-content="Monat vor (Geht nur, wenn pausiert ist.)" data-placement="left" data-trigger="hover"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @*faq*@
+            <div id="faqContent" class="position-relative h-100 w-100">
+                <partial name="~/Pages/Shared/_FAQView.cshtml" />
+            </div>
+
+            @*a modal that shows the details of an agenda item when clicked*@
+            <div class="agenda-item-inspector">
+                <div class="flexed justify-content-between align-items-center">
+                    <p class="mr-5 mb-0 font-weight-bold">Detailansicht</p>
+                    <i class="fas fa-times mr-1 close" onclick="$('.agenda-item-inspector').hide(100);"></i>
+                </div>
+                <div class="content">
+
+                </div>
+            </div>
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!--Transition animation-->
+    <div class="left-layer"></div>
+    <div class="left-layer left-layer--2"></div>
+    <div class="left-layer left-layer--3"></div>
+    <div class="left-layer left-layer--4"></div>
+
+    <!-- Information toast-->
+    <div class="position-fixed bottom-0 right-0 p-3" style="z-index: 999; right: 0; bottom: 0;">
+        <div class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="12000">
+            <div class="toast-header">
+                <strong class="mr-auto title">Titel</strong>
+                <small>Jetzt</small>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                Text
+            </div>
+        </div>
+    </div>
+
+    <!--Custom tooltip for speaker-->
+    <div id="speaker-tooltip" class="bg-light card-shadow display-none">
+        <img src="./img/Unbekannt.jpg" class="portrait" />
+        <p class="name card-shadow"></p>
+    </div>
+
+    <!--add dashboard modal-->
+    <div class="modal fade bg-gradient-light" id="addDashboardModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content w-100 rounded-0 card-shadow">
+                <div class="modal-header bg-darkprime rounded-0 text-light pl-3 pr-3 pb-1 pt-1">
+                    <h5 class="modal-title">Individuelles Dashboard hinzufügen</h5>
+                    <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-1 text-center small">Suchen und wählen Sie eine(n) Redner(in), Partei oder Fraktion.</p>
+                    <!--choose speaker-->
+                    <div class="position-relative">
+                        <div class="flexed exception-click">
+                            <input type="text" class="w-100 form-control rounded-0 exception-click" id="dashboardCreateSearch"
+                                   data-id="" data-type="" autocomplete="off" />
+                            <div class="btn btn-dark rounded-0 exception-click">
+                                <i class="fas fa-search exception-click"></i>
+                            </div>
+                        </div>
+                        <!--actual speaker, party, fraction list-->
+                        <div id="dashboardCreateSearchList" class="exception-click">
+
+                        </div>
+                    </div>
+                    <!--choose time-->
+                    <div class="mt-3">
+                        <p class="mb-1 text-center small">
+                            Wählen Sie den Zeitraum für den zu betrachtenden Datensatz.
+                        </p>
+                        <!--presets-->
+                        <div class="flexed">
+                            <a class="btn btn-outline-dark rounded-0 w-100 small-font date-preset" data-from="2017-10-24" data-to="2021-09-07">
+                                19. Legislaturperiode
+                            </a>
+                            <a class="btn btn-secondary text-light rounded-0 w-100 small-font mr-1 ml-1 date-preset" data-from="2021-11-18" data-to="today">
+                                20. Legislaturperiode
+                            </a>
+                            <a class="btn btn-dark text-light rounded-0 w-100 small-font date-preset" data-from="2017-10-24" data-to="today">
+                                Gesamt
+                            </a>
+                        </div>
+                        <!--date picker-->
+                        <div class="flexed align-items-center mt-2">
+                            <input type="date" min="2017-10-24" class="datepicker form-control w-100 rounded-0" id="createDashboardFromDate" />
+                            <label class="ml-2 mr-2 mb-0"> bis </label>
+                            <input type="date" min="2017-10-24" class="datepicker form-control rounded-0 w-100" id="createDashboardToDate" />
+                        </div>
+                    </div>
+                    <!--create the dashboard-->
+                    <div class="mt-3">
+                        <p class="mb-1 text-center small">
+                            Lassen Sie das individuelle Dashboard erstellen.
+                        </p>
+                        <a class="btn btn-success text-light rounded-0 w-100 create-dashboard-btn">Erstellen</a>
+                        <p class="text-danger error-message text-center mb-0 mt-2"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section scripts{
+        <!-- Core plugin JavaScript-->
+        <script src="~/lib/jquery-easing/jquery.easing.min.js"></script>
+
+        <!-- Custom scripts for all pages-->
+        <script src="~/js/sb-admin/sb-admin-2.min.js"></script>
+
+        <!-- Chart js stuff -->
+        <!--<script src="vendor/chart.js/dist/chart.min.js"></script>-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js" integrity="sha512-TW5s0IT/IppJtu76UbysrBH9Hy/5X41OTAbQuffZFU6lQ1rdcLHzpU5BzVvr/YFykoiMYZVWlr/PX1mDcfM9Qg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+        <!--For chart zooming-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js" integrity="sha512-UXumZrZNiOwnTcZSHLOfcTs0aos2MzBWHXOHOuB0J/R44QB0dwY5JgfbvljXcklVf65Gc4El6RjZ+lnwd2az2g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/1.2.0/chartjs-plugin-zoom.min.js" integrity="sha512-TT0wAMqqtjXVzpc48sI0G84rBP+oTkBZPgeRYIOVRGUdwJsyS3WPipsNh///ay2LJ+onCM23tipnz6EvEy2/UA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+        <!-- Load d3.js -->
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+
+        <!--For chart labeling-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.0.0/chartjs-plugin-datalabels.min.js" integrity="sha512-R/QOHLpV1Ggq22vfDAWYOaMd5RopHrJNMxi8/lJu8Oihwi4Ho4BRFeiMiCefn9rasajKjnx9/fTQ/xkWnkDACg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+        @*for title animation*@
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.2/TweenMax.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+        @*for masonry rows and columns*@
+        <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
+
+        <!--my scripts-->
+        <script src="./js/REST-dataaccess.js" charset="utf-8" type="text/javascript"></script>
+        <script src="./js/site.js" charset="utf-8" type="text/javascript"></script>
+        <script src="./js/dashboard.js" charset="utf-8" type="text/javascript"></script>
+        <script src="./js/dashboard-create.js" charset="utf-8" type="text/javascript"></script>
+        <script src="./js/utility.js" charset="utf-8" type="text/javascript"></script>
+        <script src="./js/speech-fulltext.js" charset="utf-8" type="text/javascript"></script>
+        <!--charts-->
+        <script src="./js/charts/token-chart.js" charset="utf-8" type="text/javascript"></script>
+        <script src="./js/charts/pos-chart.js" charset="utf-8" type="text/javascript"></script>
+        <script src="./js/charts/sentiment-radar-chart.js" charset="utf-8" type="text/javascript"></script>
+        <script src="./js/charts/named-entity-chart.js" charset="utf-8" type="text/javascript"></script>
+        <script src="./js/charts/speaker-topic-sentiment-chart.js" charset="utf-8" type="text/javascript"></script>
+        <script src="./js/charts/bar-topic-race-chart.js" charset="utf-8" type="text/javascript"></script>
+        <script src="./js/charts/topic-map-chart.js" charset="utf-8" type="text/javascript"></script>
+        <script src="./js/charts/speaker-chart.js" charset="utf-8" type="text/javascript"></script>
+        <script src="./js/charts/comment-network-chart.js" charset="utf-8" type="text/javascript"></script>
+    }
+</body>
+
+</html>

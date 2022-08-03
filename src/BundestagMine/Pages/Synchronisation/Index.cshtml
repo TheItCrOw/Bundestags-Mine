@@ -1,0 +1,40 @@
+﻿@page
+@model BundestagMine.Pages.Synchronisation.IndexModel
+@{
+    ViewData["Title"] = "Synchronisation";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Synchronisation</title>
+</head>
+
+<body>
+    <h1>Synchronisation</h1>
+    <hr class="mt-1" />
+    <div>
+        <div class="flexed justify-content-between mb-3" id="protocolsDiv">
+            <button class="btn btn-primary import-btn" data-id="protocols">Import Protocols</button>
+            <p>0</p>
+        </div>
+        <div class="flexed justify-content-between mb-3" id="deputiesDiv">
+            <button class="btn btn-primary import-btn" data-id="deputies">Import Deputies</button>
+            <p>0</p>
+        </div>
+        <div class="flexed justify-content-between mb-3" id="networkdatasDiv">
+            <button class="btn btn-primary import-btn" data-id="networkdatas">Import Networkdata</button>
+            <p>0</p>
+        </div>
+        <div class="flexed justify-content-between mb-3" id="speechesDiv">
+            <button class="btn btn-primary import-btn" data-id="speeches">Import Speeches</button>
+            <p>0</p>
+        </div>
+    </div>
+
+    @section scripts{
+        <script src="~/js/Synchronisation/synchronisation.js"></script>
+    }
+</body>
+</html>

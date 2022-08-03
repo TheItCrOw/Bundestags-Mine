@@ -1,0 +1,127 @@
+﻿<div class="modal fade bg-gradient-light" id="analysisConfiguratorModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content w-100 rounded-0 card-shadow">
+            <div class="modal-header rounded-0 pl-3 pr-3 pb-1 pt-1">
+                <h5 class="modal-title">Individuelle Analyse erstellen</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body pt-2 page-1">
+                @*name*@
+                <div>
+                    <label class="small-font text-center w-100">Benennen Sie die Analyse</label>
+                    <input type="text" class="text-input form-control name" />
+                </div>
+                <label class="small-font text-center w-100 mt-3">Wählen Sie einen Zeitraum</label>
+                <!--presets-->
+                <div class="flexed">
+                    <a class="btn btn-outline-dark rounded-0 w-100 small-font date-preset-analysis" data-from="2017-10-24" data-to="2021-09-07">
+                        19. Legislaturperiode
+                    </a>
+                    <a class="btn btn-secondary text-light rounded-0 w-100 small-font mr-1 ml-1 date-preset-analysis" data-from="2021-11-18" data-to="today">
+                        20. Legislaturperiode
+                    </a>
+                    <a class="btn btn-dark text-light rounded-0 w-100 small-font date-preset-analysis" data-from="2017-10-24" data-to="today">
+                        Gesamt
+                    </a>
+                </div>
+                <!--date picker-->
+                <div class="flexed align-items-center mt-2">
+                    <input type="date" min="2017-10-24" class="datepicker form-control w-100 rounded-0" id="createAnalysisFromDate" />
+                    <label class="ml-2 mr-2 mb-0"> bis </label>
+                    <input type="date" min="2017-10-24" class="datepicker form-control rounded-0 w-100" id="createAnalysisToDate" />
+                </div>
+                @*select speakers*@
+                <label class="small-font text-center w-100 mt-3">Fügen Sie Redner(innen) hinzu, die Sie betrachten wollen</label>
+                <!--choose speaker-->
+                <div class="position-relative">
+                    <div class="flexed exception-click">
+                        <input type="text" class="w-100 form-control rounded-0 exception-click" id="topicAnalysisSpeakerSearch"
+                               data-id="" data-type="" autocomplete="off" />
+                        <div class="btn add-speaker-to-list-btn rounded-0" data-toggle="popover" data-trigger="hover" data-placement="top"
+                             data-content="Redner(in) hinzufügen">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                    </div>
+                    <!--actual speaker, party, fraction list-->
+                    <div id="topicAnalysisSpeakerSearchList" class="exception-click">
+
+                    </div>
+                </div>
+                <div>
+                    <div class="speakers-list"></div>
+                </div>
+                @*select fractions*@
+                <label class="small-font text-center w-100 mt-3">Markieren Sie Fraktionen, die Sie betrachten wollen</label>
+                <div>
+                    <div class="fraction-list row m-0 p-0"></div>
+                </div>
+                <hr class="mb-1 m-2" />
+                @*select parties*@
+                <label class="small-font text-center w-100 mt-2">Markieren Sie Parteien, die Sie betrachten wollen</label>
+                <div>
+                    <div class="party-list row m-0 p-0"></div>
+                </div>
+                @*error message page 1*@
+                <label class="text-center w-100 mt-2 error-msg text-danger"></label>
+                @*go next page*@
+                <a class="btn mt-3 btn-warning modal-btn text-dark w-100 rounded-0 switch-page" data-toggle="popover" data-trigger="hover" data-placement="top"
+                   data-content="Zur nächsten Seite" data-to="2">
+                    <i class="fas fa-angle-double-right"></i>
+                </a>
+            </div>
+
+            @*second page*@
+            <div class="modal-body pt-2 page-2 display-none">
+                <label class="small-font text-center w-100">
+                    Wählen Sie ein Thema aus, um die sich die Analyse drehen soll. Der Themen-Pool wurde mithilfe der NLP Text-Analyse
+                    den Reden entnommen.
+                </label>
+                <!--choose named entity-->
+                <div class="position-relative">
+                    <div class="flexed exception-click">
+                        <input type="text" class="w-100 form-control rounded-0 exception-click" id="topicAnalysisTopicSearch"
+                               data-id="" data-type="" autocomplete="off" />
+                        <div class="btn add-topic-to-list-btn rounded-0" data-toggle="popover" data-trigger="hover" data-placement="top"
+                             data-content="Thema suchen">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                </div>
+
+                @*header for list*@
+                <div class="row m-0 p-1">
+                    <label class="col-8 m-0 p-0 font-weight-bold">Thema</label>
+                    <label class="col-4 m-0 p-0 font-weight-bold text-right">Erwähnungen</label>
+                </div>
+                @*list of ne*@
+                <div class="w-100 h-100 topic-list-container position-relative">
+                    <div class="loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                    <div class="topic-list">
+                    </div>
+                </div>
+
+                <label class="font-weight-bold text-center text-success w-100 mt-2 mb-1">Gewähltes Thema:</label>
+                <input disabled class="form-control rounded-0 selected-topic" />
+
+                @*error message page 2*@
+                <label class="text-center w-100 mt-2 error-msg text-danger"></label>
+
+                @*buttons*@
+                <div class="flexed">
+                    @*go back page*@
+                    <a class="btn mt-3 mr-1 btn-warning modal-btn text-dark w-100 rounded-0 switch-page" data-toggle="popover" data-trigger="hover" data-placement="top"
+                       data-content="Zurück" data-to="1">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                    @*finalise*@
+                    <a class="btn mt-3 ml-1 btn-success text-light modal-btn text-dark w-100 rounded-0 create" data-toggle="popover" data-trigger="hover" data-placement="top"
+                       data-content="Analyse erstellen">
+                        <i class="fas fa-chart-pie text-light"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

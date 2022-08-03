@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29326.143
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BundestagMine", "BundestagMine\BundestagMine.csproj", "{C260F458-3317-43A4-A7C2-78D61C0D500E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BundestagMine.Models", "BundestagMine.Models\BundestagMine.Models.csproj", "{425BA323-1853-4E0C-80DD-42686F79EA57}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BundestagMine.Synchronisation", "BundestagMine.Synchronisation\BundestagMine.Synchronisation.csproj", "{F5518613-EB0F-470D-9C97-A334395646EB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BundestagMine.MongoDB", "BundestagMine.MongoDB\BundestagMine.MongoDB.csproj", "{42F51406-80BC-46A1-A350-E9FD79FC1786}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BundestagMine.SqlDatabase", "BundestagMine.SqlDatabase\BundestagMine.SqlDatabase.csproj", "{6F9A9A9A-F160-495B-9666-B8C59D02B6CA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BundestagMine.Utility", "BundestagMine.Utility\BundestagMine.Utility.csproj", "{A6DCB9D8-A6C5-4770-BDA5-4F2F6C5FCB83}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C260F458-3317-43A4-A7C2-78D61C0D500E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C260F458-3317-43A4-A7C2-78D61C0D500E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C260F458-3317-43A4-A7C2-78D61C0D500E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C260F458-3317-43A4-A7C2-78D61C0D500E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{425BA323-1853-4E0C-80DD-42686F79EA57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{425BA323-1853-4E0C-80DD-42686F79EA57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{425BA323-1853-4E0C-80DD-42686F79EA57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{425BA323-1853-4E0C-80DD-42686F79EA57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5518613-EB0F-470D-9C97-A334395646EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5518613-EB0F-470D-9C97-A334395646EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5518613-EB0F-470D-9C97-A334395646EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5518613-EB0F-470D-9C97-A334395646EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42F51406-80BC-46A1-A350-E9FD79FC1786}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42F51406-80BC-46A1-A350-E9FD79FC1786}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42F51406-80BC-46A1-A350-E9FD79FC1786}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42F51406-80BC-46A1-A350-E9FD79FC1786}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F9A9A9A-F160-495B-9666-B8C59D02B6CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F9A9A9A-F160-495B-9666-B8C59D02B6CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F9A9A9A-F160-495B-9666-B8C59D02B6CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F9A9A9A-F160-495B-9666-B8C59D02B6CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6DCB9D8-A6C5-4770-BDA5-4F2F6C5FCB83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6DCB9D8-A6C5-4770-BDA5-4F2F6C5FCB83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6DCB9D8-A6C5-4770-BDA5-4F2F6C5FCB83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6DCB9D8-A6C5-4770-BDA5-4F2F6C5FCB83}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E359A645-1354-4751-B5A3-F3AC8697141D}
+	EndGlobalSection
+EndGlobal

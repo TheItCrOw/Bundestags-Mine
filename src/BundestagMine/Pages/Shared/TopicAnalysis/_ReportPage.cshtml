@@ -1,0 +1,470 @@
+﻿@using BundestagMine.ViewModels
+@model ReportPageViewModel
+
+<div class="mt-3">
+    <h5 class="flexed justify-content-between text-black">
+        Bericht zur Analyse - Seite @(Model.PageNumber + 1)
+        <span>
+            <i class="fas fa-database"></i>
+            @(Model.From.ToShortDateString()) <i class="ml-2 mr-2 fas fa-long-arrow-alt-right"></i> @(Model.To.ToShortDateString())
+        </span>
+    </h5>
+    <p class="small-font mb-0">Auf dieser Seite wird die gewählte Entität auf das Thema "@(Model.Topic)" untersucht.</p>
+    <div class="alert alert-info mt-2 flexed align-items-center p-2 mb-3" role="alert">
+        <i class="fas fa-info-circle mr-2 h-100"></i>
+        <label class="small-font m-0">
+            Alle Auswertungen, die unter Berücksichtigung des gewählten Zeitraums erfasst wurden, sind mit einem
+            <i class="fas fa-database ml-1 mr-1 text-black"></i> Icon markiert.<br />
+            Das gleiche gilt parallel für das Berücksichtigen des Themas und dem
+            <i class="fas fa-globe ml-1 mr-1 text-black"></i> Icon.
+        </label>
+    </div>
+
+    @*If its a deputy, show a bit info*@
+    @if (Model.StatisticsViewModel != null)
+    {
+        <section class="deputy-section">
+            <h5 class="flexed section-title justify-content-between align-items-center">
+                <span>Überblick zur gewählten Entität</span>
+                <span>
+                    <i class="fas fa-database timeframe-icon ml-1 text-black"></i>
+                    <i class="fas fa-globe timeframe-icon ml-1 mr-1 text-info"></i>
+                </span>
+            </h5>
+            <div class="content">
+                <div class="row m-0 p-0">
+                    @if (Model.StatisticsViewModel is ReportDeputyViewModel reportDeputyViewModel)
+                    {
+                        <img src="@Model.StatisticsViewModel.PortraitUrl" class="col-3 m-0 p-0 img-fit" />
+                    }
+                    else
+                    {
+                        <div class="col-3 m-0 p-1 w-100 h-100 position-relative">
+                            <h4 class="text-center w-100 position-absolute text-black font-weight-bold" style="margin-top:35%">
+                                @Model.StatisticsViewModel.EntityName
+                            </h4>
+                        </div>
+                    }
+                    @*speech statistics*@
+                    <div class="col-9 p-0 m-0">
+                        <table class="table table-striped small-font small-table mb-0 border-left-lightgray">
+                            <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col">Gesamt</th>
+                                    <th scope="col">Zeitraum</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">
+                                        <i class="fas fa-info-circle mr-2" data-toggle="popover" data-trigger="hover" data-placement="top"
+                                           data-content="Gesamtanzahl der Reden."></i>
+                                        Anzahl Reden
+                                    </th>
+                                    <td>@Model.StatisticsViewModel.TotalSpeechesAmount</td>
+                                    <td>@Model.StatisticsViewModel.TotalSpeechesAmountTimeFramed</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        <i class="fas fa-info-circle mr-2" data-toggle="popover" data-trigger="hover" data-placement="top"
+                                           data-content="Anzahl Reden, die das gewählte Thema mindestens einmal erwähnen."></i>
+                                        Anzahl Reden im Thema
+                                    </th>
+                                    <td>@Model.StatisticsViewModel.TotalSpeechesAmountTopic</td>
+                                    <td>@Model.StatisticsViewModel.TotalSpeechesAmountTopicTimeFramed</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        <i class="fas fa-info-circle mr-2" data-toggle="popover" data-trigger="hover" data-placement="top"
+                                           data-content="Durschnittliche Redenanzahl pro Sitzung."></i>
+                                        Reden pro Sitzung
+                                    </th>
+                                    <td>@(Math.Round(Model.StatisticsViewModel.AverageSpeechesAmount, 2))</td>
+                                    <td>@(Math.Round(Model.StatisticsViewModel.AverageSpeechesAmountTimeFramed, 2))</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        <i class="fas fa-info-circle mr-2" data-toggle="popover" data-trigger="hover" data-placement="top"
+                                           data-content="Durschnittliche Redenanzahl pro Sitzung, die das gewählte Thema mindestens einmal erwähnen."></i>
+                                        Reden pro Sitzung im Thema
+                                    </th>
+                                    <td>@(Math.Round(Model.StatisticsViewModel.AverageSpeechesAmountTopic, 2))</td>
+                                    <td>@(Math.Round(Model.StatisticsViewModel.AverageSpeechesAmountTopicTimeFramed, 2))</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @if (Model.StatisticsViewModel is ReportDeputyViewModel deputyViewModel)
+                {
+                    <div class="w-100">
+                        <a class="w-100 btn p-1 text-center align-items-center expand" data-expanded="false"
+                           onclick="var exp = $(this).data('expanded');
+                    if (!exp) {
+                        $(this).next().show(50);
+                        $(this).find('i').removeClass('fa-chevron-down');
+                        $(this).find('i').addClass('fa-chevron-up');
+                    } else {
+                        $(this).next().hide(50);
+                        $(this).find('i').removeClass('fa-chevron-up');
+                        $(this).find('i').addClass('fa-chevron-down');
+                    }
+                    $(this).data('expanded', !exp)">
+                            Visitenkarte <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <div class="expansion display-none">
+                            <hr class="ml-2 mr-2 mt-0 mb-0" />
+                            <div class="row m-0 p-1 small-font">
+                                @*first col*@
+                                <div class="col-4 pt-1 pl-1 pb-1 pr-2 border-right">
+                                    <div class="flexed justify-content-between">
+                                        <span class="mr-1 font-weight-bold">Name:</span>
+                                        <span>@deputyViewModel.Deputy.FirstName @deputyViewModel.Deputy.LastName</span>
+                                    </div>
+                                    <div class="flexed justify-content-between">
+                                        <span class="mr-1 font-weight-bold">Geschlecht:</span>
+                                        <span>@deputyViewModel.Deputy.Gender</span>
+                                    </div>
+                                    <div class="flexed justify-content-between">
+                                        <span class="mr-1 font-weight-bold">Geburtstag:</span>
+                                        <span>@deputyViewModel.Deputy.BirthDate.ToShortDateString()</span>
+                                    </div>
+                                    <div class="flexed justify-content-between">
+                                        <span class="mr-1 font-weight-bold">Religion:</span>
+                                        <span>@deputyViewModel.Deputy.Religion</span>
+                                    </div>
+                                </div>
+                                @*second col*@
+                                <div class="col-4 pt-1 pl-2 pb-1 pr-2 border-right">
+                                    <div class="flexed justify-content-between">
+                                        <span class="mr-1 font-weight-bold">Familienstand:</span>
+                                        <span>@deputyViewModel.Deputy.MaritalStatus</span>
+                                    </div>
+                                    <div class="flexed justify-content-between">
+                                        <span class="mr-1 font-weight-bold">Fraktion:</span>
+                                        <span>@deputyViewModel.Deputy.Fraction</span>
+                                    </div>
+                                    <div class="flexed justify-content-between">
+                                        <span class="mr-1 font-weight-bold">Partei:</span>
+                                        <span>@deputyViewModel.Deputy.Party</span>
+                                    </div>
+                                    <div class="flexed justify-content-between">
+                                        <span class="mr-1 font-weight-bold">Beruf:</span>
+                                        <span>@deputyViewModel.Deputy.Profession</span>
+                                    </div>
+                                </div>
+                                @*third col*@
+                                <div class="col-4 pt-1 pl-2 pb-1 pr-1">
+                                    <div class="flexed justify-content-between">
+                                        <span class="mr-1 font-weight-bold">Im Bundestag seit:</span>
+                                        <span>@deputyViewModel.Deputy.HistorySince.ToShortDateString()</span>
+                                    </div>
+                                    <div class="flexed justify-content-between">
+                                        <span class="mr-1 font-weight-bold">Akademischer Grad:</span>
+                                        <span>@deputyViewModel.Deputy.AcademicTitle</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+
+    @*sentiment chart in timefram*@
+    <section>
+        <div class="flexed justify-content-between mb-1 section-title">
+            <div class="flexed align-items-center align-items-center">
+                <h5 class="mb-0">Sentimentverteilung (Auf Satzebene)</h5>
+            </div>
+            <span>
+                <i class="fas fa-database timeframe-icon ml-1 text-black"></i>
+                <i class="fas fa-globe timeframe-icon ml-1 mr-1 text-info"></i>
+            </span>
+        </div>
+        <div class="content">
+            <canvas class="w-100 p-0 m-0 chart" id="@(Model.Id)-sentimentChart"></canvas>
+        </div>
+    </section>
+
+    @*topic speeches*@
+    <section>
+        <div class="flexed justify-content-between mb-1 section-title">
+            <div class="flexed align-items-center align-items-center">
+                <h5 class="mb-0">Reden zum Thema</h5>
+            </div>
+            <span>
+                <i class="fas fa-database timeframe-icon ml-1 text-black"></i>
+                <i class="fas fa-globe timeframe-icon ml-1 mr-1 text-info"></i>
+            </span>
+        </div>
+        <p class="small-font mt-1 mb-2">
+            Es werden die Top 20 Reden der gewählten Entität mit den meisten Erwähnungen des Themas angezeigt.
+        </p>
+        <div class="content">
+            @if (Model.TopicSpeeches == null || Model.TopicSpeeches.Count == 0)
+            {
+                <p class="small-font mb-0 text-danger m-1">
+                    Keine Reden zum Thema gefunden.
+                </p>
+            }
+            else
+            {
+                <div class="topic-speech-list">
+                    @foreach (var speechVm in Model.TopicSpeeches)
+                    {
+                        <div class="speech-list-item flexed align-items-center justify-content-between" data-id="@speechVm.Speech.Id">
+                            <div class="m-0 p-0">
+                                <img src="./img/Unbekannt.jpg" onerror="$(this).attr('src', './img/Unbekannt.jpg')" class="img-fit"
+                                     data-id="@speechVm.Speaker.Deputy.SpeakerId" />
+                                <p class="mb-0 small-font">
+                                    @speechVm.Speaker?.Deputy.FirstName @speechVm.Speaker?.Deputy.LastName
+                                </p>
+                            </div>
+
+                            <div>
+                                <p class="text-center small-font font-weight-bold mb-1">
+                                    @speechVm.Agenda?.Date.ToShortDateString()
+                                </p>
+                                <a class="text-center mb-1 read-more-agenda" data-text="@speechVm.Agenda?.Description">
+                                    @speechVm.Agenda?.Title
+                                </a>
+
+                            </div>
+
+                            <div class="flexed align-items-center">
+                                <p class="mb-0 font-weight-bold ml-1 mr-2">
+                                    @speechVm.TopicMentionCount
+                                </p>
+                                <a class="ml-2 open-speech-btn mr-2" data-toggle="popover" data-trigger="hover" data-placement="left"
+                                   data-content="Rede lesen" data-id="@speechVm.Speech?.Id">
+                                    <i class="fab fa-readme"></i>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+
+    @*comments about speech topics*@
+    <section>
+        <div class="flexed justify-content-between mb-1 section-title">
+            <div class="flexed align-items-center align-items-center">
+                <h5 class="mb-0">Kommentare zum Thema</h5>
+            </div>
+            <span>
+                <i class="fas fa-database timeframe-icon ml-1 text-black"></i>
+                <i class="fas fa-globe timeframe-icon ml-1 mr-1 text-info"></i>
+            </span>
+        </div>
+        <p class="small-font mt-1 mb-2">
+            Es werden die Top 20 Kommentare der gewählten Entität zu den Reden Anderer bzgl. des gewählten Themas angezeigt.
+            Der Ausschnitt der Rede, der gezeigt wird, kann - muss aber nicht das gewählte Thema beinhalten, sondern nur die gesamte
+            Rede.
+        </p>
+        <div class="content">
+            @if (Model.TopicCommentsFromEntity == null || Model.TopicCommentsFromEntity.Count == 0)
+            {
+                <p class="small-font mb-0 text-danger m-1">
+                    Keine Kommentare der Entität zum Thema gefunden.
+                </p>
+            }
+            else
+            {
+                <div class="comment-topic-list">
+                    @foreach (var comment in Model.TopicCommentsFromEntity)
+                    {
+                        <div>
+                            <div class="speech-list-item flexed align-items-center justify-content-between" data-id="@comment.SpeechId">
+                                <div class="m-0 p-0">
+                                    <img src="./img/Unbekannt.jpg" onerror="$(this).attr('src', './img/Unbekannt.jpg')" class="img-fit"
+                                         data-id="@comment.Speaker?.SpeakerId" />
+                                    <p class="mb-0 small-font">
+                                        @{
+                                            var org = "(Plos)";
+                                            if (!string.IsNullOrEmpty(comment.Speaker?.Fraction)) org = comment.Speaker.Fraction;
+                                            else if (!string.IsNullOrEmpty(comment.Speaker?.Party)) org = comment.Speaker.Party;
+                                        }
+                                        @comment.Speaker?.FirstName @comment.Speaker?.LastName (@org)
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="ml-3 mr-2 small-font mb-1">
+                                        @comment.SpeechSegment.Text
+                                    </p>
+                                </div>
+
+                                <div class="flexed align-items-center">
+                                    <a class="ml-2 open-speech-btn mr-2" data-toggle="popover" data-trigger="hover" data-placement="left"
+                                       data-content="Rede lesen" data-id="@comment.SpeechId">
+                                        <i class="fab fa-readme"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="shouts">
+                                @foreach (var shout in comment.SpeechSegment.Shouts)
+                                {
+                                    <div class="shout">
+                                        <label class="m-0"><b>-----</b> @shout.Text</label>
+                                        <div class="text-right">
+                                            <img src="./img/Unbekannt.jpg" onerror="$(this).attr('src', './img/Unbekannt.jpg')" class="img-fit"
+                                                 data-id="@shout?.SpeakerId" />
+                                            <p class="m-0 small-font">
+                                                @{
+                                                    org = "";
+                                                    if (!string.IsNullOrEmpty(shout.Fraction)) org = "(" + shout.Fraction + ")";
+                                                    else if (!string.IsNullOrEmpty(shout.Party)) org = "(" + shout.Party + ")";
+                                                }
+                                                @shout.FirstName @shout.LastName @org
+                                            </p>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+
+    @*topic compare to other topics of the entity*@
+    <section>
+        <div class="flexed justify-content-between mb-1 section-title">
+            <div class="flexed align-items-center align-items-center">
+                <h5 class="mb-0">Thema im Prioritäts-Vergleich</h5>
+            </div>
+            <span>
+                <i class="fas fa-database timeframe-icon ml-1 text-black"></i>
+                <i class="fas fa-globe timeframe-icon ml-1 mr-1 text-info"></i>
+            </span>
+        </div>
+        <p class="small-font mt-1 mb-2">
+            Es wird das gewählte Thema mit den Top 20 Themen der gewählten Entität bzgl. derer Erwähnungen verglichen.
+        </p>
+        <div class="content">
+            <canvas class="w-100 p-0 m-0 chart" id="@(Model.Id)-topicComparedToOtherTopicsChart"></canvas>
+        </div>
+    </section>
+
+    @*topic polls*@
+    <section>
+        <div class="flexed justify-content-between mb-1 section-title">
+            <div class="flexed align-items-center align-items-center">
+                <h5 class="mb-0">Abstimmungen zum Thema</h5>
+            </div>
+            <span>
+                <i class="fas fa-globe timeframe-icon ml-1 mr-1 text-info"></i>
+            </span>
+        </div>
+        <p class="small-font mt-1 mb-2">
+            Es werden die Top 20 Abstimmungen, die das gewählte Thema im Titel besitzen, aufgelistet. Die Wahl der gewählten
+            Entität wird ebenfalls aufgezeigt.
+        </p>
+        @*legende*@
+        <label class="flexed justify-content-around small-font">
+            <span class="mr-2">
+                <i class="fas fa-circle mr-1" style="color:green; opacity:0.7"></i>
+                Ja
+            </span>
+            <span class="mr-2">
+                <i class="fas fa-circle mr-1" style="color:red; opacity:0.7"></i>
+                Nein
+            </span>
+            <span class="mr-2">
+                <i class="fas fa-circle mr-1" style="color:dodgerblue; opacity:0.7"></i>
+                Enthalten
+            </span>
+            <span class="mr-2">
+                <i class="fas fa-circle mr-1" style="color:gray; opacity:0.7"></i>
+                Nicht abg.
+            </span>
+        </label>
+        <div class="content">
+            @if (Model.TopicPolls == null || Model.TopicPolls.Count == 0)
+            {
+                <p class="small-font mb-0 text-danger m-1">
+                    Keine Abstimmungen zum Thema gefunden.
+                    @if (Model.StatisticsViewModel is ReportPartyViewModel partyViewModel)
+                    {
+                        <span>(Parteien stimmen nicht ab - nur Fraktionen)</span>
+                    }
+                </p>
+            }
+            else
+            {
+                <div class="topic-poll-list">
+                    @foreach (var poll in Model.TopicPolls)
+                    {
+                        <div class="topic-poll-list-item">
+                            <div class="flexed p-2 justify-content-between align-items-center">
+                                <div>
+                                    <p class="m-0 font-weight-bold">@poll.Poll.Title</p>
+                                    <p class="m-0 small-font">@poll.Poll.Date.ToShortDateString()</p>
+                                    <p class="m-0 small-font">
+                                        Legislaturperiode @poll.Poll.LegislaturePeriod
+                                        <i class="fas fa-angle-double-right"></i>
+                                        Sitzung @poll.Poll.ProtocolNumber
+                                    </p>
+                                </div>
+                                <a data-id="@poll.Poll.Id" class="btn border-0 open-poll" data-toggle="popover" data-trigger="hover" data-placement="top"
+                                   data-content="Erfahre mehr über die Abstimmung (Öffnet neuen Tab).">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            </div>
+                            <p class="ml-2 mt-1 mb-1 mr-1 small-font font-weight-bold">
+                                Abstimmungs-Ergebnisse der gewählten Entität
+                            </p>
+                            <div class="poll-entries mt-2 mb-0 mr-0 ml-0 row pr-0 pb-0 pt-0 pl-1">
+                                @foreach (var entry in poll.Poll.Entries)
+                                {
+                                    <div class="poll-entry col-4 m-0 p-0">
+                                        @{
+                                            var org = "";
+                                            if (!string.IsNullOrEmpty(entry.Fraction)) org = "(" + entry.Fraction + ")";
+                                            var color = "white";
+                                            if (entry.No) color = "red";
+                                            if (entry.Yes) color = "green";
+                                            if (entry.NotSubmitted) color = "gray";
+                                            if (entry.Abstention) color = "dodgerblue";
+                                            if (entry.NotValid) color = "black";
+                                        }
+                                        <label class="small-font m-0">@entry.FirstName @entry.LastName</label>
+                                        <i class="ml-1 fas fa-circle mr-2" style="color:@color; opacity:0.7"></i>
+                                    </div>
+                                }
+                            </div>
+                            <p class="mt-0 ml-1 mr-1 mb-2 small-font font-italic">
+                                ... Alle Ergebnisse
+                                <span class="open-poll clickable text-primary" data-id="@poll.Poll.Id">hier</span>
+                            </p>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+</div>
+
+<script>
+
+// Build the sentiment chart.
+$(document).ready(function () {
+    buildSentimentChartForPage('@(Model.Id)', '@(Html.Raw(Json.Serialize(Model.SentimentGraphData)))');
+    buildTopicComparedToOtherTopicsChart('@(Model.Id)', '@(Html.Raw(Json.Serialize(Model.TopicToOtherTopicsCompareGraphData)))');
+
+    // Add speech list item portraits
+    // Lets skip this because our server is way too slow to handle that many img requests right now...
+    //$('.speech-list-item img, .shout img').each(async function () {
+    //    $(this).attr('src', await getSpeakerPortrait($(this).data('id')));
+    //})
+
+    //aktivate popoers
+    $('[data-toggle="popover"]').popover();
+})
+</script>

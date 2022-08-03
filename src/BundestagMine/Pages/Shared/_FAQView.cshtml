@@ -1,0 +1,149 @@
+﻿
+<div class="pt-4 pl-2 pr-2 pb-2">
+    <hr class="mt-0 fancy-hr bg-transparent" />
+    <h2>Häufig gestellte Fragen</h2>
+
+    <div class="mt-2">
+        <div class="row m-0 p-0"  data-masonry='{"percentPosition": true }'>
+            @*Was ist bundestags mine*@
+            <div class="col-lg-4 m-0 p-2 question-container">
+                <div class="card p-3">
+                    <h5>Was ist die "Bundestags-Mine"?</h5>
+                    <hr class="mt-0 mb-2" />
+                    <p>
+                        Die Bundestags-Mine ist eine Aufbereitung linguistischer Daten-Auswertungen der Plenarprotokolle des deutschen Bundestags.
+                        Die Daten-Auswertung findet dabei mithilfe des "Natural Language Processing" statt, welches das Text Technology Lab der
+                        Goethe Universität Frankfurt, zur Verfügung stellt.
+                    </p>
+                </div>
+            </div>
+            @*Was ist NLP*@
+            <div class="col-lg-4 m-0 p-2 question-container">
+                <div class="card p-3">
+                    <h5>Was bedeutet "Natural Language Processing" (NLP)?</h5>
+                    <hr class="mt-0 mb-2" />
+                    <p>
+                        Das "Natural Language Processing" ist ein Bereich der Computerlinguistik. Mithilfe von künstlicher Intelligenz wird versucht,
+                        dass ein Computer den Inhalt eines Textes "versteht". Der Computer kann den Text dann sortieren und kategorisieren, Verbindungen
+                        herstellen und auf verschiedenste Weise auswerten. Wir nutzen diese Technologie, indem wir alle Plenarprokolle ab der 19. Legislaturperiode
+                        auswerten lassen. Die Ergebnisse werden dann hier, auf dieser Website, aufbereitet.
+                    </p>
+                </div>
+            </div>
+            @*Woher Idee*@
+            <div class="col-lg-4 m-0 p-2 question-container">
+                <div class="card p-3">
+                    <h5>Wie entstand die Bundestags-Mine?</h5>
+                    <hr class="mt-0 mb-2" />
+                    <p>
+                        Bundestag-Mine.de ist aus einem Uni-Projekt heraus entstanden und wurde ursprünglich von einer
+                        Gruppe bestehend aus 4 Studierenden (Kevin Bönisch, Linus Reul, Gabriele Marcantonio, Elias Wahl) gebaut.
+                        Seit Modul-Ende wird das Projekt alleine weitergeführt.
+                    </p>
+                </div>
+            </div>
+            @*Woher Daten*@
+            <div class="col-lg-4 m-0 p-2 question-container">
+                <div class="card p-3">
+                    <h5>Woher kommen die Daten?</h5>
+                    <hr class="mt-0 mb-2" />
+                    <p>
+                        Alle Daten, die hier aufbereitet und in die NLP-Analyse gegeben werden, wurden von der offiziellen Seite des
+                        <a href="https://www.bundestag.de/">Bundestags</a> abgefragt. Der Bundestag bietet einen "Open Data Service",
+                        der viele Protokolle und Unterlagen zum Download bereitstellt. Alle anderen Daten, die dort nicht enthalten sind,
+                        wurden per Webcrawler von der Seite "ge-scraped" (abgefragt).
+                    </p>
+                </div>
+            </div>
+            @*Webcrawler*@
+            <div class="col-lg-4 m-0 p-2 question-container">
+                <div class="card p-3">
+                    <h5>Was ist ein Webcrawler?</h5>
+                    <hr class="mt-0 mb-2" />
+                    <p>
+                        Ein Webcrawler ist ein Computerprogramm, welches das Internet automatisch nach bestimmten Informationen durchsucht.
+                        Google benutzt dies zB. für ihre Suchmaschine. Wir benutzen es, um die Seite des Bundestags nach Informationen (Abstimmungen, Protokolle, Portraits etc.)
+                        zu durchsuchen und diese gegebenenfalls runterzuladen. Wir automatisieren also den Prozess, mühsam durch die Bundestags-Seite
+                        zu navigieren, und die Informationen klickweise runterzuladen, mit einem Programm.
+                    </p>
+                </div>
+            </div>
+            @*Technologie?*@
+            <div class="col-lg-4 m-0 p-2 question-container">
+                <div class="card p-3">
+                    <h5>Wie wird die Seite entwickelt?</h5>
+                    <hr class="mt-0 mb-2" />
+                    <p>
+                        Die Seite wurde zu Anfang mit Java entwickelt, aber dann nach C# ASP.NET Core portiert. Das Projekt ist Open-Source
+                        auf GitHub zu finden.
+                    </p>
+                </div>
+            </div>
+            @*Kann ich selbst Daten abfragen und aufbereiten?*@
+            <div class="col-lg-4 m-0 p-2 question-container">
+                <div class="card p-3">
+                    <h5>Kann ich selbst Daten abfragen (API)?</h5>
+                    <hr class="mt-0 mb-2" />
+                    <p>
+                        Es ist eine API in Planung, welche es Besuchern der Seite erlaubt, sowohl Roh-Daten als auch ausgewertete Datensätze
+                        abzufragen und für eigene Auswertungen zu nutzen. Im Moment gibt es dies nicht explizit, möglicherweise kann aber auf Nachfrage hin
+                        situativ geholfen werden.
+                    </p>
+                </div>
+            </div>
+            @*Welche Daten?*@
+            <div class="col-lg-4 m-0 p-2 question-container">
+                <div class="card p-3">
+                    <h5>Welche Daten werden hier aufbereitet?</h5>
+                    <hr class="mt-0 mb-2" />
+                    <p>
+                        Plenarprotokolle, Tagesordnungspunkte, Reden, Kommentare, Drucksachen, Abstimmungen und Abgeordnete. Wir haben ca.
+                        26.000 Reden bei 250 Protokollen mit 14.000.000 Token.
+                    </p>
+                </div>
+            </div>
+            @*Brauche ich einen Account?*@
+            <div class="col-lg-4 m-0 p-2 question-container">
+                <div class="card p-3">
+                    <h5>Brauche ich einen Account?</h5>
+                    <hr class="mt-0 mb-2" />
+                    <p>
+                        Nein. Bis auf die API, die in Planung ist, benötigt nichts einen Account.
+                    </p>
+                </div>
+            </div>
+            @*Kostet??*@
+            <div class="col-lg-4 m-0 p-2 question-container">
+                <div class="card p-3">
+                    <h5>Muss ich etwas bezahlen?</h5>
+                    <hr class="mt-0 mb-2" />
+                    <p>
+                        Nein. Bis auf die API, die in Planung ist, ist alles kostenlos.
+                    </p>
+                </div>
+            </div>
+            @*Unterstützen?*@
+            <div class="col-lg-4 m-0 p-2 question-container">
+                <div class="card p-3">
+                    <h5>Kann ich das Projekt unterstützen?</h5>
+                    <hr class="mt-0 mb-2" />
+                    <p>
+                        Natürlich! Feedback und Weiterempfehlung ist die einfachste Form der Unterstützung. Ansonsten kannst du dir gern
+                        den Source-Code auf GitHub anschauen und dort programmatisch mitwirken. Über Geld-Spenden, um die Hostingkosten
+                        vielleicht auszugleichen, freuen wir uns genauso.
+                    </p>
+                </div>
+            </div>
+            @*Ich hab einen Fehler gefunden?*@
+            <div class="col-lg-4 m-0 p-2 question-container">
+                <div class="card p-3">
+                    <h5>Ich habe einen Fehler gefunden</h5>
+                    <hr class="mt-0 mb-2" />
+                    <p>
+                        Über das Kontakt-Feld im Footer kannst du uns gern genau den Fehler beschreiben.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

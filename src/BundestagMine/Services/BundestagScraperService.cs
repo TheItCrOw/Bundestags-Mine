@@ -1,0 +1,100 @@
+﻿using BundestagMine.Models.Database;
+using BundestagMine.Models.Database.MongoDB;
+using BundestagMine.SqlDatabase;
+using BundestagMine.Utility;
+using Supremes;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Web;
+
+namespace BundestagMine.Services
+{
+    public class BundestagScraperService
+    {
+        private readonly BundestagMineDbContext _db;
+
+        public BundestagScraperService(BundestagMineDbContext db)
+        {
+            _db = db;
+        }
+
+        private static string RemoveWhitespaces(string str)
+            => string.Join("", str.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries));
+
+        /// <summary>
+        /// Removes the span, the spaces, tolower
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        private string ToCleanTitle(string s) => Regex.Replace(RemoveWhitespaces(HttpUtility.HtmlDecode(s).ToLower()), @"<[^>]*>", String.Empty);
+
+        public async Task<string> GetBundestagUrlOfPoll(Poll poll)
+        {
+            var url = "https://www.bundestag.de/ajax/filterlist/de/parlament/plenum/abstimmung/484422-484422?enddate=%ENDDATE%&endfield=date&limit=1000&noFilterSet=false&startdate=%STARTDATE%&startfield=date";
+            // sample page:
+            // https://www.bundestag.de/ajax/filterlist/de/parlament/plenum/abstimmung/484422-484422?enddate=1629849600000&endfield=date&limit=1000&noFilterSet=false&startdate=1629849600000&startfield=date
+
+            // The Date in the poll can differ from the protocol which fucks up the search.
+            // So take the protocols date instead of the polls date.
+            var protocol = _db.Protocols.FirstOrDefault(p => p.LegislaturePeriod == poll.LegislaturePeriod && p.Number == poll.ProtocolNumber);
+
+            var from = poll.Date;
+            var to = poll.Date;
+            if (protocol?.Date > poll.Date) to = protocol.Date;
+            else if (protocol?.Date < poll.Date) from = protocol.Date;
+
+            // We need the date as milliseconds as the from and to date for the url.
+            var curUrl = url.Replace("%ENDDATE%", ((long)(to - new DateTime(1970, 1, 1)).TotalMilliseconds).ToString());
+            curUrl = curUrl.Replace("%STARTDATE%", ((long)(from - new DateTime(1970, 1, 1)).TotalMilliseconds).ToString());
+            var body = Dcsoup.Parse(new Uri(curUrl), 10000);
+            var polls = body.GetElementsByClass("col-xs-12");
+            var levenshtein = new Levenshtein();
+            var editToSites = new List<(int, string)>();
+
+            // Each div has a name. If the name mathces our title, get the url of the <a>
+            foreach (var pollDiv in polls)
+            {
+                var titleH3 = pollDiv.GetElementsByClass("bt-teaser-text")?.First?.GetElementsByTag("h3")?.First;
+                if (titleH3 == null) continue;
+
+                var title = DateHelper.ReplaceInvalidPathChars(ToCleanTitle(titleH3.Html));
+                var edits = levenshtein.Compute(title, ToCleanTitle(poll.Title));
+                // Lets just take all polls into consideration and take the one, which is closest...
+                //if (edits <= poll.Title.Length / 1.2)
+                //{
+                // Now get the href.
+                var href = "https://www.bundestag.de" + pollDiv.GetElementsByTag("a").First?.Attr("href");
+                editToSites.Add((edits, href));
+                //}
+            }
+
+            // If there are multiple hits, we want the hit with the least edits required. Thats the nearest we get.
+            if (editToSites.Count > 0) return editToSites.OrderBy(e => e.Item1).First().Item2;
+
+            return "";
+        }
+
+        public string GetDeputyPortraitFromImageDatabase(string speakerId)
+            => GetDeputyPortraitFromImageDatabase(_db.Deputies.FirstOrDefault(d => d.SpeakerId == speakerId));
+
+        public string GetDeputyPortraitFromImageDatabase(Deputy deputy)
+        {
+            var name = (deputy.FirstName + "+" + deputy.LastName);
+            var url = "https://bilddatenbank.bundestag.de/search/picture-result?query=" + name;
+            var imagesOverview = Dcsoup.Parse(new Uri(url), 3000);
+            var test = imagesOverview.GetElementsByClass("rowGridContainer");
+            var container = imagesOverview.GetElementsByClass("rowGridContainer")[0];
+            var elements = container.GetElementsByClass("item");
+            if (elements.Count != 0)
+            {
+                var imgTag = elements[0].GetElementsByTag("img")[0];
+                return "https://bilddatenbank.bundestag.de" + imgTag.Attr("src");
+            }
+
+            return "";
+        }
+    }
+}

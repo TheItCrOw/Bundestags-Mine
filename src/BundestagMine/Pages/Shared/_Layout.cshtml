@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Bundestags-Mine</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/footer.css" />
+    <!-- Custom fonts for this template-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://kit.fontawesome.com/b0888ca2eb.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3" hidden>
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-page="/Index">BundestagMine</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div>
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Site footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-9">
+                    <h6>ABOUT</h6>
+                    <p class="text-justify">
+                        Bundestag-Mine.de ist aus einem Uni-Projekt heraus entstanden und wurde ursprünglich von einer
+                        Gruppe bestehend aus 4 Studierenden (Kevin Bönisch, Linus Reul, Gabriele Marcantonio, Elias Wahl) gebaut. 
+                        Seit Modul-Ende wird das Projekt alleine weitergeführt. 
+                        Alle Daten, die hier vearbeitet wurden/werden sind frei zugänglich von
+                        der <a href="https://www.bundestag.de/">Bundestag</a> Website abrufbar. Für die Textanalysen hat uns das <a href="https://www.texttechnologylab.org/">Text Technology Lab</a>
+                        der Goethe-Universität Frankfurt eine NLP-Engine bereitgestellt. Alle Daten und Analysen sind nach bestem Wissen und Gewissen
+                        aufbereitet und durchgeführt worden - mehr jedoch nicht. Das Projekt ist komplett <b>Open Source</b>.
+                    </p>
+                </div>
+
+                <div class="col-3">
+                    <h6>Quick Links</h6>
+                    <ul class="footer-links">
+                        <li><a target="_blank" href="https://www.texttechnologylab.org/">Text Technology Lab</a></li>
+                        <li><a target="_blank" href="https://www.bundestag.de/">Deutscher Bundestag</a></li>
+                        <li><a target="_blank" href="https://github.com/TheItCrOw/BundestagMine">GitHub</a></li>
+                        <li><a href="mailto:k.boenisch@outlook.com">Kontakt</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 col-sm-6 col-xs-12">
+                    <p class="copyright-text">
+                        Copyright &copy; 2022 All Rights Reserved by Kevin Bönisch
+                    </p>
+                </div>
+
+                <div class="col-md-4 col-sm-6 col-xs-12">
+                    <ul class="social-icons">
+                        <li><a class="twitter" target="_blank" href="https://github.com/TheItCrOw/BundestagMine"><i class="fab fa-github"></i></a></li>
+                        <li><a class="linkedin" target="_blank" href="https://www.xing.com/profile/Kevin_Boenisch2/cv"><i class="fab fa-xing"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

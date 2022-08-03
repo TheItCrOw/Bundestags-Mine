@@ -1,0 +1,16 @@
+﻿using BundestagMine.Models.Database.MongoDB;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace BundestagMine.ViewModels
+{
+    public class SpeechViewModel
+    {
+        public Speech Speech { get; set; }
+        public ReportDeputyViewModel Speaker { get; set; }
+        public int TopicMentionCount { get; set; }
+        public AgendaItem Agenda { get; set; }
+    }
+}

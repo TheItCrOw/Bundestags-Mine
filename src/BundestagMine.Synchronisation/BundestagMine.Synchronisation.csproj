@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="dcsoup" Version="1.0.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.15.0" />
+    <PackageReference Include="Syncfusion.XlsIO.Net.Core" Version="19.4.0.56" />
+    <PackageReference Include="System.Data.OleDb" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BundestagMine.Models\BundestagMine.Models.csproj" />
+    <ProjectReference Include="..\BundestagMine.MongoDB\BundestagMine.MongoDB.csproj" />
+    <ProjectReference Include="..\BundestagMine.SqlDatabase\BundestagMine.SqlDatabase.csproj" />
+    <ProjectReference Include="..\BundestagMine.Utility\BundestagMine.Utility.csproj" />
+  </ItemGroup>
+
+</Project>

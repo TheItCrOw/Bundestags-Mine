@@ -1,0 +1,75 @@
+﻿@using BundestagMine.ViewModels
+@using BundestagMine.Utility
+@model TopicAnalysisReportViewModel
+
+
+<div class="analysis-report" data-id="@Model.ReportId">
+    <div class="pages">
+        @for (int i = 0; i < Model.Entities.Count; i++)
+        {
+            var curEntity = Model.Entities[i];
+            var visible = i == 0 ? "" : "display-none";
+            <div class="page-container container" data-num="@i" data-obj="null">
+                <div class="header">
+                    <h5 class="m-0">
+                        @DateHelper.ConvertGermanUmlauteBack(curEntity.Item2) @(curEntity.Item3 != "Redner(in)" ? $"({curEntity.Item3})" : "")
+                        <i class="ml-2 mr-2 fas fa-long-arrow-alt-right"></i>
+                        @DateHelper.ConvertGermanUmlauteBack(Model.Topic)
+                    </h5>
+                    <p class="m-0">@(i+1)/@(Model.Entities.Count)</p>
+                </div>
+                <script>
+                    // Fill the page-content of each page. We want a request per page, because rendering all in one
+                    // takes way to long.
+                    var obj = {
+                        pageNumber: @(i),
+                        reportId: "@(Model.ReportId)",
+                        speakerId: "@(curEntity.Item3 == "Redner(in)" ? curEntity.Item1 : "")",
+                        fraction: "@(curEntity.Item3 == "Fraktion" ? curEntity.Item1 : "")",
+                        party: "@(curEntity.Item3 == "Partei" ? curEntity.Item1 : "")",
+                        from: "@(Model.From.ToShortDateString())",
+                        to: "@(Model.To.ToShortDateString())",
+                        topic: "@(Model.Topic)"
+                    }
+                    buildPage(obj);
+                </script>
+
+                @*actual content*@
+                <div class="page-content">
+                </div>
+                @*loader*@
+                <div class="page-loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                @*erorr div*@
+                <div class="page-info-div">
+                    <div class="w-100 h-100 flexed align-items-center text-center m-2">
+                        <div class="w-100 text-center">
+                            <h5>Fehler beim Laden der Seite</h5>
+                            <p>
+                                Das kann vorallem dann passieren, wenn der Server grade viele Analysen berechnen muss, was aber 
+                                nicht bedeutet, dass ein konkreter Fehler vorliegt. Ein Neuladen kann daher oft helfen.
+                            </p>
+                            <a class="btn btn-warning text-light rounded-0 card-shadow"
+                               onclick="buildPage($(this).closest('.page-container').data('obj'))">
+                                Neuladen
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                @*a div that is visible when we switch pages*@
+                <div class="go-there"><span><i class="fas fa-file-alt mr-2"></i> @(i+1)</span></div>
+
+                @*arrow to switch*@
+                <div class="go-back arrow"><i class="fas fa-chevron-left"></i></div>
+                <div class="go-next arrow"><i class="fas fa-chevron-right"></i></div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    // Init the pages.
+    $(document).ready(function () {
+        switchPage(selectedReportId, 0);
+    })
+</script>
