@@ -28,13 +28,25 @@ namespace BundestagMine.Synchronisation
         {
             Log.Information("Starting a new import run now at " + DateTime.Now);
 
-            Log.Information("Checking new imported entities.");
+            Log.Information("============================================================================");
+            Log.Information("Checking new IMPORTED ENTITIES");
+            Log.Information("============================================================================");
             var parser = new ImportedEntityParser();
-            await parser.ParseNewPotentialEntities();
+            var result = await parser.ParseNewPotentialEntities();
+            if (result == 0) ; // Send a mail, idk. Inform somehow!
 
-            Log.Information("Checking new agenda items.");
+            Log.Information("============================================================================");
+            Log.Information("Checking new AGENDA ITEMS");
+            Log.Information("============================================================================");
             var scraper = new BundestagScraper();
-            scraper.FetchNewAgendaItems();
+            result = scraper.FetchNewAgendaItems();
+            if (result == 0) ; // Send a mail, idk. Inform somehow!
+
+            Log.Information("============================================================================");
+            Log.Information("Checking new POLLS");
+            Log.Information("============================================================================");
+            result = scraper.ExportAbstimmungslisten();
+            if (result == 0) ; // Send a mail, idk. Inform somehow!
 
             return;
             try

@@ -19,7 +19,7 @@ namespace BundestagMine.Synchronisation
             {
                 // For future imporst: The path may olny take 255 characters. Some excel files are long af
                 // So put them into C:\a whatever and let them import there, otherwise ull get errors...
-                foreach (var file in Directory.EnumerateFiles(ConfigManager.GetLocalMineDirectory() + "Abstimmungslisten", "*.xls"))
+                foreach (var file in Directory.EnumerateFiles(ConfigManager.GetDataPollsDirectoryPath(), "*.xls"))
                 {
                     try
                     {
@@ -103,7 +103,7 @@ namespace BundestagMine.Synchronisation
                 {
                     var app = excelEngine.Excel;
                     app.DefaultVersion = ExcelVersion.Xlsx;
-                    foreach (var file in Directory.EnumerateFiles(ConfigManager.GetLocalMineDirectory() + "Abstimmungslisten", "*.xlsx"))
+                    foreach (var file in Directory.EnumerateFiles(ConfigManager.GetDataPollsDirectoryPath(), "*.xlsx"))
                     {
                         var splited = file.Split("\\");
                         var fileName = splited[splited.Length - 1];

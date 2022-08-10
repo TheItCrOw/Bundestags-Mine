@@ -30,7 +30,7 @@ namespace BundestagMine.Synchronisation
                     if (!db.ImportedEntities.Any())
                     {
                         Log.Information("No new entities found to import. Aborting.");
-                        return 1;
+                        return 0;
                     }
 
                     var totalNewProtocols = db.ImportedEntities.Where(e => e.Type == ModelType.Protocol).Count();
@@ -78,14 +78,69 @@ namespace BundestagMine.Synchronisation
                         Log.Information($"Saved!");
                         counter++;
                     }
+
+                    // After the protocols, import potential new deputies
+                    counter = 1;
+                    var importedDeputies = db.ImportedEntities.Where(e => e.Type == ModelType.Deputy).ToList();
+                    foreach (var importedDeputy in importedDeputies)
+                    {
+                        Log.Information($"Parsing deputy {counter}/{importedDeputies.Count}");
+                        var deputy = ParseImportedEntityToDeputy(importedDeputy);
+
+                        if(db.Deputies.Any(d => d.SpeakerId == deputy.SpeakerId))
+                        {
+                            Log.Information($"Deputy {deputy.FirstName + " " + deputy.LastName} is in the database already. Skipping it.");
+                            counter++;
+                            continue;
+                        }
+
+                        db.Deputies.Add(deputy);
+                        counter++;
+                    }
+
+                    await db.SaveChangesAsync();
                 }
+
                 return 1;
             }
             catch (Exception ex)
             {
-                Log.Error("There was an error while importing new entities: ", ex);
+                Log.Error("There was an unknown error while importing new entities: ", ex);
                 return 0;
             }
+        }
+
+        /// <summary>
+        /// Takes in a imported entity of type Deputy and creates a Deputy for our db out of it.
+        /// </summary>
+        /// <param name="importedEntity"></param>
+        /// <returns></returns>
+        private Deputy ParseImportedEntityToDeputy(ImportedEntity importedEntity)
+        {
+            if (importedEntity.Type != ModelType.Deputy) return null;
+
+            var mongoDeputy = BsonDocument.Parse(importedEntity.ModelJson);
+            var deputy = new Deputy();
+            deputy.MongoId = Guid.Empty.ToString();
+
+            if (mongoDeputy.AsBsonDocument.TryGetValue("id", out var id)) deputy.SpeakerId = id.AsString;
+            if (mongoDeputy.AsBsonDocument.TryGetValue("firstName", out var firstName)) deputy.FirstName = firstName.AsString;
+            if (mongoDeputy.AsBsonDocument.TryGetValue("lastName", out var lastName)) deputy.LastName = lastName.AsString;
+            if (mongoDeputy.AsBsonDocument.TryGetValue("fraction", out var fraction)) deputy.Fraction = fraction.AsString;
+            if (mongoDeputy.AsBsonDocument.TryGetValue("party", out var party)) deputy.Party = party.AsString;
+            if (mongoDeputy.AsBsonDocument.TryGetValue("academicTitle", out var academicTitle)) deputy.AcademicTitle = academicTitle.AsString;
+            if (mongoDeputy.AsBsonDocument.TryGetValue("historySince", out var historySince) && DateTime.TryParse(historySince.AsString, out var parsedHistorySince))
+                deputy.HistorySince = parsedHistorySince;
+            if (mongoDeputy.AsBsonDocument.TryGetValue("birthDate", out var birthDate) && DateTime.TryParse(birthDate.AsString, out var parsedBirthDate))
+                deputy.BirthDate = parsedBirthDate;
+            if (mongoDeputy.AsBsonDocument.TryGetValue("deathDate", out var deathDate) && DateTime.TryParse(deathDate.AsString, out var parsedDeathDate))
+                deputy.DeathDate = parsedDeathDate;
+            if (mongoDeputy.AsBsonDocument.TryGetValue("gender", out var gender)) deputy.Gender = gender.AsString;
+            if (mongoDeputy.AsBsonDocument.TryGetValue("maritalStatus", out var maritalStatus)) deputy.MaritalStatus = maritalStatus.AsString;
+            if (mongoDeputy.AsBsonDocument.TryGetValue("religion", out var religion)) deputy.Religion = religion.AsString;
+            if (mongoDeputy.AsBsonDocument.TryGetValue("profession", out var profession)) deputy.Profession = profession.AsString;
+
+            return deputy;
         }
 
         /// <summary>

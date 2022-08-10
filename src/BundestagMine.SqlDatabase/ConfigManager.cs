@@ -20,7 +20,15 @@ namespace BundestagMine.SqlDatabase
         /// <returns></returns>
         public static string GetConnectionString() => _config.GetSection("ConnectionStrings").GetSection("DefaultConnection").Value;
 
-        public static string GetDataDirectoryPath() => _config.GetSection("Paths").GetSection("DataDirectory").Value; 
+        public static string GetDataDirectoryPath() => _config.GetSection("Paths").GetSection("DataDirectory").Value;
+
+        public static string GetDataPollsDirectoryPath() => _config.GetSection("Paths").GetSection("PollsDirectory").Value;
+
+        public static int GetPollExporterMaxOffset() => 
+            int.Parse(_config.GetSection("Configurations").GetSection("PollsExportMaxOffset").Value);
+
+        public static int GetAgendaItemScrapeStartYear() =>
+            int.Parse(_config.GetSection("Configurations").GetSection("AgendaItemScrapeStartYear").Value);
 
         /// <summary>
         /// Returns the db options we need to pass into each new db context.
