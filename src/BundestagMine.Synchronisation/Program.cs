@@ -1,7 +1,11 @@
 ﻿using BundestagMine.Models.Database;
 using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.MongoDB;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using Serilog;
 using System;
 using System.Threading.Tasks;
 
@@ -11,19 +15,34 @@ namespace BundestagMine.Synchronisation
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            // Create a new logger
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.File($"import_logs\\Import_{DateTime.Now.ToShortDateString()}.txt")
+            .CreateLogger();
+
             MainAsync().GetAwaiter().GetResult();
         }
 
         private static async Task MainAsync()
         {
+            Log.Information("Starting a new import run now at " + DateTime.Now);
+
+            Log.Information("Checking new imported entities.");
+            var parser = new ImportedEntityParser();
+            await parser.ParseNewPotentialEntities();
+
+            Log.Information("Checking new agenda items.");
+            var scraper = new BundestagScraper();
+            scraper.FetchNewAgendaItems();
+
+            return;
             try
             {
                 var import = false;
                 var export = false;
-                var scrape = true;
+                var scrape = false;
                 var importExsel = false;
-                // Connect to the MongoDB
 
                 if (import)
                 {
@@ -38,33 +57,33 @@ namespace BundestagMine.Synchronisation
                 {
                     var exporter = new MongoDBExporter(null);
                     Console.WriteLine("Exporting deputies");
-                    //await exporter.ExportDeputies();
+                    await exporter.ExportDeputies();
                     Console.WriteLine("Exporting networkdata");
-                    //await exporter.ExportNetworkData();
+                    await exporter.ExportNetworkData();
                     Console.WriteLine("Exporting Speeches");
-                    //await exporter.ExportSpeeches();
+                    await exporter.ExportSpeeches();
                     Console.WriteLine("Exporting NLP Speeches");
-                    //await exporter.ExportNLPSpeeches();
+                    await exporter.ExportNLPSpeeches();
                     Console.WriteLine("creating lemmavalues for NamedEntities");
                     await exporter.FillNamedEntitiesFromTokens();
                 }
 
                 if (scrape)
                 {
-                    var scraper = new BundestagScraper();
+                    //var scraper = new BundestagScraper();
                     Console.WriteLine("Scraping Abstimmungslisten");
-                    //scraper.ExportAbstimmungslisten();
+                    scraper.ExportAbstimmungslisten();
                     Console.WriteLine("Scraping Tagesordnungspunkte");
-                    scraper.ExportAndImportTagesordnungspunkte();
+                    scraper.FetchNewAgendaItems();
                 }
 
                 if (importExsel)
                 {
                     var excelImporter = new ExcelImporter();
                     Console.WriteLine("XLSX");
-                    //excelImporter.ImportXLSXAbstimmungslisten();
+                    excelImporter.ImportXLSXAbstimmungslisten();
                     Console.WriteLine("XLS");
-                    //excelImporter.ImportXLSAbstimmungslisten();
+                    excelImporter.ImportXLSAbstimmungslisten();
                 }
             }
             catch (Exception ex)

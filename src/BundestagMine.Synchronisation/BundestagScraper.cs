@@ -1,6 +1,7 @@
 ﻿using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.SqlDatabase;
 using BundestagMine.Utility;
+using Serilog;
 using Supremes;
 using System;
 using System.Collections.Generic;
@@ -31,29 +32,29 @@ namespace BundestagMine.Synchronisation
         /// <summary>
         /// Exports the tagesordnungspunkte by scraping and then imports them into the database.
         /// </summary>
-        public void ExportAndImportTagesordnungspunkte()
+        public void FetchNewAgendaItems()
         {
             // Its going to be a big boi method hehe
             // At the end we need something like:
             // https://www.bundestag.de/apps/plenar/plenar/conferenceweekDetail.form?limit=1&week=2&year=2022
             var url = "https://www.bundestag.de/apps/plenar/plenar/conferenceweekDetail.form?limit=1";
-            Console.WriteLine("Scraping TOP from: " + url);
+            Log.Information("Scraping TOP from: " + url);
 
             using (var sqlDb = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
             {
-                // We are only interested in the datetime between 2017 and today.
+                // We are only interested in the datetime between 2017 and today. Start is at 2017
                 // And There are 52 weeks in year
-                for (int year = 2017; year <= DateTime.Now.Year; year++)
+                for (int year = 2022; year <= DateTime.Now.Year; year++)
                     for (int week = 1; week <= 52; week++)
                     {
                         var curUrl = $"{url}&week={week}&year={year}";
                         var body = Dcsoup.Parse(new Uri(curUrl), 10000);
-                        Console.WriteLine($"New Year {year} and week {week}.");
+                        Log.Information($"New Year {year} and week {week}.");
                         // First check if there are any top at this week.
                         var firstDiv = body.GetElementsByClass("bt-standard-content").First;
                         if (firstDiv.Html == "")
                         {
-                            Console.WriteLine($"No content.");
+                            Log.Information($"No content.");
                             continue;
                         }
 
@@ -77,14 +78,14 @@ namespace BundestagMine.Synchronisation
                             // If there is no protocol at that date it means we dont have it cause its older than oktober 2017.
                             if (protocol == null)
                             {
-                                Console.WriteLine($"No protocol (Too early?).");
+                                Log.Information($"No protocol (Too early? Too late?).");
                                 continue;
                             };
 
                             // Check if this protocol already has added agendaitems.
                             if(sqlDb.AgendaItems.Any(a => a.ProtocolId == protocol.Id))
                             {
-                                Console.WriteLine($"Already has agendaitems added.");
+                                Log.Information($"Already has agendaitems added.");
                                 continue;
                             }
 
@@ -102,7 +103,7 @@ namespace BundestagMine.Synchronisation
 
                                 if (counter > protocol.AgendaItemsCount)
                                 {
-                                    Console.WriteLine("CAUTION: This protocol has more top than anticipated. Error somewhere?!");
+                                    Log.Warning("CAUTION: This protocol has more top than anticipated. Error somewhere?!");
                                 }
 
                                 var title = columns[2].GetElementsByClass("bt-top-collapser").First.Html;
@@ -124,10 +125,10 @@ namespace BundestagMine.Synchronisation
 
                             if(counter < protocol.AgendaItemsCount)
                             {
-                                Console.WriteLine("CAUTION: This protocol has less top than anticipated. Error somewhere?!");
+                                Log.Warning("CAUTION: This protocol has less top than anticipated. Error somewhere?!");
                             }
                             sqlDb.SaveChanges();
-                            Console.WriteLine($"Stored new agendaitems.");
+                            Log.Information($"Stored new agendaitems.");
                         }
                     }
             }
@@ -187,14 +188,12 @@ namespace BundestagMine.Synchronisation
                             }
                             var title = fullTitle.Substring(11, fullTitle.Length - 11).Trim();
 
-
                             var blob = a[1].Attr("href");
                             var href = excelUrl + blob;
 
                             // Create a new WebClient instance.
                             using (var myWebClient = new WebClient())
                             {
-
                                 // Download the Web resource and save it into the current filesystem folder.
                                 myWebClient.DownloadFile(href, path);
                                 Console.WriteLine("Downloaded " + fullTitle + ".");
