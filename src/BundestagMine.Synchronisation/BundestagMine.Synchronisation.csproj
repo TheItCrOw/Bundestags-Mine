@@ -12,6 +12,7 @@
   <ItemGroup>
     <PackageReference Include="dcsoup" Version="1.0.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.15.0" />
+    <PackageReference Include="Serilog.Exceptions" Version="8.3.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="Syncfusion.XlsIO.Net.Core" Version="19.4.0.56" />
     <PackageReference Include="System.Data.OleDb" Version="6.0.0" />

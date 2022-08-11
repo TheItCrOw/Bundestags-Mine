@@ -403,10 +403,7 @@ namespace BundestagMine.Controllers
             try
             {
                 response.status = "200";
-                //var graphData = _graphService.BuildTopicBarRaceChartData();
-                //var dataString = JsonConvert.SerializeObject(graphData);
-                //System.IO.File.WriteAllText($".\\wwwroot\\data\\2022-05-24_topicBarRaceData.json", dataString);
-                var jsonString = System.IO.File.ReadAllText($"{ConfigManager.GetDataDirectoryPath()}2022-05-24_topicBarRaceData.json");
+                var jsonString = System.IO.File.ReadAllText($"{ConfigManager.GetDataDirectoryPath()}topicBarRaceData.json");
                 var data = JsonConvert.DeserializeObject(jsonString, typeof(List<TopicBarRaceGraphObject>));
                 response.result = data;
             }

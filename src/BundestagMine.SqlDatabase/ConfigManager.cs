@@ -30,6 +30,20 @@ namespace BundestagMine.SqlDatabase
         public static int GetAgendaItemScrapeStartYear() =>
             int.Parse(_config.GetSection("Configurations").GetSection("AgendaItemScrapeStartYear").Value);
 
+        public static string GetAgendaItemsScrapeUrl() => _config.GetSection("Configurations").GetSection("AgendaItemsScrapeUrl").Value;
+        public static string GetPollsScrapeUrl() => _config.GetSection("Configurations").GetSection("PollsScrapeUrl").Value;
+        public static string GetBundestagUrl() => _config.GetSection("Configurations").GetSection("BundestagUrl").Value;
+        public static string GetPortraitDatabaseQueryUrl() => _config.GetSection("Configurations").GetSection("PortraitDatabaseQueryUrl").Value;
+        public static string GetPortraitDatabaseUrl() => _config.GetSection("Configurations").GetSection("PortraitDatabaseUrl").Value;
+        public static string GetPollsQueryUrl() => _config.GetSection("Configurations").GetSection("PollsQueryUrl").Value;
+
+        public static string GetSmtpHost() => _config.GetSection("Smtp").GetSection("Host").Value;
+        public static int GetSmtpPort() => int.Parse(_config.GetSection("Smtp").GetSection("Port").Value);
+        public static string GetSmtpUsername() => _config.GetSection("Smtp").GetSection("Username").Value;
+        public static string GetSmtpPassword() => _config.GetSection("Smtp").GetSection("Password").Value;
+        public static bool GetSmtpEnableSSL() => bool.Parse(_config.GetSection("Smtp").GetSection("EnableSSL").Value);
+        public static bool GetSmtpIsBodyHtml() => bool.Parse(_config.GetSection("Smtp").GetSection("IsBodyHtml").Value);
+
         /// <summary>
         /// Returns the db options we need to pass into each new db context.
         /// </summary>

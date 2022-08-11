@@ -33,7 +33,7 @@ namespace BundestagMine.Services
 
         public async Task<string> GetBundestagUrlOfPoll(Poll poll)
         {
-            var url = "https://www.bundestag.de/ajax/filterlist/de/parlament/plenum/abstimmung/484422-484422?enddate=%ENDDATE%&endfield=date&limit=1000&noFilterSet=false&startdate=%STARTDATE%&startfield=date";
+            var url = ConfigManager.GetPollsQueryUrl();
             // sample page:
             // https://www.bundestag.de/ajax/filterlist/de/parlament/plenum/abstimmung/484422-484422?enddate=1629849600000&endfield=date&limit=1000&noFilterSet=false&startdate=1629849600000&startfield=date
 
@@ -63,18 +63,15 @@ namespace BundestagMine.Services
                 var title = DateHelper.ReplaceInvalidPathChars(ToCleanTitle(titleH3.Html));
                 var edits = levenshtein.Compute(title, ToCleanTitle(poll.Title));
                 // Lets just take all polls into consideration and take the one, which is closest...
-                //if (edits <= poll.Title.Length / 1.2)
-                //{
                 // Now get the href.
-                var href = "https://www.bundestag.de" + pollDiv.GetElementsByTag("a").First?.Attr("href");
+                var href = ConfigManager.GetBundestagUrl() + pollDiv.GetElementsByTag("a").First?.Attr("href");
                 editToSites.Add((edits, href));
-                //}
             }
 
             // If there are multiple hits, we want the hit with the least edits required. Thats the nearest we get.
             if (editToSites.Count > 0) return editToSites.OrderBy(e => e.Item1).First().Item2;
 
-            return "";
+            return string.Empty;
         }
 
         public string GetDeputyPortraitFromImageDatabase(string speakerId)
@@ -83,7 +80,7 @@ namespace BundestagMine.Services
         public string GetDeputyPortraitFromImageDatabase(Deputy deputy)
         {
             var name = (deputy.FirstName + "+" + deputy.LastName);
-            var url = "https://bilddatenbank.bundestag.de/search/picture-result?query=" + name;
+            var url = ConfigManager.GetPortraitDatabaseQueryUrl() + name;
             var imagesOverview = Dcsoup.Parse(new Uri(url), 3000);
             var test = imagesOverview.GetElementsByClass("rowGridContainer");
             var container = imagesOverview.GetElementsByClass("rowGridContainer")[0];
@@ -91,10 +88,10 @@ namespace BundestagMine.Services
             if (elements.Count != 0)
             {
                 var imgTag = elements[0].GetElementsByTag("img")[0];
-                return "https://bilddatenbank.bundestag.de" + imgTag.Attr("src");
+                return ConfigManager.GetPortraitDatabaseUrl() + imgTag.Attr("src");
             }
 
-            return "";
+            return string.Empty;
         }
     }
 }

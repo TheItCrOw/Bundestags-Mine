@@ -14,11 +14,6 @@ namespace BundestagMine.Synchronisation
 {
     public class ExcelImporter
     {
-        public int ImportAllPolls()
-        {
-            return 1;
-        }
-
         /// <summary>
         /// Imporst the old XLS abstimmungslisten as excel into the mssql
         /// </summary>
@@ -103,7 +98,7 @@ namespace BundestagMine.Synchronisation
                     }
                     catch (Exception ex)
                     {
-                        Log.Error("Error trying to import xls poll: " + ex);
+                        Log.Error(ex, "Error trying to import xls poll: ");
                     }
                     counter++;
                 }
@@ -183,7 +178,7 @@ namespace BundestagMine.Synchronisation
                         }
                         catch (Exception ex)
                         {
-                            Log.Error($"Unknown Error with {title}: ", ex);
+                            Log.Error(ex, $"Unknown Error with {title}: );
                         }
                     }
                 }

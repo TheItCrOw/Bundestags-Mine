@@ -37,7 +37,7 @@ namespace BundestagMine.Synchronisation
             // Its going to be a big boi method hehe
             // At the end we need something like:
             // https://www.bundestag.de/apps/plenar/plenar/conferenceweekDetail.form?limit=1&week=2&year=2022
-            var url = "https://www.bundestag.de/apps/plenar/plenar/conferenceweekDetail.form?limit=1";
+            var url = ConfigManager.GetAgendaItemsScrapeUrl();
             Log.Information("Scraping TOP from: " + url);
 
             try
@@ -139,7 +139,7 @@ namespace BundestagMine.Synchronisation
             }
             catch (Exception ex)
             {
-                Log.Error("Unknown error while fetching new Agenda items!", ex);
+                Log.Error(ex, "Unknown error while fetching new Agenda items!");
                 return 0;
             }
         }
@@ -149,8 +149,8 @@ namespace BundestagMine.Synchronisation
         /// </summary>
         public int ExportAbstimmungslisten()
         {
-            var url = "https://www.bundestag.de/ajax/filterlist/de/parlament/plenum/abstimmung/liste/462112-462112?limit=30&noFilterSet=true&offset=";
-            var excelUrl = "https://www.bundestag.de";
+            var url = ConfigManager.GetPollsScrapeUrl();
+            var excelUrl = ConfigManager.GetBundestagUrl();
             Log.Information($"Checking for new excel polls at {url}.");
 
             try
@@ -233,7 +233,7 @@ namespace BundestagMine.Synchronisation
             }
             catch(Exception ex)
             {
-                Log.Error("Unknown error while trying to export polls!", ex);
+                Log.Error(ex, "Unknown error while trying to export polls!");
                 return 0;
             }            
         }

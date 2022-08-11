@@ -1,53 +1,82 @@
 ﻿using BundestagMine.Models.Database;
 using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.MongoDB;
+using BundestagMine.SqlDatabase;
+using BundestagMine.Synchronisation.Services;
+using BundestagMine.Utility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using Newtonsoft.Json;
 using Serilog;
+using Serilog.Exceptions;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace BundestagMine.Synchronisation
 {
     class Program
     {
+        private static string _fullLogFileName = $"import_logs\\Import_{DateTime.Now.ToShortDateString()}.txt";
+
         static void Main(string[] args)
         {
             // Create a new logger
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .WriteTo.File($"import_logs\\Import_{DateTime.Now.ToShortDateString()}.txt")
+                .Enrich.WithExceptionDetails()
+                .WriteTo.File(_fullLogFileName)
             .CreateLogger();
 
-            MainAsync().GetAwaiter().GetResult();
+            try
+            {
+                MainAsync().GetAwaiter().GetResult();
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex, "Unknown error canceled the whole Import!");
+                Log.CloseAndFlush();
+
+                // Send a mail about the failure.
+                MailManager.SendMail($"Import-Abbruch!",
+                    $"Der Import wurde um {DateTime.Now} komplett abgebrochen! Log ist im Anhang.",
+                    new List<string>() { "keboen@web.de" },
+                    new List<Attachment> { new Attachment(_fullLogFileName) });
+            }
         }
 
         private static async Task MainAsync()
         {
-            Log.Information("Starting a new import run now at " + DateTime.Now);
+            var curDate = DateTime.Now;
+            MailManager.SendMail($"Import-Start um {curDate}",
+                $"Der Entity-Import startet jetzt.",
+                new List<string>() { "keboen@web.de" });
+
+            Log.Information("Starting a new import run now at " + curDate);
+            Log.Information("\n");
 
             Log.Information("============================================================================");
             Log.Information("Checking new IMPORTED ENTITIES");
             Log.Information("============================================================================");
             var parser = new ImportedEntityParser();
-            var result = await parser.ParseNewPotentialEntities();
-            if (result == 0) ; // Send a mail, idk. Inform somehow!
+            var entityResult = await parser.ParseNewPotentialEntities();
 
             Log.Information("============================================================================");
             Log.Information("Checking new AGENDA ITEMS");
             Log.Information("============================================================================");
             var scraper = new BundestagScraper();
-            result = scraper.FetchNewAgendaItems();
-            if (result == 0) ; // Send a mail, idk. Inform somehow!
+            var agendaItemResult = scraper.FetchNewAgendaItems();
 
             Log.Information("============================================================================");
             Log.Information("Checking new POLLS");
             Log.Information("============================================================================");
             Log.Information("Exporting polls from Bundestag...");
-            result = scraper.ExportAbstimmungslisten();
-            if (result == 0) ; // Send a mail, idk. Inform somehow!
+            var exportPollsResult = scraper.ExportAbstimmungslisten();
 
             Log.Information("Importing polls into database...");
             var importer = new ExcelImporter();
@@ -56,64 +85,64 @@ namespace BundestagMine.Synchronisation
             Log.Information("XLS  ======================================");
             importer.ImportXLSPolls();
 
-            Log.Information("============================================================================");
-            Log.Information("Recalculate GRAPHS");
-            Log.Information("============================================================================");
-
-            return;
-            try
+            if (entityResult == 0)
             {
-                var import = false;
-                var export = false;
-                var scrape = false;
-                var importExsel = false;
-
-                if (import)
-                {
-                    //var importer = new MongoDBImporter(null);
-                    //importer.Import("Protocols");
-                    //importer.Import("Deputies");
-                    //importer.Import("NetworkData");
-                    //importer.Import("Speeches");
-                }
-
-                if (export)
-                {
-                    var exporter = new MongoDBExporter(null);
-                    Console.WriteLine("Exporting deputies");
-                    await exporter.ExportDeputies();
-                    Console.WriteLine("Exporting networkdata");
-                    await exporter.ExportNetworkData();
-                    Console.WriteLine("Exporting Speeches");
-                    await exporter.ExportSpeeches();
-                    Console.WriteLine("Exporting NLP Speeches");
-                    await exporter.ExportNLPSpeeches();
-                    Console.WriteLine("creating lemmavalues for NamedEntities");
-                    await exporter.FillNamedEntitiesFromTokens();
-                }
-
-                if (scrape)
-                {
-                    //var scraper = new BundestagScraper();
-                    Console.WriteLine("Scraping Abstimmungslisten");
-                    scraper.ExportAbstimmungslisten();
-                    Console.WriteLine("Scraping Tagesordnungspunkte");
-                    scraper.FetchNewAgendaItems();
-                }
-
-                if (importExsel)
-                {
-                    var excelImporter = new ExcelImporter();
-                    Console.WriteLine("XLSX");
-                    excelImporter.ImportXLSXPolls();
-                    Console.WriteLine("XLS");
-                    excelImporter.ImportXLSPolls();
-                }
+                Log.Information("No new entities imported, therefore no graph calculations need to be done.");
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine(ex);
+                Log.Information("============================================================================");
+                Log.Information("Recalculate GRAPHS");
+                Log.Information("============================================================================");
+                var graphService = new GraphService();
+
+                Log.Information("Topic Bar Race Chart ======================================");
+                var graphData = graphService.BuildTopicBarRaceChartData();
+                if (graphData != null)
+                {
+                    var dataString = JsonConvert.SerializeObject(graphData);
+                    var path = $"{ConfigManager.GetDataDirectoryPath()}topicBarRaceData.json";
+                    File.WriteAllText(path, dataString);
+                    Log.Information($"Stored new Topic Bar Race Chart Data under {path}");
+                }
+
+                Log.Information("Topic Map ======================================");
+                var from = DateTime.Parse($"01.01.{DateTime.Now.Year}");
+                var to = DateTime.Parse($"31.12.{DateTime.Now.Year}");
+                Log.Information($"Year: {from.Year}");
+                var data = graphService.BuildTopicMapData(from, to);
+                if (data != null)
+                {
+                    var dataString = JsonConvert.SerializeObject(data);
+                    File.WriteAllText($"{ConfigManager.GetDataDirectoryPath()}topicMap_{from.Year}.json", dataString);
+                    Log.Information($"Stored the topic map data!");
+                }
+
+                from = DateTime.Parse($"01.01.2017");
+                to = DateTime.Parse($"31.12.{DateTime.Now.AddYears(1).Year}");
+                Log.Information($"Year: Gesamt");
+                data = graphService.BuildTopicMapData(from, to);
+                if (data != null)
+                {
+                    var dataString = JsonConvert.SerializeObject(data);
+                    File.WriteAllText($"{ConfigManager.GetDataDirectoryPath()}topicMap_Gesamt.json", dataString);
+                    Log.Information($"Stored the topic map data!");
+                }
+
+                // TODO: Missing the commentary network... but this is written in JAVA and I have to rewrite it.
             }
+
+            Log.Information("============================================================================");
+            Log.Information("============================================================================");
+            Log.Information($"Done. Import run ended at {DateTime.Now}");
+            // We have to dispose the logger, otherwise the log file is being occupied by the process.
+            Log.CloseAndFlush();
+
+            // Send a mail about the import.
+            MailManager.SendMail($"Import-Bericht {curDate.ToShortDateString()}",
+                $"Stati:<br/>Entity-Import: {entityResult}<br/>Agenda-Scrape: {agendaItemResult}<br/>Polls-Scrape: {exportPollsResult}<br/><br/>Log im Anhang.",
+                new List<string>() { "keboen@web.de" },
+                new List<Attachment> { new Attachment(_fullLogFileName) });
         }
     }
 }

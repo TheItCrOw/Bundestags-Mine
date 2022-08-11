@@ -118,7 +118,7 @@ namespace BundestagMine.Synchronisation
             }
             catch (Exception ex)
             {
-                Log.Error("There was an unknown error while importing new entities: ", ex);
+                Log.Error(ex, "There was an unknown error while importing new entities: ");
                 return 0;
             }
         }
