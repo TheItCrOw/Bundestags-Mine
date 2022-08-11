@@ -39,7 +39,6 @@ namespace BundestagMine.Services
         public int Rank { get; set; }
     }
 
-
     public class GraphService
     {
         private readonly MetadataService _metadataService;
@@ -50,7 +49,6 @@ namespace BundestagMine.Services
             _metadataService = metadataService;
             _db = db;
         }
-
 
         /// <summary>
         /// Builds the csv data needed for the topic bar race

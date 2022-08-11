@@ -45,8 +45,20 @@ namespace BundestagMine.Synchronisation
             Log.Information("============================================================================");
             Log.Information("Checking new POLLS");
             Log.Information("============================================================================");
+            Log.Information("Exporting polls from Bundestag...");
             result = scraper.ExportAbstimmungslisten();
             if (result == 0) ; // Send a mail, idk. Inform somehow!
+
+            Log.Information("Importing polls into database...");
+            var importer = new ExcelImporter();
+            Log.Information("XLSX ======================================");
+            importer.ImportXLSXPolls();
+            Log.Information("XLS  ======================================");
+            importer.ImportXLSPolls();
+
+            Log.Information("============================================================================");
+            Log.Information("Recalculate GRAPHS");
+            Log.Information("============================================================================");
 
             return;
             try
@@ -58,11 +70,11 @@ namespace BundestagMine.Synchronisation
 
                 if (import)
                 {
-                    var importer = new MongoDBImporter(null);
-                    importer.Import("Protocols");
-                    importer.Import("Deputies");
-                    importer.Import("NetworkData");
-                    importer.Import("Speeches");
+                    //var importer = new MongoDBImporter(null);
+                    //importer.Import("Protocols");
+                    //importer.Import("Deputies");
+                    //importer.Import("NetworkData");
+                    //importer.Import("Speeches");
                 }
 
                 if (export)
@@ -93,9 +105,9 @@ namespace BundestagMine.Synchronisation
                 {
                     var excelImporter = new ExcelImporter();
                     Console.WriteLine("XLSX");
-                    excelImporter.ImportXLSXAbstimmungslisten();
+                    excelImporter.ImportXLSXPolls();
                     Console.WriteLine("XLS");
-                    excelImporter.ImportXLSAbstimmungslisten();
+                    excelImporter.ImportXLSPolls();
                 }
             }
             catch (Exception ex)

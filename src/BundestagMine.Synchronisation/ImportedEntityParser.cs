@@ -50,7 +50,7 @@ namespace BundestagMine.Synchronisation
 
                         // we need to check whether this protocol is already in the database by some accident.
                         var protocol = ParseImportedEntityToProtocol(importedProtocol);
-                        if(db.Protocols.Any(p => p.LegislaturePeriod == protocol.LegislaturePeriod && p.Number == protocol.Number))
+                        if (db.Protocols.Any(p => p.LegislaturePeriod == protocol.LegislaturePeriod && p.Number == protocol.Number))
                         {
                             Log.Information($"Protocol {protocol.Title} is in the database already. Skipping it.");
                             counter++;
@@ -69,7 +69,20 @@ namespace BundestagMine.Synchronisation
                         foreach (var importedSpeech in importedSpeeches)
                         {
                             Log.Information($"Parsing speech {counter2}/{importedSpeeches.Count}");
-                            db.NLPSpeeches.Add(ParseImportedEntityToNLPSpeech(importedSpeech));
+                            var speech = ParseImportedEntityToNLPSpeech(importedSpeech);
+
+                            // This shouldn't happen, since we only import as whole protocols, but check if we imported this exact speech once before.
+                            var alreadyStoredSpeech = db.NLPSpeeches.FirstOrDefault(s => s.ProtocolNumber == speech.ProtocolNumber
+                                && s.AgendaItemNumber == speech.AgendaItemNumber && s.Text == speech.Text && s.SpeakerId == speech.SpeakerId);
+                            if (alreadyStoredSpeech != null)
+                            {
+                                Log.Warning("Found a speech to a protocol which is already in the database - this should not happen!\n" +
+                                    $"Speech Id: {alreadyStoredSpeech.Id}");
+                                counter2++;
+                                continue;
+                            }
+
+                            db.NLPSpeeches.Add(speech);
                             counter2++;
                         }
 
@@ -87,7 +100,7 @@ namespace BundestagMine.Synchronisation
                         Log.Information($"Parsing deputy {counter}/{importedDeputies.Count}");
                         var deputy = ParseImportedEntityToDeputy(importedDeputy);
 
-                        if(db.Deputies.Any(d => d.SpeakerId == deputy.SpeakerId))
+                        if (db.Deputies.Any(d => d.SpeakerId == deputy.SpeakerId))
                         {
                             Log.Information($"Deputy {deputy.FirstName + " " + deputy.LastName} is in the database already. Skipping it.");
                             counter++;

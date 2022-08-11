@@ -7,32 +7,49 @@ using System.Linq;
 using System.Text;
 using BundestagMine.Models.Database;
 using BundestagMine.SqlDatabase;
+using Serilog;
 using Syncfusion.XlsIO;
 
 namespace BundestagMine.Synchronisation
 {
     public class ExcelImporter
     {
-        public void ImportXLSAbstimmungslisten()
+        public int ImportAllPolls()
+        {
+            return 1;
+        }
+
+        /// <summary>
+        /// Imporst the old XLS abstimmungslisten as excel into the mssql
+        /// </summary>
+        public void ImportXLSPolls()
         {
             using (var sqlDb = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
             {
                 // For future imporst: The path may olny take 255 characters. Some excel files are long af
                 // So put them into C:\a whatever and let them import there, otherwise ull get errors...
-                foreach (var file in Directory.EnumerateFiles(ConfigManager.GetDataPollsDirectoryPath(), "*.xls"))
+                var xlsFiles = Directory.EnumerateFiles(ConfigManager.GetDataPollsDirectoryPath(), "*.xls");
+                Log.Information($"Found {xlsFiles.Count()} new importable xls polls.");
+
+                var counter = 1;
+                foreach (var file in xlsFiles)
                 {
+                    Log.Information($"Importing {counter}/{xlsFiles.Count()}");
+
                     try
                     {
                         var splited = file.Split("\\");
                         var fileName = splited[splited.Length - 1];
                         var title = fileName.Substring(22, fileName.Length - 26).Trim();
+                        Log.Information("Trying to import poll: " + title);
+
                         if (sqlDb.Polls.Any(p => p.Title == title))
                         {
-                            Console.WriteLine("Skipping " + title);
+                            Log.Information("Skipping importing Poll because its already in the database: " + title);
                             continue;
                         }
 
-                        String strExcelConn = "Provider=Microsoft.ACE.OLEDB.12.0;"
+                        var strExcelConn = "Provider=Microsoft.ACE.OLEDB.12.0;"
                             + $"Data Source={file};"
                             + "Extended Properties='Excel 8.0;HDR=Yes'";
 
@@ -80,14 +97,15 @@ namespace BundestagMine.Synchronisation
                                 sqlDb.Polls.Add(poll);
                                 sqlDb.PollEntries.AddRange(poll.Entries);
                                 sqlDb.SaveChanges();
-                                Console.WriteLine($"Imported {poll.Title} with {poll.Entries.Count} entries.");
+                                Log.Information($"Imported and saved {poll.Title} with {poll.Entries.Count} entries.");
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("ERror: " + ex);
+                        Log.Error("Error trying to import xls poll: " + ex);
                     }
+                    counter++;
                 }
             }
         }
@@ -95,7 +113,7 @@ namespace BundestagMine.Synchronisation
         /// <summary>
         /// Imporst the abstimmungslisten as excel into the mssql
         /// </summary>
-        public void ImportXLSXAbstimmungslisten()
+        public void ImportXLSXPolls()
         {
             using (var sqlDb = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
             {
@@ -103,16 +121,22 @@ namespace BundestagMine.Synchronisation
                 {
                     var app = excelEngine.Excel;
                     app.DefaultVersion = ExcelVersion.Xlsx;
-                    foreach (var file in Directory.EnumerateFiles(ConfigManager.GetDataPollsDirectoryPath(), "*.xlsx"))
+                    var xlsxFiles = Directory.EnumerateFiles(ConfigManager.GetDataPollsDirectoryPath(), "*.xlsx");
+                    Log.Information($"Found {xlsxFiles.Count()} new importable xlsx polls.");
+
+                    foreach (var file in xlsxFiles)
                     {
                         var splited = file.Split("\\");
                         var fileName = splited[splited.Length - 1];
                         var title = fileName.Substring(22, fileName.Length - 26).Trim();
+                        Log.Information("Trying to import poll: " + title);
+
                         if (sqlDb.Polls.Any(p => p.Title == title))
                         {
-                            Console.WriteLine("Skipping " + title);
+                            Log.Information("Skipping importing Poll because its already in the database: " + title);
                             continue;
                         }
+
                         try
                         {
                             var workbook = app.Workbooks.Open(File.Open(file, FileMode.Open), ExcelOpenType.Automatic);
@@ -155,11 +179,11 @@ namespace BundestagMine.Synchronisation
                             sqlDb.Polls.Add(poll);
                             sqlDb.PollEntries.AddRange(poll.Entries);
                             sqlDb.SaveChanges();
-                            Console.WriteLine($"Imported {poll.Title} with {poll.Entries.Count} entries.");
+                            Log.Information($"Imported and saved {poll.Title} with {poll.Entries.Count} entries.");
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"Error with {title}: {ex.Message}");
+                            Log.Error($"Unknown Error with {title}: ", ex);
                         }
                     }
                 }

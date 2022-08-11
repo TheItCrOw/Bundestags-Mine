@@ -771,6 +771,5 @@ namespace BundestagMine.Services
                 })
                 .ToList();
         }
-    
     }
 }

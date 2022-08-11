@@ -200,9 +200,9 @@ namespace BundestagMine.Synchronisation
                                     var path = ConfigManager.GetDataPollsDirectoryPath()
                                             + ReplaceInvalidChars(fullTitle) + "." + a[1].Html.Split("|")[0].ToLower(); // XLSX | 53KB
 
-                                    // The name format on the urls is a bit tricky... We cannot check if the exakt title already
-                                    // exists, so check if the date matches and the fullTile containts the stored title. Then we should
-                                    // probably already own that poll.
+                                    // The name format on the urls is a bit tricky... We cannot check if the exact title already
+                                    // exists, so check if the date matches and the fullTile contains the stored title. Then we should
+                                    // probably already own that poll. Its a bit hacky, ngl
                                     if (db.Polls.Any(p => p.Date.Equals(date) && fullTitle.Contains(p.Title)))
                                     {
                                         Log.Information($"{fullTitle} already in database. Skipping it.");
