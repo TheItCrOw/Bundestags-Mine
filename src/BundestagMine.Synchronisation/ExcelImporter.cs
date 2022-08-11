@@ -178,7 +178,7 @@ namespace BundestagMine.Synchronisation
                         }
                         catch (Exception ex)
                         {
-                            Log.Error(ex, $"Unknown Error with {title}: );
+                            Log.Error(ex, $"Unknown Error with {title}:");
                         }
                     }
                 }

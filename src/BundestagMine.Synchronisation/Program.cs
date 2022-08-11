@@ -37,7 +37,7 @@ namespace BundestagMine.Synchronisation
             {
                 MainAsync().GetAwaiter().GetResult();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.Error(ex, "Unknown error canceled the whole Import!");
                 Log.CloseAndFlush();
@@ -45,7 +45,7 @@ namespace BundestagMine.Synchronisation
                 // Send a mail about the failure.
                 MailManager.SendMail($"Import-Abbruch!",
                     $"Der Import wurde um {DateTime.Now} komplett abgebrochen! Log ist im Anhang.",
-                    new List<string>() { "keboen@web.de" },
+                    ConfigManager.GetImportReportRecipients(),
                     new List<Attachment> { new Attachment(_fullLogFileName) });
             }
         }
@@ -55,7 +55,7 @@ namespace BundestagMine.Synchronisation
             var curDate = DateTime.Now;
             MailManager.SendMail($"Import-Start um {curDate}",
                 $"Der Entity-Import startet jetzt.",
-                new List<string>() { "keboen@web.de" });
+                ConfigManager.GetImportReportRecipients());
 
             Log.Information("Starting a new import run now at " + curDate);
             Log.Information("\n");
@@ -141,7 +141,7 @@ namespace BundestagMine.Synchronisation
             // Send a mail about the import.
             MailManager.SendMail($"Import-Bericht {curDate.ToShortDateString()}",
                 $"Stati:<br/>Entity-Import: {entityResult}<br/>Agenda-Scrape: {agendaItemResult}<br/>Polls-Scrape: {exportPollsResult}<br/><br/>Log im Anhang.",
-                new List<string>() { "keboen@web.de" },
+                ConfigManager.GetImportReportRecipients(),
                 new List<Attachment> { new Attachment(_fullLogFileName) });
         }
     }
