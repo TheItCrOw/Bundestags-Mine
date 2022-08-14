@@ -57,6 +57,69 @@ namespace BundestagMine.Synchronisation.Services
         }
 
         /// <summary>
+        /// Builds the data model for the comment network.
+        /// </summary>
+        /// <returns></returns>
+        public NetworkData BuildCommentNetworkData()
+        {
+            var networkData = new NetworkData();
+
+            using (var db = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
+            {
+                foreach (var shout in db.Shouts.Where(s => !string.IsNullOrEmpty(s.SpeakerId)))
+                {
+                    var shouter = db.Deputies.FirstOrDefault(d => d.SpeakerId == shout.SpeakerId);
+                    // Speaker of the current speech the shouter is commenting in.
+                    var speaker = db.SpeechSegment
+                        .Where(ss => ss.Id == shout.SpeechSegmentId)
+                        .SelectMany(ss => db.Speeches.Where(s => s.Id == ss.SpeechId))
+                        .SelectMany(s => db.Deputies.Where(d => d.SpeakerId == s.SpeakerId))?
+                        .First();
+
+                    // If the shouter doesnt already have a node, create it
+                    if (!networkData.Nodes.Any(n => n.Id == shouter.SpeakerId))
+                        networkData.Nodes.Add(new CommentNetworkNode()
+                        {
+                            Id = shouter.SpeakerId,
+                            Name = shouter.FirstName + " " + shouter.LastName,
+                            Party = shouter.Fraction ?? shouter.Party
+                        });
+
+                    // If the speaker doesnt already have a node, create it. Same thing with the shouter
+                    if (!networkData.Nodes.Any(n => n.Id == speaker.SpeakerId))
+                        networkData.Nodes.Add(new CommentNetworkNode()
+                        {
+                            Id = speaker.SpeakerId,
+                            Name = speaker.FirstName + " " + speaker.LastName,
+                            Party = speaker.Fraction ?? speaker.Party
+                        });
+
+                    // Now create or update the link of these two.
+                    var existingLink = networkData.Links.FirstOrDefault(l => l.Source == shouter.SpeakerId && l.Target == speaker.SpeakerId);
+                    if (existingLink != default)
+                    {
+                        existingLink.Value++;
+                    }
+                    else
+                    {
+                        // TODO: This is blocked because I forgot to import the sentiments of Shouts...
+                        // Ill need to redo that and then come back here.
+                        // => Added it into the import. Maybe we have to reimport everything from scratch or I just fix the old.
+                        networkData.Links.Add(new CommentNetworkLink()
+                        {
+                            Sentiment = db.Sentiment.FirstOrDefault(s => s.ShoutId == shout.Id)?.SentimentSingleScore ?? 0.0,
+                            Source = shouter.SpeakerId,
+                            Target = speaker.SpeakerId,
+                            Value = 1
+                        });
+                    }
+                }
+            }
+
+            return networkData;
+        }
+
+        /// <summary>
         /// Builds the csv data needed for the topic bar race
         /// </summary>
         /// <returns></returns>

@@ -37,7 +37,7 @@ namespace BundestagMine.SqlDatabase
         public static string GetPortraitDatabaseQueryUrl() => _config.GetSection("Configurations").GetSection("PortraitDatabaseQueryUrl").Value;
         public static string GetPortraitDatabaseUrl() => _config.GetSection("Configurations").GetSection("PortraitDatabaseUrl").Value;
         public static string GetPollsQueryUrl() => _config.GetSection("Configurations").GetSection("PollsQueryUrl").Value;
-        public static List<string> GetImportReportRecipients() => _config.GetSection("Configurations").GetSection("PollsQueryUrl").Value.Split(',').ToList();
+        public static List<string> GetImportReportRecipients() => _config.GetSection("Configurations").GetSection("ImportReportRecipients").Value.Split(',').ToList();
 
         public static string GetSmtpHost() => _config.GetSection("Smtp").GetSection("Host").Value;
         public static int GetSmtpPort() => int.Parse(_config.GetSection("Smtp").GetSection("Port").Value);

@@ -4,14 +4,16 @@ using BundestagMine.SqlDatabase;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BundestagMine.SqlDatabase.Migrations
 {
     [DbContext(typeof(BundestagMineDbContext))]
-    partial class BundestagMineDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220812101652_AddedShoutIdToNLPObjects")]
+    partial class AddedShoutIdToNLPObjects
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

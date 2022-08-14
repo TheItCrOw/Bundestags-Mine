@@ -12,5 +12,6 @@ namespace BundestagMine.Models.Database.MongoDB
         public string Fraction { get; set; }
         public string Party { get; set; }
         public string SpeakerId { get; set; }
+        public Guid SpeechSegmentId { get; set; }
     }
 }
