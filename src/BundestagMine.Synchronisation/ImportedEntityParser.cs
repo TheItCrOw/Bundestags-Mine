@@ -58,6 +58,7 @@ namespace BundestagMine.Synchronisation
                             continue;
                         }
                         db.Protocols.Add(protocol);
+                        if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.Remove(importedProtocol);
 
                         // The Speeches of this protocol
                         var importedSpeeches = db.ImportedEntities
@@ -84,6 +85,7 @@ namespace BundestagMine.Synchronisation
                             }
 
                             db.NLPSpeeches.Add(speech);
+                            if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.Remove(importedSpeech);
                             counter2++;
                         }
 
@@ -109,6 +111,8 @@ namespace BundestagMine.Synchronisation
                         }
 
                         db.Deputies.Add(deputy);
+                        if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.Remove(importedDeputy);
+
                         counter++;
                     }
 

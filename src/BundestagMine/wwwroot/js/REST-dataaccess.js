@@ -609,24 +609,6 @@ async function getNamedEntitiesWithSearchString(search) {
     }
 }
 
-// Gets all Named Entity with their sentiment value.
-async function getNamedEntityWithSentimentView(searchTerm, minimum, from, to, fraction, party, speakerId) {
-    try {
-        var param = cleanParameter(searchTerm + ',' + minimum + ',' + from + ',' + to + ',' + fraction + ',' + party + ',' + speakerId);
-        const result = await $.ajax({
-            url: "/api/DashboardController/GetNamedEntititesWithSentimentView/" + param,
-            type: "GET",
-            dataType: "json",
-            accepts: {
-                text: "application/json"
-            },
-        });
-        return result.result;
-    } catch (error) {
-        console.error(error);
-    }
-}
-
 //============================================== NE End ===============================================
 
 // ============================================== Topic analysis ======================================

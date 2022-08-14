@@ -49,7 +49,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Fraction == fraction))
-                .SelectMany(s => _db.Token.Where(t => t.LemmaValue != null && s.Id == t.NLPSpeechId))
+                .SelectMany(s => _db.Token.Where(t => t.LemmaValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .GroupBy(t => t.LemmaValue)
                 .Select(t => new { Element = t.Key, Count = t.Count() })
                 .OrderByDescending(kv => kv.Count)
@@ -60,7 +60,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Party == party))
-                .SelectMany(s => _db.Token.Where(t => t.LemmaValue != null && s.Id == t.NLPSpeechId))
+                .SelectMany(s => _db.Token.Where(t => t.LemmaValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .GroupBy(t => t.LemmaValue)
                 .Select(t => new { Element = t.Key, Count = t.Count() })
                 .OrderByDescending(kv => kv.Count)
@@ -71,7 +71,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && s.SpeakerId == speakerId))
-                .SelectMany(s => _db.Token.Where(t => t.LemmaValue != null && s.Id == t.NLPSpeechId))
+                .SelectMany(s => _db.Token.Where(t => t.LemmaValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .GroupBy(t => t.LemmaValue)
                 .Select(t => new { Element = t.Key, Count = t.Count() })
                 .OrderByDescending(kv => kv.Count)
@@ -80,7 +80,7 @@ namespace BundestagMine.Services
             else
                 return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
                 .SelectMany(p => _db.Speeches.Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
-                .SelectMany(s => _db.Token.Where(t => t.LemmaValue != null && s.Id == t.NLPSpeechId))
+                .SelectMany(s => _db.Token.Where(t => t.LemmaValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .GroupBy(t => t.LemmaValue)
                 .Select(t => new { Element = t.Key, Count = t.Count() })
                 .OrderByDescending(kv => kv.Count)
@@ -112,7 +112,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Fraction == fraction))
-                .SelectMany(s => _db.Token.Where(t => t.posValue != null && s.Id == t.NLPSpeechId))
+                .SelectMany(s => _db.Token.Where(t => t.posValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .GroupBy(t => t.posValue)
                 .Select(t => new { Element = t.Key, Count = t.Count() })
                 .OrderByDescending(kv => kv.Count)
@@ -123,7 +123,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Party == party))
-                .SelectMany(s => _db.Token.Where(t => t.posValue != null && s.Id == t.NLPSpeechId))
+                .SelectMany(s => _db.Token.Where(t => t.posValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .GroupBy(t => t.posValue)
                 .Select(t => new { Element = t.Key, Count = t.Count() })
                 .OrderByDescending(kv => kv.Count)
@@ -134,7 +134,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && s.SpeakerId == speakerId))
-                .SelectMany(s => _db.Token.Where(t => t.posValue != null && s.Id == t.NLPSpeechId))
+                .SelectMany(s => _db.Token.Where(t => t.posValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .GroupBy(t => t.posValue)
                 .Select(t => new { Element = t.Key, Count = t.Count() })
                 .OrderByDescending(kv => kv.Count)
@@ -143,7 +143,7 @@ namespace BundestagMine.Services
             else
                 return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
                 .SelectMany(p => _db.Speeches.Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
-                .SelectMany(s => _db.Token.Where(t => t.posValue != null && s.Id == t.NLPSpeechId))
+                .SelectMany(s => _db.Token.Where(t => t.posValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .GroupBy(t => t.posValue)
                 .Select(t => new { Element = t.Key, Count = t.Count() })
                 .OrderByDescending(kv => kv.Count)
@@ -187,7 +187,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Fraction == fraction))
-                .SelectMany(s => _db.Sentiment.Where(t => s.Id == t.NLPSpeechId))
+                .SelectMany(s => _db.Sentiment.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .AsEnumerable()
                 .GroupBy(t => SentimentScoreToString(t.SentimentSingleScore))
                 .Select(t => new { Element = t.Key, Count = t.Count() })
@@ -197,7 +197,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Party == party))
-                .SelectMany(s => _db.Sentiment.Where(t => s.Id == t.NLPSpeechId))
+                .SelectMany(s => _db.Sentiment.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .AsEnumerable()
                 .GroupBy(t => SentimentScoreToString(t.SentimentSingleScore))
                 .Select(t => new { Element = t.Key, Count = t.Count() })
@@ -207,7 +207,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && s.SpeakerId == speakerId))
-                .SelectMany(s => _db.Sentiment.Where(t => s.Id == t.NLPSpeechId))
+                .SelectMany(s => _db.Sentiment.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .AsEnumerable()
                 .GroupBy(t => SentimentScoreToString(t.SentimentSingleScore))
                 .Select(t => new { Element = t.Key, Count = t.Count() })
@@ -215,7 +215,7 @@ namespace BundestagMine.Services
             else
                 return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
                 .SelectMany(p => _db.Speeches.Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
-                .SelectMany(s => _db.Sentiment.Where(t => s.Id == t.NLPSpeechId))
+                .SelectMany(s => _db.Sentiment.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .AsEnumerable()
                 .GroupBy(t => SentimentScoreToString(t.SentimentSingleScore))
                 .Select(t => new { Element = t.Key, Count = t.Count() })
@@ -246,7 +246,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Fraction == fraction))
-                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId))
+                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .AsEnumerable()
                 .GroupBy(n => n.Value)
                 .Select(g1 => new
@@ -266,7 +266,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Party == party))
-                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId))
+                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .AsEnumerable()
                 .GroupBy(n => n.Value)
                 .Select(g1 => new
@@ -285,7 +285,7 @@ namespace BundestagMine.Services
                 return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.SpeakerId == speakerId && s.LegislaturePeriod == p.LegislaturePeriod))
-                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId))
+                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .AsEnumerable()
                 .GroupBy(n => n.Value)
                 .Select(g1 => new
@@ -304,7 +304,7 @@ namespace BundestagMine.Services
                 return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
-                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId))
+                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .AsEnumerable()
                 .GroupBy(n => n.Value)
                 .Select(g1 => new
@@ -673,7 +673,7 @@ namespace BundestagMine.Services
                 .AsEnumerable()
                 .Select(ne =>
                 {
-                    var sentiment = _db.Sentiment.SingleOrDefault(s => s.NLPSpeechId == ne.NLPSpeechId && s.Begin <= ne.Begin && s.End >= ne.End);
+                    var sentiment = _db.Sentiment.SingleOrDefault(s => s.NLPSpeechId == ne.NLPSpeechId && s.ShoutId == Guid.Empty && s.Begin <= ne.Begin && s.End >= ne.End);
                     if (sentiment == null) return null;
                     var value = "neu";
                     if (sentiment.SentimentSingleScore > 0) value = "pos";
@@ -700,7 +700,7 @@ namespace BundestagMine.Services
                 .AsEnumerable()
                 .Select(ne =>
                 {
-                    var sentiment = _db.Sentiment.SingleOrDefault(s => s.NLPSpeechId == ne.NLPSpeechId && s.Begin <= ne.Begin && s.End >= ne.End);
+                    var sentiment = _db.Sentiment.SingleOrDefault(s => s.NLPSpeechId == ne.NLPSpeechId && s.ShoutId == Guid.Empty && s.Begin <= ne.Begin && s.End >= ne.End);
                     if (sentiment == null) return null;
                     var value = "neu";
                     if (sentiment.SentimentSingleScore > 0) value = "pos";
@@ -727,7 +727,7 @@ namespace BundestagMine.Services
                 .AsEnumerable()
                 .Select(ne =>
                 {
-                    var sentiment = _db.Sentiment.SingleOrDefault(s => s.NLPSpeechId == ne.NLPSpeechId && s.Begin <= ne.Begin && s.End >= ne.End);
+                    var sentiment = _db.Sentiment.SingleOrDefault(s => s.NLPSpeechId == ne.NLPSpeechId && s.ShoutId == Guid.Empty && s.Begin <= ne.Begin && s.End >= ne.End);
                     if (sentiment == null) return null;
                     var value = "neu";
                     if (sentiment.SentimentSingleScore > 0) value = "pos";
@@ -753,7 +753,7 @@ namespace BundestagMine.Services
                 .AsEnumerable()
                 .Select(ne =>
                 {
-                    var sentiment = _db.Sentiment.SingleOrDefault(s => s.NLPSpeechId == ne.NLPSpeechId && s.Begin <= ne.Begin && s.End >= ne.End);
+                    var sentiment = _db.Sentiment.SingleOrDefault(s => s.NLPSpeechId == ne.NLPSpeechId && s.ShoutId == Guid.Empty && s.Begin <= ne.Begin && s.End >= ne.End);
                     if (sentiment == null) return null;
                     var value = "neu";
                     if (sentiment.SentimentSingleScore > 0) value = "pos";

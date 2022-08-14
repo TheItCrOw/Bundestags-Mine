@@ -322,9 +322,9 @@ namespace BundestagMine.Controllers
                 response.status = "200";
 
                 var speech = await _db.NLPSpeeches.FindAsync(id);
-                speech.Tokens = _db.Token.Where(t => t.NLPSpeechId == id).OrderBy(t => t.Begin).ToList();
-                speech.NamedEntities = _db.NamedEntity.Where(t => t.NLPSpeechId == id).OrderBy(t => t.Begin).ToList();
-                speech.Sentiments = _db.Sentiment.Where(t => t.NLPSpeechId == id).OrderBy(t => t.Begin).ToList();
+                speech.Tokens = _db.Token.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
+                speech.NamedEntities = _db.NamedEntity.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
+                speech.Sentiments = _db.Sentiment.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
                 speech.Segments = _db.SpeechSegment.Include(s => s.Shouts).Where(s => s.SpeechId == speech.Id).ToList();
                 speech.CategoryCoveredTags = _db.CategoryCoveredTagged.Where(c => c.NLPSpeechId == speech.Id)
                     .OrderByDescending(t => t.Score).ToList();
@@ -376,11 +376,6 @@ namespace BundestagMine.Controllers
             try
             {
                 response.status = "200";
-                //var from = DateTime.Parse("01.01.2022");
-                //var to = DateTime.Parse("31.12.2022");
-                //var graphData = _graphService.GetTopicMapData(from, to);
-                //var dataString = JsonConvert.SerializeObject(graphData);
-                //System.IO.File.WriteAllText($".\\wwwroot\\data\\topicMap_{from.Year.ToString()}.json", dataString);
                 var jsonString = System.IO.File.ReadAllText($"{ConfigManager.GetDataDirectoryPath()}topicMap_{year}.json");
                 var data = JsonConvert.DeserializeObject(jsonString, typeof(TopicMapGraphObject));
                 response.result = data;
@@ -548,7 +543,7 @@ namespace BundestagMine.Controllers
             catch (Exception ex)
             {
                 response.status = "400";
-                response.message = $"Couldn't fetch url for poll, error in logs";
+                response.message = $"Couldn't search named entities, error in logs";
                 //TODO: Log
             }
 
@@ -575,36 +570,6 @@ namespace BundestagMine.Controllers
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp sentiments for speaker, error in logs";
-                //TODO: Log
-            }
-
-            return Json(response);
-        }
-
-        [HttpGet("/api/DashboardController/GetNamedEntititesWithSentimentView/{param}")]
-        public async Task<IActionResult> GetNamedEntititesWithSentimentView(string param)
-        {
-            dynamic response = new ExpandoObject();
-
-            try
-            {
-                var splited = param.ToCleanRequestString().Split(',');
-                var searchTerm = splited[0];
-                var limit = int.Parse(splited[1]);
-                var from = DateTime.Parse(splited[2]);
-                var to = DateTime.Parse(splited[3]);
-                var fraction = splited[4];
-                var party = splited[5];
-                var speakerId = splited[6];
-                var data = _annotationService.GetNamedEntityWithCorrespondingSentiment(
-                    searchTerm, from, to, fraction, party, speakerId);
-                response.status = "200";
-                response.result = await _viewRenderService.RenderToStringAsync("Dashboard/_Layout", data);
-            }
-            catch (Exception ex)
-            {
-                response.status = "400";
-                response.message = "Couldn't fetch nlp NE with sentiments, error in logs";
                 //TODO: Log
             }
 

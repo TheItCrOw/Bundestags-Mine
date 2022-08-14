@@ -129,7 +129,9 @@ namespace BundestagMine.Synchronisation
                     Log.Information($"Stored the topic map data!");
                 }
 
-                // TODO: Missing the commentary network... but this is written in JAVA and I have to rewrite it.
+                // Comment Network
+                Log.Information("Comment Network ======================================");
+                graphService.BuildAndStoreCommentNetworkData();
             }
 
             Log.Information("============================================================================");
