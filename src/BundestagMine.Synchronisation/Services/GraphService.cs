@@ -1,5 +1,7 @@
 ﻿using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.SqlDatabase;
+using BundestagMine.Utility;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -62,15 +64,23 @@ namespace BundestagMine.Synchronisation.Services
         /// <returns></returns>
         public void BuildAndStoreCommentNetworkData()
         {
-            var networkData = new NetworkData();
-            networkData.Links = new List<CommentNetworkLink>();
-            networkData.Nodes = new List<CommentNetworkNode>();
-
             try
             {
+                // This is optimal to save after every add, but my patience is running thin and I had to many exceptions...
                 using (var db = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
                 {
-                    foreach (var shout in db.Shouts.Where(s => !string.IsNullOrEmpty(s.SpeakerId)))
+                    NetworkData networkData = db.NetworkDatas.FirstOrDefault();
+                    if (networkData == default)
+                    {
+                        networkData = new NetworkData()
+                        {
+                            Id = Guid.NewGuid()
+                        };
+                        db.NetworkDatas.Add(networkData);
+                        db.SaveChanges();
+                    }
+
+                    foreach (var shout in CacheService.ImportedShouts.Where(s => !string.IsNullOrEmpty(s.SpeakerId)))
                     {
                         var shouter = db.Deputies.FirstOrDefault(d => d.SpeakerId == shout.SpeakerId);
                         // Speaker of the current speech the shouter is commenting in.
@@ -81,54 +91,63 @@ namespace BundestagMine.Synchronisation.Services
                             .First();
 
                         // If the shouter doesnt already have a node, create it
-                        if (!networkData.Nodes.Any(n => n.Id == shouter.SpeakerId))
-                            networkData.Nodes.Add(new CommentNetworkNode()
+                        if (!db.CommentNetworkNode.Any(n => n.Id == shouter.SpeakerId))
+                        {
+                            db.CommentNetworkNode.Add(new CommentNetworkNode()
                             {
                                 Id = shouter.SpeakerId,
                                 Name = shouter.FirstName + " " + shouter.LastName,
-                                Party = shouter.Fraction ?? shouter.Party
+                                Party = shouter.Fraction ?? shouter.Party,
+                                NetworkDataId = networkData.Id
                             });
+                            db.SaveChanges();
+                        }
 
                         // If the speaker doesnt already have a node, create it. Same thing with the shouter
-                        if (!networkData.Nodes.Any(n => n.Id == speaker.SpeakerId))
-                            networkData.Nodes.Add(new CommentNetworkNode()
+                        if (!db.CommentNetworkNode.Any(n => n.Id == speaker.SpeakerId))
+                        {
+                            db.CommentNetworkNode.Add(new CommentNetworkNode()
                             {
                                 Id = speaker.SpeakerId,
                                 Name = speaker.FirstName + " " + speaker.LastName,
-                                Party = speaker.Fraction ?? speaker.Party
+                                Party = speaker.Fraction ?? speaker.Party,
+                                NetworkDataId = networkData.Id
                             });
+                            db.SaveChanges();
+                        }
 
                         // Now create or update the link of these two.
-                        var existingLink = networkData.Links.FirstOrDefault(l => l.Source == shouter.SpeakerId && l.Target == speaker.SpeakerId);
+                        var existingLink = db.CommentNetworkLink.FirstOrDefault(l => l.Source == shouter.SpeakerId && l.Target == speaker.SpeakerId);
                         if (existingLink != default)
                         {
                             existingLink.Value++;
                             // Not sure if I have to do this or if it updates...
-                            networkData.Links.Remove(existingLink);
-                            networkData.Links.Add(existingLink);
+                            db.CommentNetworkLink.Update(existingLink);
+                            db.SaveChanges();
                         }
                         else
                         {
                             // TODO: This is blocked because I forgot to import the sentiments of Shouts...
                             // Ill need to redo that and then come back here.
                             // => Added it into the import. Maybe we have to reimport everything from scratch or I just fix the old.
-                            networkData.Links.Add(new CommentNetworkLink()
+                            db.CommentNetworkLink.Add(new CommentNetworkLink()
                             {
                                 Sentiment = db.Sentiment.FirstOrDefault(s => s.ShoutId == shout.Id)?.SentimentSingleScore ?? 0.0,
                                 Source = shouter.SpeakerId,
                                 Target = speaker.SpeakerId,
-                                Value = 1
+                                Value = 1,
+                                NetworkDataId = networkData.Id
                             });
+                            db.SaveChanges();
                         }
                     }
 
                     Log.Information("Build the data - trying to store it...");
-                    db.NetworkDatas.Add(networkData);
                     db.SaveChanges();
                     Log.Information("Stored it!");
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.Error(ex, "Error while trying to build and store the comment network data: ");
             }

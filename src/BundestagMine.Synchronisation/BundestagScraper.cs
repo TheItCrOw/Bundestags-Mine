@@ -214,12 +214,22 @@ namespace BundestagMine.Synchronisation
                                     var blob = a[1].Attr("href");
                                     var href = excelUrl + blob;
 
-                                    // Create a new WebClient instance.
-                                    using (var myWebClient = new WebClient())
+                                    if (!string.IsNullOrEmpty(href))
                                     {
-                                        // Download the Web resource and save it into the current filesystem folder.
-                                        myWebClient.DownloadFile(href, path);
-                                        Log.Information($"Downloaded: {fullTitle}");
+                                        try
+                                        {
+                                            // Create a new WebClient instance.
+                                            using (var myWebClient = new WebClient())
+                                            {
+                                                // Download the Web resource and save it into the current filesystem folder.
+                                                myWebClient.DownloadFile(href, path);
+                                                Log.Information($"Downloaded: {fullTitle}");
+                                            }
+                                        }
+                                        catch(Exception ex)
+                                        {
+                                            Log.Warning(ex, $"There was an error downloading an excel poll. Href: {href}");
+                                        }
                                     }
                                 }
                                 counter++;
@@ -231,11 +241,11 @@ namespace BundestagMine.Synchronisation
 
                 return 1;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.Error(ex, "Unknown error while trying to export polls!");
                 return 0;
-            }            
+            }
         }
     }
 }

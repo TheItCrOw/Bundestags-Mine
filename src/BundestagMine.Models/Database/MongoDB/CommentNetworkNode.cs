@@ -13,5 +13,6 @@ namespace BundestagMine.Models.Database.MongoDB
         public string Name { get; set; }
 
         public string Party { get; set; }
+        public Guid NetworkDataId { get; set; }
     }
 }

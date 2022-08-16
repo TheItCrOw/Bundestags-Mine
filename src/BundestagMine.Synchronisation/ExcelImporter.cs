@@ -41,6 +41,7 @@ namespace BundestagMine.Synchronisation
                         if (sqlDb.Polls.Any(p => p.Title == title))
                         {
                             Log.Information("Skipping importing Poll because its already in the database: " + title);
+                            if (ConfigManager.GetDeleteImportedEntity()) File.Delete(file);
                             continue;
                         }
 
@@ -92,6 +93,7 @@ namespace BundestagMine.Synchronisation
                                 sqlDb.Polls.Add(poll);
                                 sqlDb.PollEntries.AddRange(poll.Entries);
                                 sqlDb.SaveChanges();
+                                if (ConfigManager.GetDeleteImportedEntity()) File.Delete(file);
                                 Log.Information($"Imported and saved {poll.Title} with {poll.Entries.Count} entries.");
                             }
                         }
@@ -129,6 +131,7 @@ namespace BundestagMine.Synchronisation
                         if (sqlDb.Polls.Any(p => p.Title == title))
                         {
                             Log.Information("Skipping importing Poll because its already in the database: " + title);
+                            if (ConfigManager.GetDeleteImportedEntity()) File.Delete(file);
                             continue;
                         }
 
@@ -174,6 +177,7 @@ namespace BundestagMine.Synchronisation
                             sqlDb.Polls.Add(poll);
                             sqlDb.PollEntries.AddRange(poll.Entries);
                             sqlDb.SaveChanges();
+                            if (ConfigManager.GetDeleteImportedEntity()) File.Delete(file);
                             Log.Information($"Imported and saved {poll.Title} with {poll.Entries.Count} entries.");
                         }
                         catch (Exception ex)

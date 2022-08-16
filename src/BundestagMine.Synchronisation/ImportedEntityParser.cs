@@ -51,19 +51,22 @@ namespace BundestagMine.Synchronisation
 
                         // we need to check whether this protocol is already in the database by some accident.
                         var protocol = ParseImportedEntityToProtocol(importedProtocol);
-                        if (db.Protocols.Any(p => p.LegislaturePeriod == protocol.LegislaturePeriod && p.Number == protocol.Number))
-                        {
-                            Log.Information($"Protocol {protocol.Title} is in the database already. Skipping it.");
-                            counter++;
-                            continue;
-                        }
-                        db.Protocols.Add(protocol);
-                        if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.Remove(importedProtocol);
-
                         // The Speeches of this protocol
                         var importedSpeeches = db.ImportedEntities
                             .Where(e => e.Type == ModelType.NLPSpeech && e.ProtocolId == importedProtocol.Id)
                             .ToList();
+
+                        if (db.Protocols.Any(p => p.LegislaturePeriod == protocol.LegislaturePeriod && p.Number == protocol.Number))
+                        {
+                            Log.Information($"Protocol {protocol.Title} is in the database already. Skipping it.");
+                            counter++;
+                            if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.Remove(importedProtocol);
+                            if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.RemoveRange(importedSpeeches);
+                            continue;
+                        }
+
+                        db.Protocols.Add(protocol);
+                        if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.Remove(importedProtocol);
 
                         // Now parse each nlp speech
                         var speeches = new List<NLPSpeech>();
@@ -81,6 +84,7 @@ namespace BundestagMine.Synchronisation
                                 Log.Warning("Found a speech to a protocol which is already in the database - this should not happen!\n" +
                                     $"Speech Id: {alreadyStoredSpeech.Id}");
                                 counter2++;
+                                if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.Remove(importedSpeech);
                                 continue;
                             }
 
@@ -106,6 +110,7 @@ namespace BundestagMine.Synchronisation
                         if (db.Deputies.Any(d => d.SpeakerId == deputy.SpeakerId))
                         {
                             Log.Information($"Deputy {deputy.FirstName + " " + deputy.LastName} is in the database already. Skipping it.");
+                            if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.Remove(importedDeputy);
                             counter++;
                             continue;
                         }
@@ -224,6 +229,9 @@ namespace BundestagMine.Synchronisation
                                 if (by.AsBsonDocument.TryGetValue("party", out var party)) shout.Party = party.AsString;
                                 if (by.AsBsonDocument.TryGetValue("id", out var speakerId2)) shout.SpeakerId = speakerId2.AsString;
                             }
+
+                            // We need the shouts later for the network data calculations, so cache them.
+                            CacheService.ImportedShouts.Add(shout);
                             shouts.Add(shout);
                         }
 

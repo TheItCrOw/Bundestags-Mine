@@ -14,5 +14,7 @@ namespace BundestagMine.Models.Database.MongoDB
         public double Sentiment { get; set; }
 
         public int Value { get; set; }
+
+        public Guid NetworkDataId { get; set; }
     }
 }

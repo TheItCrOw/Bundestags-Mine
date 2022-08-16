@@ -22,15 +22,18 @@ namespace BundestagMine.Synchronisation
 {
     class Program
     {
-        private static string _fullLogFileName = $"import_logs\\Import_{DateTime.Now.ToShortDateString()}.txt";
+        private static string _fullLogFileName = $"{ConfigManager.GetImportLogOutputPath()}{DateTime.Now.ToShortDateString()}.txt";
 
         static void Main(string[] args)
         {
-            // Create a new logger
+            // Creates a log set of 20 MB files like:
+            //   log.txt
+            //   log_001.txt
+            //   log_002.txt
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .Enrich.WithExceptionDetails()
-                .WriteTo.File(_fullLogFileName)
+                .WriteTo.File(_fullLogFileName, rollOnFileSizeLimit: true, fileSizeLimitBytes: 20_971_520)
             .CreateLogger();
 
             try
