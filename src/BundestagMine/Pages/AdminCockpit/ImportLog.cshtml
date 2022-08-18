@@ -8,6 +8,7 @@
     <link href="~/css/import-log.css" rel="stylesheet">
 </head>
 
+<input type="hidden" asp-for="@Model.ImportLog.FullFilePath" id="logFilePathInput" />
 <div class="container min-vh-100">
     <div class="flexed justify-content-between algin-items-center mt-3">
         <div>
@@ -28,7 +29,7 @@
         }
     </div>
     <hr class="mt-2" />
-
+    <p>Auto-Refreshing every 4 seconds. Status: <span id="refreshCounter" class="font-weight-bold">Good</span></p>
     @*actual cointent*@
     <div class="log-lines">
         @foreach (var line in Model.ImportLog.LogLines)
@@ -41,10 +42,48 @@
     </div>
 </div>
 
-<script>
-    var lineCount = @Model.ImportLog.LogLines.Count;
-    var filePath = @Model.ImportLog.FullFilePath;
+@section scripts{
+    <script>
+        var obj = {
+            lineCount: @Model.ImportLog.LogLines.Count,
+            logFilePath: $('#logFilePathInput').val()
+        };
 
+        // Polls every x seconds new lines from the import log if there are any.
+        async function pollNewLines() {
+            const result = await $.ajax({
+                url: "/api/AdminCockpitController/PollImportLogLines/",
+                type: "POST",
+                data: JSON.stringify(obj),
+                dataType: "json",
+                contentType: "application/json",
+                accepts: {
+                    text: "application/json"
+                },
+            });
 
-    console.log(lineCount);
-</script>
+            // If the request was successfull.
+            if (result.status == "200") {
+                $('#refreshCounter').html('Success at ' + Date.now());
+                for (var i = 0; i < result.result.length; i++) {
+                    var newLine = result.result[i];
+                    var c = 'info';
+                    if (newLine.includes('[WRN]')) c = 'warning';
+                    else if (newLine.includes('[ERR]')) c = 'error';
+                    $('.log-lines').append(`<p class="line ${c}">${newLine}</p>`);
+                }
+
+                obj.lineCount += result.result.length;
+                // scroll down. I know, i know. hacky
+                $('.log-lines').scrollTop(9999999999);
+            } else {
+                $('#refreshCounter').html('ERROR WHILE TRYING TO REFRESH at' + Date.now());
+            }
+        }
+
+        // Poll new lines every x seconds.
+        var intervalId = window.setInterval(function() {
+            pollNewLines();
+        }, 4000);
+    </script>
+}
