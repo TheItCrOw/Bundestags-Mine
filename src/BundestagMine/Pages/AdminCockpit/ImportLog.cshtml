@@ -1,0 +1,50 @@
+﻿@page
+@model BundestagMine.Pages.AdminCockpit.ImportLogModel
+@{
+    ViewData["Title"] = "Import Log";
+}
+
+<head>
+    <link href="~/css/import-log.css" rel="stylesheet">
+</head>
+
+<div class="container min-vh-100">
+    <div class="flexed justify-content-between algin-items-center mt-3">
+        <div>
+            <h1 class="m-0">@Model.ImportLog.Name</h1>
+            <label class="m-0 text-black-50">@Model.ImportLog.FullFilePath</label>
+        </div>
+        @if (Model.ImportLog.Status == ViewModels.Import.Status.Success)
+        {
+            <i class="large-font text-success fas fa-check align-self-center"></i>
+        }
+        else if (Model.ImportLog.Status == ViewModels.Import.Status.Warning)
+        {
+            <i class="large-font text-warning fas fa-exclamation-triangle align-self-center"></i>
+        }
+        else if (Model.ImportLog.Status == ViewModels.Import.Status.Error)
+        {
+            <i class="large-font text-danger fas fa-bug align-self-center"></i>
+        }
+    </div>
+    <hr class="mt-2" />
+
+    @*actual cointent*@
+    <div class="log-lines">
+        @foreach (var line in Model.ImportLog.LogLines)
+        {
+            var c = "info";
+            if (line.Contains("[WRN]")) c = "warning";
+            else if (line.Contains("[ERR]")) c = "error";
+            <p class="line @c">@line</p>
+        }
+    </div>
+</div>
+
+<script>
+    var lineCount = @Model.ImportLog.LogLines.Count;
+    var filePath = @Model.ImportLog.FullFilePath;
+
+
+    console.log(lineCount);
+</script>

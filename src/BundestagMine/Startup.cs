@@ -81,6 +81,7 @@ namespace BundestagMine
             services.AddTransient<MetadataService>();
             services.AddTransient<BundestagScraperService>();
             services.AddTransient<TopicAnalysisService>();
+            services.AddTransient<ImportService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
