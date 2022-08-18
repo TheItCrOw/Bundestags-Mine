@@ -36,6 +36,7 @@ namespace BundestagMine
             // Identity Configurations.
             services.AddIdentity<IdentityUser, IdentityRole>()
                     .AddEntityFrameworkStores<IdentityContext>()
+                    .AddDefaultUI()
                     .AddDefaultTokenProviders();
 
             services.Configure<IdentityOptions>(options =>
@@ -43,10 +44,9 @@ namespace BundestagMine
                 // Password settings.
                 options.Password.RequireDigit = true;
                 options.Password.RequireLowercase = true;
-                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = true;
                 options.Password.RequiredLength = 6;
-                options.Password.RequiredUniqueChars = 1;
 
                 // Lockout settings.
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
@@ -65,6 +65,7 @@ namespace BundestagMine
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
 
                 options.LoginPath = "/Identity/Account/Login";
+                options.LogoutPath = "/Identity/Account/Logout";
                 options.AccessDeniedPath = "/Identity/Account/AccessDenied";
                 options.SlidingExpiration = true;
             });
