@@ -18,7 +18,7 @@ namespace BundestagMine.Pages.AdminCockpit
 
         public IActionResult OnGet(string filename)
         {
-            //if (!User.Identity.IsAuthenticated) return RedirectToPage("Index");
+            if (!User.Identity.IsAuthenticated) return RedirectToPage("Index");
 
             ImportLog = _importService.BuildImportLogViewModel(filename, true);
 

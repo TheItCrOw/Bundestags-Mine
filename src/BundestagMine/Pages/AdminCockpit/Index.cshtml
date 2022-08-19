@@ -9,7 +9,7 @@
 </head>
 
 @*show a login screen when not logged in*@
-@if (User.Identity.IsAuthenticated)
+@if (!User.Identity.IsAuthenticated)
 {
     <div class="vh-100 w-100 position-relative">
         <form class="login-modal card-shadow" method="post" id="account">
