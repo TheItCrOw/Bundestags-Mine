@@ -50,7 +50,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DashboardController/GetProtocols")]
-        public async Task<IActionResult> GetProtocols()
+        public IActionResult GetProtocols()
         {
             dynamic response = new ExpandoObject();
 
@@ -71,7 +71,7 @@ namespace BundestagMine.Controllers
                     })
                     .OrderByDescending(p => p.LegislaturePeriod).ThenByDescending(p => p.Number).ToList();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch protocols, error in logs";
@@ -82,7 +82,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DashboardController/GetParties")]
-        public async Task<IActionResult> GetParties()
+        public IActionResult GetParties()
         {
             dynamic response = new ExpandoObject();
 
@@ -101,7 +101,7 @@ namespace BundestagMine.Controllers
                 }
                 response.result = parties;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch parties, error in logs";
@@ -112,7 +112,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DashboardController/GetFractions")]
-        public async Task<IActionResult> GetFractions()
+        public IActionResult GetFractions()
         {
             dynamic response = new ExpandoObject();
 
@@ -122,7 +122,7 @@ namespace BundestagMine.Controllers
                 response.result = _metadataService.GetFractions();
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch fractions, error in logs";
@@ -133,7 +133,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DashboardController/GetAgendaItemsOfProtocol/{protocolIdAsString}")]
-        public async Task<IActionResult> GetAgendaItemsOfProtocol(string protocolIdAsString)
+        public IActionResult GetAgendaItemsOfProtocol(string protocolIdAsString)
         {
             dynamic response = new ExpandoObject();
 
@@ -143,7 +143,7 @@ namespace BundestagMine.Controllers
                 response.status = "200";
                 response.result = _db.AgendaItems.Where(a => a.ProtocolId == id).OrderBy(a => a.Order).ToList();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch agendaitems, error in logs";
@@ -154,7 +154,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DashboardController/GetPollsOfProtocol/{param}")]
-        public async Task<IActionResult> GetPollsOfProtocol(string param)
+        public IActionResult GetPollsOfProtocol(string param)
         {
             dynamic response = new ExpandoObject();
 
@@ -167,7 +167,7 @@ namespace BundestagMine.Controllers
                 response.result = _db.Polls.Where(p => p.LegislaturePeriod == legislaturePeriod && p.ProtocolNumber == protocolNumber)
                     .ToList();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch polls for protocols, error in logs";
@@ -187,9 +187,9 @@ namespace BundestagMine.Controllers
                 var pollId = Guid.Parse(pollIdAsString);
                 var poll = await _db.Polls.FindAsync(pollId);
                 response.status = "200";
-                response.result = await _bundestagScraperService.GetBundestagUrlOfPoll(poll);
+                response.result = _bundestagScraperService.GetBundestagUrlOfPoll(poll);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = $"Couldn't fetch url for poll, error in logs";
@@ -200,7 +200,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DashboardController/GetSpeakerById/{speakerId}")]
-        public async Task<IActionResult> GetSpeakerById(string speakerId)
+        public IActionResult GetSpeakerById(string speakerId)
         {
             dynamic response = new ExpandoObject();
 
@@ -209,7 +209,7 @@ namespace BundestagMine.Controllers
                 response.status = "200";
                 response.result = _db.Deputies.FirstOrDefault(d => d.SpeakerId == speakerId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch fractions, error in logs";
@@ -225,7 +225,7 @@ namespace BundestagMine.Controllers
         /// <param name="param"></param>
         /// <returns></returns>
         [HttpGet("/api/DashboardController/GetSpeaker/{param}")]
-        public async Task<IActionResult> GetSpeaker(string param)
+        public IActionResult GetSpeaker(string param)
         {
             dynamic response = new ExpandoObject();
 
@@ -274,7 +274,7 @@ namespace BundestagMine.Controllers
 
                 response.status = "200";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch speaker, error in logs";
@@ -286,7 +286,7 @@ namespace BundestagMine.Controllers
 
 
         [HttpGet("/api/DashboardController/GetSpeechesOfAgendaItem/{param}")]
-        public async Task<IActionResult> GetSpeechesOfAgendaItem(string param)
+        public IActionResult GetSpeechesOfAgendaItem(string param)
         {
             dynamic response = new ExpandoObject();
 
@@ -301,7 +301,7 @@ namespace BundestagMine.Controllers
                     .Where(s => s.LegislaturePeriod == period && s.ProtocolNumber == protocol && s.AgendaItemNumber == number)
                     .ToList();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch agenda items, error in logs";
@@ -335,7 +335,7 @@ namespace BundestagMine.Controllers
                     agendaItem = _metadataService.GetAgendaItemOfSpeech(speech)
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp speech, error in logs";
@@ -346,7 +346,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DashboardController/GetCommentNetworkData/")]
-        public async Task<IActionResult> GetCommentNetworkData()
+        public IActionResult GetCommentNetworkData()
         {
             dynamic response = new ExpandoObject();
 
@@ -358,7 +358,7 @@ namespace BundestagMine.Controllers
                 data.Nodes = _db.CommentNetworkNode.ToList();
                 response.result = data;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch netweork data speech, error in logs";
@@ -369,7 +369,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DashboardController/GetTopicMapChartData/{year}")]
-        public async Task<IActionResult> GetTopicMapChartData(string year)
+        public IActionResult GetTopicMapChartData(string year)
         {
             dynamic response = new ExpandoObject();
 
@@ -377,13 +377,11 @@ namespace BundestagMine.Controllers
             {
                 response.status = "200";
                 var jsonString = System.IO.File.ReadAllText($"{ConfigManager.GetDataDirectoryPath()}topicMap_{year}.json");
-                var data = JsonConvert.DeserializeObject(jsonString, typeof(TopicMapGraphObject));
-                response.result = data;
+                response.result = JsonConvert.DeserializeObject(jsonString, typeof(TopicMapGraphObject));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
-                response.message = $"Couldn't fetch topic map data, error {ex.Message} {ex.InnerException} in logs";
                 //TODO: Log
             }
 
@@ -391,7 +389,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DashboardController/GetTopicBarRaceChartData/")]
-        public async Task<IActionResult> GetTopicBarRaceChartData()
+        public IActionResult GetTopicBarRaceChartData()
         {
             dynamic response = new ExpandoObject();
 
@@ -399,13 +397,11 @@ namespace BundestagMine.Controllers
             {
                 response.status = "200";
                 var jsonString = System.IO.File.ReadAllText($"{ConfigManager.GetDataDirectoryPath()}topicBarRaceData.json");
-                var data = JsonConvert.DeserializeObject(jsonString, typeof(List<TopicBarRaceGraphObject>));
-                response.result = data;
+                response.result = JsonConvert.DeserializeObject(jsonString, typeof(List<TopicBarRaceGraphObject>));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
-                response.message = $"Couldn't fetch topic bar race chart data, error {ex.Message} {ex.InnerException} in logs";
                 //TODO: Log
             }
 
@@ -413,7 +409,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DashboardController/GetTokens/{param}")]
-        public async Task<IActionResult> GetTokens(string param)
+        public IActionResult GetTokens(string param)
         {
             dynamic response = new ExpandoObject();
 
@@ -430,7 +426,7 @@ namespace BundestagMine.Controllers
                 response.result = _annotationService.GetTokensForGraphs(limit, from, to, fraction, party, speakerId);
                 response.status = "200";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp tokens, error in logs";
@@ -441,7 +437,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DashboardController/GetPOS/{param}")]
-        public async Task<IActionResult> GetPOS(string param)
+        public IActionResult GetPOS(string param)
         {
             dynamic response = new ExpandoObject();
 
@@ -458,7 +454,7 @@ namespace BundestagMine.Controllers
                 response.result = _annotationService.GetPOSForGraphs(limit, from, to, fraction, party, speakerId);
                 response.status = "200";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp pos, error in logs";
@@ -469,7 +465,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DashboardController/GetSentiments/{param}")]
-        public async Task<IActionResult> GetSentiments(string param)
+        public IActionResult GetSentiments(string param)
         {
             dynamic response = new ExpandoObject();
 
@@ -485,7 +481,7 @@ namespace BundestagMine.Controllers
                 response.result = _annotationService.GetSentimentsForGraphs(from, to, fraction, party, speakerId);
                 response.status = "200";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp sentiments, error in logs";
@@ -496,7 +492,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DashboardController/GetNamedEntitites/{param}")]
-        public async Task<IActionResult> GetNamedEntitites(string param)
+        public IActionResult GetNamedEntitites(string param)
         {
             dynamic response = new ExpandoObject();
 
@@ -513,7 +509,7 @@ namespace BundestagMine.Controllers
                 response.result = _annotationService.GetNamedEntitiesForGraph(limit, from, to, fraction, party, speakerId);
                 response.status = "200";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp NE, error in logs";
@@ -524,7 +520,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DashboardController/SearchNamedEntities/{searchString}")]
-        public async Task<IActionResult> SearchNamedEntities(string searchString)
+        public IActionResult SearchNamedEntities(string searchString)
         {
             dynamic response = new ExpandoObject();
 
@@ -540,7 +536,7 @@ namespace BundestagMine.Controllers
                     .Select(kv => new { Element = kv.Key, Count = kv.Count() })
                     .ToList();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = $"Couldn't search named entities, error in logs";
@@ -551,7 +547,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DashboardController/GetSpeakerSentimentsAboutNamedEntity/{param}")]
-        public async Task<IActionResult> GetSpeakerSentimentsAboutNamedEntity(string param)
+        public IActionResult GetSpeakerSentimentsAboutNamedEntity(string param)
         {
             dynamic response = new ExpandoObject();
 
@@ -566,7 +562,7 @@ namespace BundestagMine.Controllers
                 response.result = _annotationService.GetNamedEntityWithCorrespondingSentiment(namedEntity, from, to, "", "", speakerId);
                 response.status = "200";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp sentiments for speaker, error in logs";
@@ -577,7 +573,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DashboardController/SearchSpeeches/{searchTerm}")]
-        public async Task<IActionResult> SearchSpeeches(string searchTerm)
+        public IActionResult SearchSpeeches(string searchTerm)
         {
             dynamic response = new ExpandoObject();
 
@@ -596,7 +592,7 @@ namespace BundestagMine.Controllers
                     .ToList();
                 response.status = "200";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp speeches, error in logs";
@@ -607,7 +603,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DashboardController/GetHomescreenData")]
-        public async Task<IActionResult> GetHomescreenData()
+        public IActionResult GetHomescreenData()
         {
             dynamic response = new ExpandoObject();
 
@@ -620,7 +616,7 @@ namespace BundestagMine.Controllers
                 response.result.tokens = _db.Token.Count();
                 response.status = "200";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch homescreen data, error in logs";
@@ -647,7 +643,7 @@ namespace BundestagMine.Controllers
                 response.result = _bundestagScraperService.GetDeputyPortraitFromImageDatabase(deputy);
                 response.status = "200";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch image, error in logs";
@@ -683,7 +679,7 @@ namespace BundestagMine.Controllers
                 response.status = "200";
                 response.result = await _viewRenderService.RenderToStringAsync("TopicAnalysis/_TopicAnalysisReportView", reportVm);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't post topic analysis report, error in logs";
@@ -769,7 +765,7 @@ namespace BundestagMine.Controllers
                 response.status = "200";
                 response.result = await _viewRenderService.RenderToStringAsync("TopicAnalysis/_ReportPage", pageVm);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't build page, error in logs";

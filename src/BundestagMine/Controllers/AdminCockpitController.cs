@@ -24,7 +24,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpPost("/api/AdminCockpitController/PollImportLogLines/")]
-        public async Task<IActionResult> PollImportLogLines(RequestLogLine param)
+        public IActionResult PollImportLogLines(RequestLogLine param)
         {
             dynamic response = new ExpandoObject();
 
@@ -36,7 +36,7 @@ namespace BundestagMine.Controllers
                 response.status = "200";
                 response.result = _importService.GetLinesFromImportProtocol(lineCount, logFilePath);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch import log lines, error in logs";

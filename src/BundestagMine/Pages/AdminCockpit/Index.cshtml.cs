@@ -41,9 +41,9 @@ namespace BundestagMine.Pages
             _signInManager = signInManager;
         }
 
-        public async Task OnGetAsync()
+        public void OnGet()
         {
-            //if (!User.Identity.IsAuthenticated) return;
+            if (!User.Identity.IsAuthenticated) return;
 
             ImportList = _importService.GetAllImportLogFileNames();
         }

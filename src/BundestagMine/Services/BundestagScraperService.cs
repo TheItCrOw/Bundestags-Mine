@@ -31,7 +31,7 @@ namespace BundestagMine.Services
         /// <returns></returns>
         private string ToCleanTitle(string s) => Regex.Replace(RemoveWhitespaces(HttpUtility.HtmlDecode(s).ToLower()), @"<[^>]*>", String.Empty);
 
-        public async Task<string> GetBundestagUrlOfPoll(Poll poll)
+        public string GetBundestagUrlOfPoll(Poll poll)
         {
             var url = ConfigManager.GetPollsQueryUrl();
             // sample page:
