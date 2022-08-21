@@ -333,6 +333,7 @@ async function insertSpeechIntoFulltextAnalysis(speechId) {
     if (!result) return;
     var speech = result.speech;
     var agendaItem = result.agendaItem;
+    var topics = result.topics;
 
     var imgSrc = await getSpeakerPortrait(speech.speakerId);
     var speaker = await getSpeakerById(speech.speakerId);
@@ -361,19 +362,18 @@ async function insertSpeechIntoFulltextAnalysis(speechId) {
     $('.breadcrumbs').find('.agenda').data('text', agendaItem.description);
 
     // Set the topic of the speech
-    var topics = speech.categoryCoveredTags;
     if (topics != undefined && topics.length >= 2) {
-        $('.fulltext-analysis-div').find('.topic-header .topic-1').html('#' + topics[0]?.value);
+        $('.fulltext-analysis-div').find('.topic-header .topic-1').html(topics[0]?.value);
         $('.fulltext-analysis-div').find('.topic-header .topic-1').attr('data-content',
-            'Kategorie mit ' + (Math.round(topics[0].score * 100, 0)) + '% Übereinstimmung');
+            'Thema mit ' + topics[0].count + ' Erwähnungen');
 
-        $('.fulltext-analysis-div').find('.topic-header .topic-2').html('#' + topics[1]?.value);
+        $('.fulltext-analysis-div').find('.topic-header .topic-2').html(topics[1]?.value);
         $('.fulltext-analysis-div').find('.topic-header .topic-2').attr('data-content',
-            'Kategorie mit ' + (Math.round(topics[1].score * 100, 0)) + '% Übereinstimmung');
+            'Thema mit ' + topics[1].count + ' Erwähnungen');
 
-        $('.fulltext-analysis-div').find('.topic-header .topic-3').html('#' + topics[2]?.value);
+        $('.fulltext-analysis-div').find('.topic-header .topic-3').html(topics[2]?.value);
         $('.fulltext-analysis-div').find('.topic-header .topic-3').attr('data-content',
-            'Kategorie mit ' + (Math.round(topics[2].score * 100, 0)) + '% Übereinstimmung');
+            'Thema mit ' + topics[2].count + ' Erwähnungen');
     }
 
     // Visualize the nlp speech in the content

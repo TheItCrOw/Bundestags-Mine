@@ -329,9 +329,22 @@ namespace BundestagMine.Controllers
                 speech.CategoryCoveredTags = _db.CategoryCoveredTagged.Where(c => c.NLPSpeechId == speech.Id)
                     .OrderByDescending(t => t.Score).ToList();
 
+                // We want the top X named entities which build the topic of this speech.
+                var topics = speech.NamedEntities
+                    .GroupBy(ne => ne.LemmaValue)
+                    .OrderByDescending(g => g.Count())
+                    .Select(ne => new
+                    {
+                        Value = ne.Key,
+                        Count = ne.Count()
+                    })
+                    .Take(5)
+                    .ToList();
+
                 response.result = new
                 {
                     speech,
+                    topics,
                     agendaItem = _metadataService.GetAgendaItemOfSpeech(speech)
                 };
             }
@@ -640,7 +653,7 @@ namespace BundestagMine.Controllers
                     response.message = "Deputy not found";
                     return response;
                 }
-                response.result = _bundestagScraperService.GetDeputyPortraitFromImageDatabase(deputy);
+                response.result =  _bundestagScraperService.GetDeputyPortraitFromImageDatabase(deputy);
                 response.status = "200";
             }
             catch (Exception)

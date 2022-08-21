@@ -453,7 +453,7 @@
 
 <script>
 
-// Build the sentiment chart.
+// Build the charts.
 $(document).ready(function () {
     buildSentimentChartForPage('@(Model.Id)', '@(Html.Raw(Json.Serialize(Model.SentimentGraphData)))');
     buildTopicComparedToOtherTopicsChart('@(Model.Id)', '@(Html.Raw(Json.Serialize(Model.TopicToOtherTopicsCompareGraphData)))');
@@ -464,7 +464,7 @@ $(document).ready(function () {
     //    $(this).attr('src', await getSpeakerPortrait($(this).data('id')));
     //})
 
-    //aktivate popoers
+    //activate popoers
     $('[data-toggle="popover"]').popover();
 })
 </script>

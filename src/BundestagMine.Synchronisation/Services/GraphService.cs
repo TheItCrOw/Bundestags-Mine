@@ -127,7 +127,6 @@ namespace BundestagMine.Synchronisation.Services
                         }
                         else
                         {
-                            // TODO: This is blocked because I forgot to import the sentiments of Shouts...
                             // Ill need to redo that and then come back here.
                             // => Added it into the import. Maybe we have to reimport everything from scratch or I just fix the old.
                             db.CommentNetworkLink.Add(new CommentNetworkLink()

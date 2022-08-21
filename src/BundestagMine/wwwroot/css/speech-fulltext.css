@@ -246,11 +246,13 @@
         top: 195px;
         display: flex;
         justify-content: space-around;
-        background-color: #343a40 !important;
+        background-color: lightgray !important;
         align-items: center;
-        color: white;
-        height: 30px;
-        display: none;
+        border-bottom:gray 1px solid;
+        border-left:gray 1px solid;
+        border-right:gray 1px solid;
+        color: black;
+        height: 25px;
         width: 100%;
         cursor: default;
         z-index: 2;

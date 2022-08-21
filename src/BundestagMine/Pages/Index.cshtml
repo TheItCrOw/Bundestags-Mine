@@ -15,7 +15,6 @@
     <meta name="description" content="">
     <meta name="author" content="Kevin Bönisch">
 
-    <!-- Custom styles for this template-->
     <link href="./css/sb-admin-2.min.css" rel="stylesheet">
     <!--my css files-->
     <link href="./css/site.css" rel="stylesheet">
@@ -370,9 +369,18 @@
                                     </div>
                                     <!--topic header-->
                                     <div class="topic-header">
-                                        <h6 class="topic-1 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
-                                        <h6 class="topic-2 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
-                                        <h6 class="topic-3 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
+                                        <div class="flexed align-items-center">
+                                            <h4 class="mb-0 mt-0 mr-1 font-weight-bold">#</h4>
+                                            <h6 class="topic-1 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
+                                        </div>
+                                        <div class="flexed align-items-center">
+                                            <h4 class="mb-0 mt-0 mr-1 font-weight-bold">#</h4>
+                                            <h6 class="topic-2 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
+                                        </div>
+                                        <div class="flexed align-items-center">
+                                            <h4 class="mb-0 mt-0 mr-1 font-weight-bold">#</h4>
+                                            <h6 class="topic-3 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
+                                        </div>
                                     </div>
                                     <!--analysis content-->
                                     <div class="analysis-content">
@@ -899,12 +907,6 @@
     </div>
 
     @section scripts{
-        <!-- Core plugin JavaScript-->
-        <script src="~/lib/jquery-easing/jquery.easing.min.js"></script>
-
-        <!-- Custom scripts for all pages-->
-        <script src="~/js/sb-admin/sb-admin-2.min.js"></script>
-
         <!-- Chart js stuff -->
         <!--<script src="vendor/chart.js/dist/chart.min.js"></script>-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js" integrity="sha512-TW5s0IT/IppJtu76UbysrBH9Hy/5X41OTAbQuffZFU6lQ1rdcLHzpU5BzVvr/YFykoiMYZVWlr/PX1mDcfM9Qg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -943,6 +945,6 @@
         <script src="./js/charts/speaker-chart.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/charts/comment-network-chart.js" charset="utf-8" type="text/javascript"></script>
     }
-        </body>
+    </body>
 
-        </html>
+    </html>

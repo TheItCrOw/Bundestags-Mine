@@ -36,6 +36,7 @@ namespace BundestagMine.SqlDatabase
         public static string GetBundestagUrl() => _config.GetSection("Configurations").GetSection("BundestagUrl").Value;
         public static string GetPortraitDatabaseQueryUrl() => _config.GetSection("Configurations").GetSection("PortraitDatabaseQueryUrl").Value;
         public static string GetPortraitDatabaseUrl() => _config.GetSection("Configurations").GetSection("PortraitDatabaseUrl").Value;
+        public static string GetCachedPortraitPath() => _config.GetSection("Configurations").GetSection("CachedPortraitPath").Value;
         public static string GetPollsQueryUrl() => _config.GetSection("Configurations").GetSection("PollsQueryUrl").Value;
         public static bool GetDeleteImportedEntity() => bool.Parse(_config.GetSection("Configurations").GetSection("DeleteImportedEntity").Value);
         public static string GetImportLogOutputPath() => _config.GetSection("Configurations").GetSection("ImportLogOutputPath").Value;
