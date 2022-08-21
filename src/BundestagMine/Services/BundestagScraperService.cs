@@ -17,12 +17,10 @@ namespace BundestagMine.Services
 {
     public class BundestagScraperService
     {
-        private readonly ImageService _imageService;
         private readonly BundestagMineDbContext _db;
 
-        public BundestagScraperService(BundestagMineDbContext db, ImageService imageService)
+        public BundestagScraperService(BundestagMineDbContext db)
         {
-            _imageService = imageService;
             _db = db;
         }
 
@@ -89,7 +87,7 @@ namespace BundestagMine.Services
             var filename = ConfigManager.GetCachedPortraitPath() + deputy.SpeakerId + ".jpg";
             if (File.Exists(filename))
             {
-                var imageArray = System.IO.File.ReadAllBytes(filename);
+                var imageArray = File.ReadAllBytes(filename);
                 return ConfigManager.GetBase64SourcePrefix() + Convert.ToBase64String(imageArray);
             }
             // Else scrape it, store it, return it

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BundestagMine.Pages
@@ -33,7 +34,16 @@ namespace BundestagMine.Pages
         /// A list of import logs to list in the view.
         /// </summary>
         [BindProperty]
-        public List<ImportLogViewModel> ImportList { get; set; }
+        public List<ImportLogViewModel> ImportLogsList { get; set; } = new List<ImportLogViewModel>();
+
+        /// <summary>
+        /// A list of all protocols in the ImportedEntities table.
+        /// </summary>
+        [BindProperty]
+        public List<ImportedProtocolViewModel> ImportableProtocols { get; set; } = new List<ImportedProtocolViewModel>();
+
+        [BindProperty]
+        public List<string> ImportableDeputies { get; set; }
 
         public AdminCockpitModel(SignInManager<IdentityUser> signInManager, ImportService importService)
         {
@@ -45,7 +55,9 @@ namespace BundestagMine.Pages
         {
             if (!User.Identity.IsAuthenticated) return;
 
-            ImportList = _importService.GetAllImportLogFileNames();
+            ImportLogsList = _importService.GetImportLogFileNames();
+            ImportableProtocols = _importService.GetToBeImportedProtocols().ToList();
+            ImportableDeputies = _importService.GetToBeImportedDeputies().ToList();
         }
 
         public async Task<IActionResult> OnPostAsync()

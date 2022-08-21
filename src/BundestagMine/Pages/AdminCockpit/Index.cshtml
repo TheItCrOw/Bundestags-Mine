@@ -28,7 +28,7 @@
 }
 else
 {
-    <div class="container min-vh-100">
+    <div class="container min-vh-100 pb-5">
         <div class="cockpit-container">
             @*header*@
             <div class="flexed justify-content-between align-items-center mt-3 mb-2">
@@ -38,10 +38,10 @@ else
                 </a>
             </div>
             <hr class="mt-2" />
-            <h5>Import-Logs:</h5>
+            <h5>Import-Logs (@Model.ImportLogsList.Count):</h5>
             @*Imports*@
             <div class="import-list">
-                @foreach (var importLog in Model.ImportList)
+                @foreach (var importLog in Model.ImportLogsList)
                 {
                     <a class="import-log-list-item" asp-page="ImportLog" asp-route-filename="@importLog.FullFilePath">
                         <div class="flexed align-items-center">
@@ -61,6 +61,36 @@ else
                         {
                             <i class="large-font text-danger fas fa-bug"></i>
                         }
+                    </a>
+                }
+            </div>
+            <hr class="mt-2" />
+            <h5>Importable Protocols (@Model.ImportableProtocols.Count):</h5>
+            @*Importable protocols*@
+            <div class="import-list">
+                @foreach (var protocol in Model.ImportableProtocols)
+                {
+                    <a class="import-log-list-item text-center">
+                        <div class="flexed align-items-center">
+                            <i class="fas fa-clipboard-list mr-2 text-dark"></i>
+                            <label class="m-0 font-weight-bold text-dark">@protocol.ImportedDate</label>
+                        </div>
+                        <label class="ml-1 mb-0 mt-0 mr-3">@protocol.ProtocolJson</label>
+                        <label class="ml-1 mb-0 mt-0 mr-3 text-center font-weight-bold">@(protocol.SpeechIds.Count) Speeches</label>
+                    </a>
+                }
+            </div>
+            <hr class="mt-2" />
+            <h5>Importable Deputies (@Model.ImportableDeputies.Count):</h5>
+            @*Importable protocols*@
+            <div class="import-list">
+                @foreach (var deputy in Model.ImportableDeputies)
+                {
+                    <a class="import-log-list-item text-center">
+                        <div class="flexed align-items-center">
+                            <i class="fas fa-user mr-2 text-dark"></i>
+                        </div>
+                        <label class="ml-2 mb-0 mt-0 mr-1 text-left text-wrap text-break">@deputy</label>
                     </a>
                 }
             </div>

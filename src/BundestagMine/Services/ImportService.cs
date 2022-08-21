@@ -1,4 +1,5 @@
-﻿using BundestagMine.SqlDatabase;
+﻿using BundestagMine.Models.Database;
+using BundestagMine.SqlDatabase;
 using BundestagMine.ViewModels.Import;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,13 @@ namespace BundestagMine.Services
     /// </summary>
     public class ImportService
     {
+        private readonly BundestagMineDbContext _db;
+
+        public ImportService(BundestagMineDbContext db)
+        {
+            _db = db;
+        }
+
         public List<string> GetLinesFromImportProtocol(int begin, string filePath)
         {
             using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
@@ -34,7 +42,6 @@ namespace BundestagMine.Services
                 return content;
             }
         }
-
 
         /// <summary>
         /// Builds a viewmodel out of a import log txt
@@ -75,7 +82,42 @@ namespace BundestagMine.Services
             }
         }
 
-        public List<ImportLogViewModel> GetAllImportLogFileNames()
+        /// <summary>
+        /// Gets the deputies which may be imported
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<string> GetToBeImportedDeputies()
+        {
+            foreach (var entity in _db.ImportedEntities.Where(e => e.Type == ModelType.Deputy).ToList())
+            {
+                yield return entity.ModelJson;
+            }
+        }
+
+        /// <summary>
+        /// Gets the protocols which are about to be imported
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<ImportedProtocolViewModel> GetToBeImportedProtocols()
+        {
+            foreach(var entity in _db.ImportedEntities.Where(e => e.Type == ModelType.Protocol).ToList())
+            {
+                yield return new ImportedProtocolViewModel()
+                {
+                    ImportedDate = DateTime.Parse(entity.ImportedDate),
+                    ImportedEntityId = entity.Id,
+                    ProtocolJson = entity.ModelJson,
+                    SpeechIds = _db.ImportedEntities.Where(e => e.ProtocolId == entity.Id).Select(e => e.Id).ToList()
+                };
+            }
+        }
+
+        /// <summary>
+        /// Gets the imported logs as viewmodels and returns them
+        /// </summary>
+        /// <param name="limit"></param>
+        /// <returns></returns>
+        public List<ImportLogViewModel> GetImportLogFileNames(int limit = 10)
         {
             var result = new List<ImportLogViewModel>();
 
@@ -91,7 +133,7 @@ namespace BundestagMine.Services
                 }
             }
 
-            return result;
+            return result.OrderByDescending(r => r.Date).Take(limit).ToList();
         }
     }
 }
