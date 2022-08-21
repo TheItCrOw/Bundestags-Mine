@@ -460,9 +460,9 @@ $(document).ready(function () {
 
     // Add speech list item portraits
     // Lets skip this because our server is way too slow to handle that many img requests right now...
-    //$('.speech-list-item img, .shout img').each(async function () {
-    //    $(this).attr('src', await getSpeakerPortrait($(this).data('id')));
-    //})
+    $('.speech-list-item img, .shout img').each(async function () {
+        $(this).attr('src', await getSpeakerPortrait($(this).data('id')));
+    })
 
     //activate popoers
     $('[data-toggle="popover"]').popover();

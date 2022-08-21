@@ -5,7 +5,10 @@ using BundestagMine.Utility;
 using Supremes;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
@@ -14,10 +17,12 @@ namespace BundestagMine.Services
 {
     public class BundestagScraperService
     {
+        private readonly ImageService _imageService;
         private readonly BundestagMineDbContext _db;
 
-        public BundestagScraperService(BundestagMineDbContext db)
+        public BundestagScraperService(BundestagMineDbContext db, ImageService imageService)
         {
+            _imageService = imageService;
             _db = db;
         }
 
@@ -79,6 +84,15 @@ namespace BundestagMine.Services
 
         public string GetDeputyPortraitFromImageDatabase(Deputy deputy)
         {
+            // We check if we have fetched the image already onto our harddrive. If yes, then fetch it from there
+            // and return it as a base64 string. Else fetch it from the bundestag website and in parallel cache it.
+            var filename = ConfigManager.GetCachedPortraitPath() + deputy.SpeakerId + ".jpg";
+            if (File.Exists(filename))
+            {
+                var imageArray = System.IO.File.ReadAllBytes(filename);
+                return ConfigManager.GetBase64SourcePrefix() + Convert.ToBase64String(imageArray);
+            }
+            // Else scrape it, store it, return it
             var name = (deputy.FirstName + "+" + deputy.LastName);
             var url = ConfigManager.GetPortraitDatabaseQueryUrl() + name;
             var imagesOverview = Dcsoup.Parse(new Uri(url), 3000);
@@ -88,10 +102,37 @@ namespace BundestagMine.Services
             if (elements.Count != 0)
             {
                 var imgTag = elements[0].GetElementsByTag("img")[0];
-                return ConfigManager.GetPortraitDatabaseUrl() + imgTag.Attr("src");
+                var imgUrl = ConfigManager.GetPortraitDatabaseUrl() + imgTag.Attr("src");
+
+                // We want this to run async in the background
+                Task.Run(() => DownloadAndStoreDeputyPortrait(imgUrl, deputy.SpeakerId));
+
+                return imgUrl;
             }
 
             return string.Empty;
+        }
+
+
+        /// <summary>
+        /// Takes in a img url and the speaker id and stores the img on our harddrive with less resolution
+        /// </summary>
+        public void DownloadAndStoreDeputyPortrait(string imgUrl, string speakerId)
+        {
+            using (var client = new WebClient())
+            {
+                // Download the file
+                var filename = ConfigManager.GetCachedPortraitPath() + speakerId + ".jpg";
+                try
+                {
+                    if (!File.Exists(filename))
+                        client.DownloadFile(new Uri(imgUrl), filename);
+                }
+                catch (Exception)
+                {
+                    // TODO: Log
+                }
+            }
         }
     }
 }
