@@ -1,6 +1,7 @@
 ﻿using BundestagMine.Models.Database;
 using BundestagMine.SqlDatabase;
 using BundestagMine.ViewModels.Import;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,10 +16,12 @@ namespace BundestagMine.Services
     /// </summary>
     public class ImportService
     {
+        private readonly ILogger<ImportService> _logger;
         private readonly BundestagMineDbContext _db;
 
-        public ImportService(BundestagMineDbContext db)
+        public ImportService(BundestagMineDbContext db, ILogger<ImportService> logger)
         {
+            _logger = logger;
             _db = db;
         }
 
@@ -127,9 +130,9 @@ namespace BundestagMine.Services
                 {
                     result.Add(BuildImportLogViewModel(file));
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    // TODO: Log excetpion
+                    _logger.LogError(ex, "Error fetching import log files:");
                 }
             }
 

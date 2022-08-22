@@ -18,6 +18,7 @@ using BundestagMine.RequestModels;
 using BundestagMine.ViewModels;
 using System.Text.RegularExpressions;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace BundestagMine.Controllers
 {
@@ -25,6 +26,7 @@ namespace BundestagMine.Controllers
     [ApiController]
     public class DashboardController : Controller
     {
+        private readonly ILogger<DashboardController> _logger;
         private readonly TopicAnalysisService _topicAnalysisService;
         private readonly BundestagScraperService _bundestagScraperService;
         private readonly GraphService _graphService;
@@ -38,8 +40,10 @@ namespace BundestagMine.Controllers
             MetadataService metadataService,
             GraphService graphService,
             BundestagScraperService bundestagScraperService,
-            TopicAnalysisService topicAnalysisService)
+            TopicAnalysisService topicAnalysisService,
+            ILogger<DashboardController> logger)
         {
+            _logger = logger;
             _topicAnalysisService = topicAnalysisService;
             _bundestagScraperService = bundestagScraperService;
             _graphService = graphService;
@@ -71,11 +75,11 @@ namespace BundestagMine.Controllers
                     })
                     .OrderByDescending(p => p.LegislaturePeriod).ThenByDescending(p => p.Number).ToList();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error fetching protocols:");
                 response.status = "400";
                 response.message = "Couldn't fetch protocols, error in logs";
-                //TODO: Log
             }
 
             return Json(response);
@@ -101,11 +105,11 @@ namespace BundestagMine.Controllers
                 }
                 response.result = parties;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch parties, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching parties:");
             }
 
             return Json(response);
@@ -122,11 +126,11 @@ namespace BundestagMine.Controllers
                 response.result = _metadataService.GetFractions();
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch fractions, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching fractions:");
             }
 
             return Json(response);
@@ -143,11 +147,11 @@ namespace BundestagMine.Controllers
                 response.status = "200";
                 response.result = _db.AgendaItems.Where(a => a.ProtocolId == id).OrderBy(a => a.Order).ToList();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch agendaitems, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching agenda items of protocol:");
             }
 
             return Json(response);
@@ -167,11 +171,11 @@ namespace BundestagMine.Controllers
                 response.result = _db.Polls.Where(p => p.LegislaturePeriod == legislaturePeriod && p.ProtocolNumber == protocolNumber)
                     .ToList();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch polls for protocols, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching polls of protocol:");
             }
 
             return Json(response);
@@ -189,11 +193,11 @@ namespace BundestagMine.Controllers
                 response.status = "200";
                 response.result = _bundestagScraperService.GetBundestagUrlOfPoll(poll);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = $"Couldn't fetch url for poll, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching bundestag url for poll:");
             }
 
             return Json(response);
@@ -209,11 +213,11 @@ namespace BundestagMine.Controllers
                 response.status = "200";
                 response.result = _db.Deputies.FirstOrDefault(d => d.SpeakerId == speakerId);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch fractions, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching speaker by id:");
             }
 
             return Json(response);
@@ -274,11 +278,11 @@ namespace BundestagMine.Controllers
 
                 response.status = "200";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch speaker, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching speakers:");
             }
 
             return Json(response);
@@ -301,11 +305,11 @@ namespace BundestagMine.Controllers
                     .Where(s => s.LegislaturePeriod == period && s.ProtocolNumber == protocol && s.AgendaItemNumber == number)
                     .ToList();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch agenda items, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching speeches of agenda item:");
             }
 
             return Json(response);
@@ -326,8 +330,8 @@ namespace BundestagMine.Controllers
                 speech.NamedEntities = _db.NamedEntity.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
                 speech.Sentiments = _db.Sentiment.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
                 speech.Segments = _db.SpeechSegment.Include(s => s.Shouts).Where(s => s.SpeechId == speech.Id).ToList();
-                speech.CategoryCoveredTags = _db.CategoryCoveredTagged.Where(c => c.NLPSpeechId == speech.Id)
-                    .OrderByDescending(t => t.Score).ToList();
+                //speech.CategoryCoveredTags = _db.CategoryCoveredTagged.Where(c => c.NLPSpeechId == speech.Id)
+                //    .OrderByDescending(t => t.Score).ToList();
 
                 // We want the top X named entities which build the topic of this speech.
                 var topics = speech.NamedEntities
@@ -348,11 +352,11 @@ namespace BundestagMine.Controllers
                     agendaItem = _metadataService.GetAgendaItemOfSpeech(speech)
                 };
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp speech, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching nlp speech:");
             }
 
             return Json(response);
@@ -371,11 +375,11 @@ namespace BundestagMine.Controllers
                 data.Nodes = _db.CommentNetworkNode.ToList();
                 response.result = data;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch netweork data speech, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching comment network data:");
             }
 
             return Json(response);
@@ -392,10 +396,10 @@ namespace BundestagMine.Controllers
                 var jsonString = System.IO.File.ReadAllText($"{ConfigManager.GetDataDirectoryPath()}topicMap_{year}.json");
                 response.result = JsonConvert.DeserializeObject(jsonString, typeof(TopicMapGraphObject));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching topic map chart data:");
             }
 
             return Json(response);
@@ -412,10 +416,10 @@ namespace BundestagMine.Controllers
                 var jsonString = System.IO.File.ReadAllText($"{ConfigManager.GetDataDirectoryPath()}topicBarRaceData.json");
                 response.result = JsonConvert.DeserializeObject(jsonString, typeof(List<TopicBarRaceGraphObject>));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching topic bar race data:");
             }
 
             return Json(response);
@@ -439,11 +443,11 @@ namespace BundestagMine.Controllers
                 response.result = _annotationService.GetTokensForGraphs(limit, from, to, fraction, party, speakerId);
                 response.status = "200";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp tokens, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching tokens:");
             }
 
             return Json(response);
@@ -467,11 +471,11 @@ namespace BundestagMine.Controllers
                 response.result = _annotationService.GetPOSForGraphs(limit, from, to, fraction, party, speakerId);
                 response.status = "200";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp pos, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching POS:");
             }
 
             return Json(response);
@@ -494,11 +498,11 @@ namespace BundestagMine.Controllers
                 response.result = _annotationService.GetSentimentsForGraphs(from, to, fraction, party, speakerId);
                 response.status = "200";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp sentiments, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching sentiments:");
             }
 
             return Json(response);
@@ -522,11 +526,11 @@ namespace BundestagMine.Controllers
                 response.result = _annotationService.GetNamedEntitiesForGraph(limit, from, to, fraction, party, speakerId);
                 response.status = "200";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp NE, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching named entities:");
             }
 
             return Json(response);
@@ -549,11 +553,11 @@ namespace BundestagMine.Controllers
                     .Select(kv => new { Element = kv.Key, Count = kv.Count() })
                     .ToList();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = $"Couldn't search named entities, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error searching named entities:");
             }
 
             return Json(response);
@@ -575,11 +579,11 @@ namespace BundestagMine.Controllers
                 response.result = _annotationService.GetNamedEntityWithCorrespondingSentiment(namedEntity, from, to, "", "", speakerId);
                 response.status = "200";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp sentiments for speaker, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching speaker sentiment about ne:");
             }
 
             return Json(response);
@@ -605,11 +609,11 @@ namespace BundestagMine.Controllers
                     .ToList();
                 response.status = "200";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp speeches, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error searching speeches:");
             }
 
             return Json(response);
@@ -629,11 +633,11 @@ namespace BundestagMine.Controllers
                 response.result.tokens = _db.Token.Count();
                 response.status = "200";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch homescreen data, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching homescreen data:");
             }
 
             return Json(response);
@@ -656,11 +660,11 @@ namespace BundestagMine.Controllers
                 response.result =  _bundestagScraperService.GetDeputyPortraitFromImageDatabase(deputy);
                 response.status = "200";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch image, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching deputy portrait:");
             }
 
             return Json(response);
@@ -692,11 +696,11 @@ namespace BundestagMine.Controllers
                 response.status = "200";
                 response.result = await _viewRenderService.RenderToStringAsync("TopicAnalysis/_TopicAnalysisReportView", reportVm);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't post topic analysis report, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error posting new topic analysis:");
             }
 
             return Json(response);
@@ -778,11 +782,11 @@ namespace BundestagMine.Controllers
                 response.status = "200";
                 response.result = await _viewRenderService.RenderToStringAsync("TopicAnalysis/_ReportPage", pageVm);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't build page, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error building report page:");
             }
 
             return Json(response);

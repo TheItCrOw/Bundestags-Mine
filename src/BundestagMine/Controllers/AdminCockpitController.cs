@@ -1,5 +1,6 @@
 ﻿using BundestagMine.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Dynamic;
 using System.Threading.Tasks;
@@ -16,10 +17,12 @@ namespace BundestagMine.Controllers
     [ApiController]
     public class AdminCockpitController : Controller
     {
+        private readonly ILogger<AdminCockpitController> _logger;
         private readonly ImportService _importService;
 
-        public AdminCockpitController(ImportService importService)
+        public AdminCockpitController(ImportService importService, ILogger<AdminCockpitController> logger)
         {
+            _logger = logger;
             _importService = importService;
         }
 
@@ -36,11 +39,11 @@ namespace BundestagMine.Controllers
                 response.status = "200";
                 response.result = _importService.GetLinesFromImportProtocol(lineCount, logFilePath);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't fetch import log lines, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching new import log lines:");
             }
 
             return Json(response);

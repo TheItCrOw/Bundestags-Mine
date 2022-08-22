@@ -25,6 +25,8 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.8" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Utils" Version="6.0.8" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGenerators.Mvc" Version="6.0.8" />
+    <PackageReference Include="NLog" Version="5.0.2" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="5.1.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,6 +43,12 @@
     <None Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="nlog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

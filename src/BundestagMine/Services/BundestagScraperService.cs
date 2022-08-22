@@ -2,6 +2,7 @@
 using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.SqlDatabase;
 using BundestagMine.Utility;
+using Microsoft.Extensions.Logging;
 using Supremes;
 using System;
 using System.Collections.Generic;
@@ -17,10 +18,12 @@ namespace BundestagMine.Services
 {
     public class BundestagScraperService
     {
+        private readonly ILogger<BundestagScraperService> _logger;
         private readonly BundestagMineDbContext _db;
 
-        public BundestagScraperService(BundestagMineDbContext db)
+        public BundestagScraperService(BundestagMineDbContext db, ILogger<BundestagScraperService> logger)
         {
+            _logger = logger;
             _db = db;
         }
 
@@ -126,9 +129,9 @@ namespace BundestagMine.Services
                     if (!File.Exists(filename))
                         client.DownloadFile(new Uri(imgUrl), filename);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    // TODO: Log
+                    _logger.LogError(ex, "Error downloading and storing deputy portrait:");
                 }
             }
         }
