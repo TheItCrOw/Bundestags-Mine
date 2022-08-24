@@ -362,7 +362,7 @@ async function insertSpeechIntoFulltextAnalysis(speechId) {
     $('.breadcrumbs').find('.agenda').data('text', agendaItem.description);
 
     // Set the topic of the speech
-    if (topics != undefined && topics.length >= 2) {
+    if (topics != undefined && topics.length >= 3) {
         $('.fulltext-analysis-div').find('.topic-header .topic-1').html(topics[0]?.value);
         $('.fulltext-analysis-div').find('.topic-header .topic-1').attr('data-content',
             'Thema mit ' + topics[0].count + ' Erwähnungen');

@@ -209,7 +209,8 @@ async function initTopicRaceChart(data) {
                 .remove();
         }
 
-        if (year == '2022.5') topicRaceticker.stop();
+        var today = new Date();
+        if (year == `${today.getFullYear()}.${(today.getMonth() + 1)}`) topicRaceticker.stop();
 
         if (step < 12) year = splited[0] + '.' + (parseInt(step) + 1);
         else year = (parseInt(splited[0]) + 1).toString() + ".1";

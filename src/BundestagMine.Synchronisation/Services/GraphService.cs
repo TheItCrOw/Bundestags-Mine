@@ -85,10 +85,12 @@ namespace BundestagMine.Synchronisation.Services
                         var shouter = db.Deputies.FirstOrDefault(d => d.SpeakerId == shout.SpeakerId);
                         // Speaker of the current speech the shouter is commenting in.
                         var speaker = db.SpeechSegment
-                            .Where(ss => ss.Id == shout.SpeechSegmentId)
-                            .SelectMany(ss => db.Speeches.Where(s => s.Id == ss.SpeechId))
+                            .Where(ss => ss.Id == shout.SpeechSegmentId)?
+                            .SelectMany(ss => db.Speeches.Where(s => s.Id == ss.SpeechId))?
                             .SelectMany(s => db.Deputies.Where(d => d.SpeakerId == s.SpeakerId))?
-                            .First();
+                            .FirstOrDefault();
+
+                        if (speaker == default || shouter == default) continue;
 
                         // If the shouter doesnt already have a node, create it
                         if (!db.CommentNetworkNode.Any(n => n.Id == shouter.SpeakerId))
@@ -187,7 +189,7 @@ namespace BundestagMine.Synchronisation.Services
                         var topics = db.Protocols.Where(p => p.Date >= from && p.Date <= curTo)
                             .SelectMany(p => db.Speeches
                                 .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
-                            .SelectMany(s => db.NamedEntity.Where(t => s.Id == t.NLPSpeechId && !neBlackList.Contains(t.LemmaValue)))
+                            .SelectMany(s => db.NamedEntity.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty && !neBlackList.Contains(t.LemmaValue)))
                             .AsEnumerable()
                             .GroupBy(n => n.LemmaValue)
                             .Select(g1 =>
@@ -270,7 +272,7 @@ namespace BundestagMine.Synchronisation.Services
                             .SelectMany(p => db.Speeches
                                 .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod &&
                                     db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Fraction == graphFraction.Name))
-                            .SelectMany(s => db.NamedEntity.Where(n => s.Id == n.NLPSpeechId && n.LemmaValue != null))
+                            .SelectMany(s => db.NamedEntity.Where(n => s.Id == n.NLPSpeechId && n.ShoutId == Guid.Empty && n.LemmaValue != null))
                             .AsEnumerable()
                             .GroupBy(n => n.LemmaValue.ToLower())
                             .Select(g1 => new TopicMapGraphObject()
@@ -292,7 +294,7 @@ namespace BundestagMine.Synchronisation.Services
                                                .SelectMany(p => db.Speeches
                                                    .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                                                     && s.SpeakerId == deputy.SpeakerId))
-                                               .SelectMany(s => db.NamedEntity.Where(n => n.LemmaValue == entityChild.Name && n.NLPSpeechId == s.Id))
+                                               .SelectMany(s => db.NamedEntity.Where(n => n.LemmaValue == entityChild.Name && n.NLPSpeechId == s.Id && n.ShoutId == Guid.Empty))
                                                .Count();
                                 deputyToEntityCount[deputy] = count;
                             }

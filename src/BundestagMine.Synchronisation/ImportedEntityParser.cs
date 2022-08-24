@@ -95,6 +95,7 @@ namespace BundestagMine.Synchronisation
 
                         Log.Information($"Saving the protocol and its speeches...");
                         await db.SaveChangesAsync();
+                        CacheService.NewProtocolsStored++;
                         Log.Information($"Saved!");
                         counter++;
                     }
@@ -276,10 +277,13 @@ namespace BundestagMine.Synchronisation
                                     // Sentiments are different for shouts and a bit bugged. There should only be once sentiment
                                     // for the whole shout - so its not based on sentences. Just take the first object of the array
                                     // in the array (Dumb) and that should be it...
-                                    var shoutSentiment = shoutSentiments[0].AsBsonArray[0].AsBsonDocument;
-                                    var sentiment = MongoDocumentsParserService.MongoSentimentToSentiment(shoutSentiment);
-                                    sentiment.ShoutId = curShout.Id;
-                                    speech.Sentiments.Add(sentiment);
+                                    if(shoutSentiments.AsBsonArray.Count > 0)
+                                    {
+                                        var shoutSentiment = shoutSentiments[0]?.AsBsonArray[0]?.AsBsonDocument;
+                                        var sentiment = MongoDocumentsParserService.MongoSentimentToSentiment(shoutSentiment);
+                                        sentiment.ShoutId = curShout.Id;
+                                        speech.Sentiments.Add(sentiment);
+                                    }
                                 }
                             }
                         }

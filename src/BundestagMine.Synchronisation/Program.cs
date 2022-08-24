@@ -22,7 +22,8 @@ namespace BundestagMine.Synchronisation
 {
     class Program
     {
-        private static string _fullLogFileName = $"{ConfigManager.GetImportLogOutputPath()}{DateTime.Now.ToShortDateString()}.txt";
+        // We need a englisch format date, since the IIS on the server only works with those...
+        private static string _fullLogFileName = $"{ConfigManager.GetImportLogOutputPath()}{DateTime.Now.ToString("yyyy-MM-dd")}.txt";
 
         static void Main(string[] args)
         {
@@ -88,7 +89,7 @@ namespace BundestagMine.Synchronisation
             Log.Information("XLS  ======================================");
             importer.ImportXLSPolls();
 
-            if (entityResult == 0)
+            if (CacheService.NewProtocolsStored == 0)
             {
                 Log.Information("No new entities imported, therefore no graph calculations need to be done.");
             }

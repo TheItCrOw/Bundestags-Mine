@@ -105,7 +105,7 @@ async function searchTopic(input) {
 function speakerSearch(input) {
     $('#topicAnalysisSpeakerSearchList').html('');
     input = input.toLowerCase();
-    console.log(input);
+
     // Look for parties
     allSpeaker.forEach(function (speaker) {
         var org = speaker.party;
