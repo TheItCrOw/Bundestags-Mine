@@ -578,11 +578,7 @@ namespace BundestagMine.Services
                     Agenda = _metadataService.GetAgendaItemOfSpeech(s),
                     TopicMentionCount = _db.NamedEntity
                         .Where(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == neLemmaValue).Count(),
-                    Speaker = new ReportDeputyViewModel()
-                    {
-                        Deputy = _db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId)
-                        //PortraitUrl = _bundestagScraperService.GetDeputyPortraitFromImageDatabase(s.SpeakerId)
-                    }
+                    Speaker = _db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId)
                 })
                 .OrderByDescending(s => s.TopicMentionCount)
                 .Take(limit)
@@ -599,11 +595,7 @@ namespace BundestagMine.Services
                     Agenda = _metadataService.GetAgendaItemOfSpeech(s),
                     TopicMentionCount = _db.NamedEntity
                         .Where(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == neLemmaValue).Count(),
-                    Speaker = new ReportDeputyViewModel()
-                    {
-                        Deputy = _db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId)
-                        //PortraitUrl = _bundestagScraperService.GetDeputyPortraitFromImageDatabase(s.SpeakerId)
-                    }
+                    Speaker = _db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId)
                 })
                 .OrderByDescending(s => s.TopicMentionCount)
                 .Take(limit)
@@ -620,11 +612,7 @@ namespace BundestagMine.Services
                     Agenda = _metadataService.GetAgendaItemOfSpeech(s),
                     TopicMentionCount = _db.NamedEntity
                         .Where(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == neLemmaValue).Count(),
-                    Speaker = new ReportDeputyViewModel()
-                    {
-                        Deputy = _db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId)
-                        //PortraitUrl = _bundestagScraperService.GetDeputyPortraitFromImageDatabase(s.SpeakerId)
-                    }
+                    Speaker = _db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId)
                 })
                 .OrderByDescending(s => s.TopicMentionCount)
                 .Take(limit)
@@ -640,11 +628,7 @@ namespace BundestagMine.Services
                         Agenda = _metadataService.GetAgendaItemOfSpeech(s),
                         TopicMentionCount = _db.NamedEntity
                             .Where(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == neLemmaValue).Count(),
-                        Speaker = new ReportDeputyViewModel()
-                        {
-                            Deputy = _db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId)
-                            //PortraitUrl = _bundestagScraperService.GetDeputyPortraitFromImageDatabase(s.SpeakerId)
-                        }
+                        Speaker = _db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId)
                     })
                     .OrderByDescending(s => s.TopicMentionCount)
                     .Take(limit)

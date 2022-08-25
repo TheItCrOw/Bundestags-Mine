@@ -560,6 +560,25 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        [HttpPost("/api/DashboardController/GlobalSearch/")]
+        public IActionResult GlobalSearch(GlobalSearchRequest globalSearchRequest)
+        {
+            dynamic response = new ExpandoObject();
+
+            try
+            {
+                response.status = "200";
+            }
+            catch (Exception ex)
+            {
+                response.status = "400";
+                response.message = $"Global Search failed.";
+                _logger.LogError(ex, "Error global search:");
+            }
+
+            return Json(response);
+        }
+
         [HttpGet("/api/DashboardController/GetSpeakerSentimentsAboutNamedEntity/{param}")]
         public IActionResult GetSpeakerSentimentsAboutNamedEntity(string param)
         {

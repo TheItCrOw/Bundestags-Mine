@@ -9,11 +9,12 @@
     }
 
     // Public function
-    GlobalSearchHandler.prototype.startNewGlobalSearch = function () {
+    GlobalSearchHandler.prototype.startNewGlobalSearch = async function () {
         console.log('Starting a new global search');
         var searchString = $('.global-search-input').val();
         if (searchString == '') return;
 
+        // Build the request model
         var obj = {
             searchString,
             includeSpeeches: $('.global-search-filter').find('input[data-id="speeches"]').is(':checked'),
@@ -24,7 +25,18 @@
             to: $('.global-search-filter').find('input[data-id="to"]').val()
         }
 
-        console.log(obj);
+        // Do the request
+        const result = await $.ajax({
+            url: "/api/DashboardController/GlobalSearch/",
+            type: "POST",
+            data: JSON.stringify(obj),
+            dataType: "json",
+            contentType: "application/json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+
     }
 
     return GlobalSearchHandler;
