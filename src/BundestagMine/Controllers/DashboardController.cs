@@ -244,18 +244,15 @@ namespace BundestagMine.Controllers
                 if (DateTime.TryParse(splited[1], out var from) && DateTime.TryParse(splited[2], out var to))
                 {
                     var speakerIdToCount = _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
-                    .SelectMany(p => _db.Speeches
-                        .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod)
-                        .Select(s => _db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId))
-                        .Where(d => d != null
-                            && (string.IsNullOrEmpty(fraction) || d.Fraction == fraction)
-                            && (string.IsNullOrEmpty(party) || d.Party == party)))
-                    .AsEnumerable()
-                    .GroupBy(s => s)
-                    .Select(t => new { Deputy = t.Key, Count = t.Count() })
-                    .OrderByDescending(kv => kv.Count)
-                    .Take(limit)
-                    .ToList();
+                        .SelectMany(p => _db.Speeches
+                            .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
+                        .SelectMany(s => _db.Deputies.Where(d => d.SpeakerId == s.SpeakerId && (string.IsNullOrEmpty(fraction) || d.Fraction == fraction)
+                                && (string.IsNullOrEmpty(party) || d.Party == party)))
+                        .GroupBy(s => s.SpeakerId)
+                        .Select(t => new { Deputy = _db.Deputies.FirstOrDefault(d => d.SpeakerId == t.Key), Count = t.Count() })
+                        .OrderByDescending(kv => kv.Count)
+                        .Take(limit)
+                        .ToList();
 
                     var dynamicDeputies = new List<dynamic>();
                     foreach (var pair in speakerIdToCount)
@@ -657,7 +654,7 @@ namespace BundestagMine.Controllers
                     response.message = "Deputy not found";
                     return response;
                 }
-                response.result =  _bundestagScraperService.GetDeputyPortraitFromImageDatabase(deputy);
+                response.result = _bundestagScraperService.GetDeputyPortraitFromImageDatabase(deputy);
                 response.status = "200";
             }
             catch (Exception ex)
