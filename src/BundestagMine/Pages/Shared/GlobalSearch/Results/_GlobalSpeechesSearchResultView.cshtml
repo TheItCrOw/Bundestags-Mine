@@ -1,0 +1,10 @@
+﻿@using BundestagMine.ViewModels
+@model List<SpeechViewModel>
+
+<div>
+    @foreach(var speech in Model)
+    {
+        <label>@speech.Speech.Text</label>
+        <hr/>
+    }
+</div>

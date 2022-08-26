@@ -7,12 +7,19 @@ namespace BundestagMine.RequestModels
 {
     public class GlobalSearchRequest
     {
+        public bool SearchSpeeches { get; set; }
+        public bool SearchSpeakers { get; set; }
+        public bool SearchAgendaItems { get; set; }
+        public bool SearchPolls { get; set; }
         public string SearchString { get; set; }
-        public bool IncludeSpeeches { get; set; }
-        public bool IncludeSpeakers { get; set; }
-        public bool IncludeAgendaItems { get; set; }
-        public bool IncludePolls { get; set; }
         public DateTime From { get; set; }
         public DateTime To { get; set; }
+        public int Offset { get; set; }
+
+        public override string ToString()
+        {
+            return $"Speeches: {SearchSpeeches}, Speakers: {SearchSpeakers}, AgendaItems: {SearchAgendaItems}, Polls: {SearchPolls}\n" +
+                $"Search: {SearchString}, From: {From}, To: {To}, Offset {Offset}";
+        }
     }
 }

@@ -1,5 +1,12 @@
 ﻿.global-search{
 }
 
+    .global-search .header {
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    }
 
+    .global-search .results{
+    }
 
+    .global-search .results .result-content{
+    }
