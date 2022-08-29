@@ -1,0 +1,46 @@
+﻿@using BundestagMine.ViewModels.GlobalSearch
+@using BundestagMine.ViewModels
+@using BundestagMine.Services
+@model GlobalSearchResultViewModel
+@inject BundestagScraperService BundestagScraperService
+
+@foreach (var speech in Model.ResultList as List<SpeechViewModel>)
+{
+    <div class="flexed align-items-center speech col-lg-6 open-speech-btn" data-id="@speech.Speech?.Id">
+        <div>
+            @{
+                var imgSrc = BundestagScraperService.GetDeputyPortraitFromImageDatabase(speech.Speaker?.SpeakerId);
+                if (string.IsNullOrEmpty(imgSrc)) imgSrc = "./img/Unbekannt.jpg";
+                <img src="@imgSrc" />
+                <p class="name">@speech.Speaker.FirstName @speech.Speaker.LastName (@(speech.Speaker.Fraction ?? speech.Speaker.Party))</p>
+            }
+        </div>
+        <div>
+            <p class="info">
+                @(speech.Speech?.LegislaturePeriod). Legislatureperiode - @(speech.Speech?.ProtocolNumber). Sitzung - @speech.Agenda?.Title
+            </p>
+            <p class="date">
+                @speech.Agenda?.Date
+            </p>
+            @{
+                // We want a sneekpeak of the speech that contains the searchstring. We earlier fetched all the segments
+                // that fit the criteria. Showcase the segment.
+                var sneekpeak = speech.Speech.Segments.FirstOrDefault()?.Text;
+                var searches = Model.SearchString.ToLower().Split(" ");
+                <p class="sneekpeak">
+                    @foreach (var word in sneekpeak.Split(" "))
+                    {
+                        @if (searches.Any(s => word.ToLower().Contains(s)))
+                        {
+                            <span class="word">@word</span>
+                        }
+                        else
+                        {
+                            <span>@word</span>
+                        }
+                    }
+                </p>
+            }
+        </div>
+    </div>
+}

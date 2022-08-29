@@ -2,6 +2,8 @@
 using BundestagMine.RequestModels;
 using BundestagMine.SqlDatabase;
 using BundestagMine.ViewModels;
+using BundestagMine.ViewModels.GlobalSearch;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,32 +68,67 @@ namespace BundestagMine.Services
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        public List<Deputy> SearchSpeakers(string search, DateTime from, DateTime to, int offset = 0, int take = 15)
+        public GlobalSearchResultViewModel SearchSpeakers(string search,
+            DateTime from,
+            DateTime to,
+            int totalCount = -1,
+            int offset = 0,
+            int take = 20)
         {
-            return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
+            return new GlobalSearchResultViewModel()
+            {
+                ResultList = 
+                _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
                     .SelectMany(p => _db.Speeches
                          .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
                     .SelectMany(s => _db.Deputies.Where(d => d.SpeakerId == s.SpeakerId
                                 && string.Concat(d.FirstName ?? "", d.LastName ?? "", d.Fraction ?? "", d.Party ?? "").ToLower().Contains(search)))
+                    .Distinct()
                     .Skip(offset)
                     .Take(take)
-                    .ToList();
+                    .ToList(),
+                // Get the total count, but only, if we didnt fetch it already.
+                // If its -1, then we need to fetch it. Otherwise, we got it already and avoid the request.
+                TotalResults = totalCount == -1 ?
+                    _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
+                    .SelectMany(p => _db.Speeches
+                         .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
+                    .SelectMany(s => _db.Deputies.Where(d => d.SpeakerId == s.SpeakerId
+                                && string.Concat(d.FirstName ?? "", d.LastName ?? "", d.Fraction ?? "", d.Party ?? "").ToLower().Contains(search)))
+                    .Distinct()
+                    .Count()
+                : totalCount,
+                CurrentPage = offset,
+                TakeResults = take,
+                SearchString = search,
+                Type = ResultType.Speakers
+            };
         }
 
         /// <summary>
-        /// Searches the speeches and returns them as speechviewmodels
+        /// Searches the speeches and returns them as a <see cref="GlobalSearchResultViewModel"/>
         /// </summary>
         /// <param name="search"></param>
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        public List<SpeechViewModel> SearchSpeeches(string search, DateTime from, DateTime to, int offset = 0, int take = 15)
+        public GlobalSearchResultViewModel SearchSpeeches(string search, 
+            DateTime from, 
+            DateTime to,
+            int totalCount = -1,
+            int offset = 0,
+            int take = 20)
         {
-            return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
+            // I couldnt get it working to make this into one request... So Item1 is the actual speech list and item2 the total speeches count found
+            return new GlobalSearchResultViewModel()
+            {
+                ResultList = // Get the TAKE AMOUNT of speeches
+                _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
                     .SelectMany(p => _db.Speeches
                         .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
-                            && s.Text.ToLower().Contains(search)))
-                    .Skip(offset)
+                            && s.Text.ToLower().Contains(search.ToLower())))
+                    .Include(s => s.Segments.Where(se => se.Text.ToLower().Contains(search.ToLower())))
+                    .Skip(offset * take)
                     .Take(take)
                     .Select(s => new SpeechViewModel()
                     {
@@ -99,7 +136,21 @@ namespace BundestagMine.Services
                         Agenda = _metadataService.GetAgendaItemOfSpeech(s),
                         Speaker = _db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId)
                     })
-                    .ToList();
+                    .ToList(),
+                // Get the total count, but only, if we didnt fetch it already.
+                // If its -1, then we need to fetch it. Otherwise, we got it already and avoid the request.
+                TotalResults = totalCount == -1 ?
+                    _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
+                    .SelectMany(p => _db.Speeches
+                        .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
+                            && s.Text.ToLower().Contains(search.ToLower())))
+                    .Count()
+                : totalCount,
+                CurrentPage = offset,
+                TakeResults = take,
+                SearchString = search,
+                Type = ResultType.Speeches
+            };
         }
     }
 }

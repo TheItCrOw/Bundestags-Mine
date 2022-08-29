@@ -35,12 +35,12 @@
                 @*From*@
                 <div class="flexed align-items-baseline" data-expanded="true" data-toggle="popover" data-content="Von-Datum" data-trigger="hover">
                     <h6 class="mb-0 mt-0 mr-2"><i class="fas fa-hourglass-start"></i></h6>
-                    <input type="date" data-id="from" class="form-control rounded-0" />
+                    <input type="date" data-id="from" class="form-control rounded-0" value="2017-01-01" />
                 </div>
                 @*To*@
                 <div class="flexed align-items-baseline" data-expanded="true" data-toggle="popover" data-content="Bis-Datum" data-trigger="hover">
                     <h6 class="mb-0 mt-0 mr-2"><i class="fas fa-hourglass-end"></i></h6>
-                    <input type="date" data-id="to" class="form-control rounded-0" />
+                    <input type="date" data-id="to" class="form-control rounded-0" value="2023-01-01" />
                 </div>
             </div>
         </div>
@@ -49,26 +49,37 @@
     <hr class="mt-0 mb-0" />
     @*Results*@
     <div>
-        <div class="p-3 flexed justify-content-between align-items-center">
-            <h5 class="m-0 text-dark">Suchergebnisse:</h5>
-            <h5 class="m-0"><span>2021-01-01</span> <i class="fas fa-long-arrow-alt-right"></i> <span>2022-01-01</span></h5>
+        <div class="p-3 flexed justify-content-between align-items-center search-result-info">
+            <h5 class="m-0 text-dark">Suchergebnisse für <span class="search text-dark font-weight-bold"></span></h5>
+            <h5 class="m-0"><span class="from"></span> <i class="fas fa-long-arrow-alt-right"></i> <span class="to"></span></h5>
         </div>
-        <hr class="mt-0 mb-0"/>
 
         @*tabs to switch views*@
         <div class="flexed justify-content-around align-items-center tabs">
-            <button class="btn rounded-0 btn-secondary w-100" data-id="speeches">Reden</button>
-            <button class="btn rounded-0 btn-secondary w-100" data-id="speakers">Redner(innen)</button>
-            <button class="btn rounded-0 btn-secondary w-100" data-id="agendaItems">TOP</button>
-            <button class="btn rounded-0 btn-secondary w-100" data-id="polls">Abstimmungen</button>
+            <button class="btn rounded-0 w-100 tab" data-id="speeches">Reden</button>
+            <button class="btn rounded-0 w-100 tab" data-id="speakers">Redner(innen)</button>
+            <button class="btn rounded-0 w-100 tab" data-id="agendaItems">TOP</button>
+            <button class="btn rounded-0 w-100 tab" data-id="polls">Abstimmungen</button>
         </div>
 
         @*result contents that shows the search results*@
         <div class="results">
-            <div class="result-content" data-id="speeches"></div>
-            <div class="result-content" data-id="speakers"></div>
-            <div class="result-content" data-id="agendaItems"></div>
-            <div class="result-content" data-id="polls"></div>
+            <div class="result" data-id="speeches">
+                <div class="loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                <div class="result-content"></div>
+            </div>
+            <div class="result" data-id="speakers">
+                <div class="loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                <div class="result-content"></div>
+            </div>
+            <div class="result" data-id="agendaItems">
+                <div class="loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                <div class="result-content"></div>
+            </div>
+            <div class="result">
+                <div class="loader" data-id="polls"><div class="lds-ripple"><div></div><div></div></div></div>
+                <div class="result-content"></div>
+            </div>
         </div>
     </div>
 

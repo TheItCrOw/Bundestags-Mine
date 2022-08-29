@@ -1,12 +1,186 @@
-﻿.global-search{
+﻿.global-search {
 }
 
     .global-search .header {
         box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     }
 
-    .global-search .results{
+    .global-search .tabs .tab {
+        border-bottom: gray 1px solid;
+        transition: 0.15s;
+        border-top: gray 1px solid;
+        color: black;
+        display: none;
     }
 
-    .global-search .results .result-content{
+        .global-search .tabs .tab:hover {
+            background-color: lightgray;
+            border: 1px gray solid;
+            transition: 0.15s;
+        }
+
+    .global-search .tabs .selected-tab {
+        border-right: gray 1px solid;
+        transition: 0.15s;
+        border-left: gray 1px solid;
+        color: black;
+        background-color: #f6c23e;
     }
+
+    .global-search .results {
+        position: relative;
+    }
+
+        .global-search .results .result {
+            display: none;
+        }
+
+        .global-search .results .loader {
+            position: absolute;
+            width: 100%;
+            display: none;
+            z-index: 5;
+            background-color: rgba(255,255,255,0.8);
+            top: 0;
+            height: calc(100vh - 226px); /*This is the height of all the headers. Its hacky, yes. Wont work on mobile.*/
+            left: 0;
+        }
+
+            .global-search .results .loader .lds-ripple {
+                position: absolute;
+                left: calc(50% - 40px);
+                top: calc(50% - 40px);
+            }
+
+        .global-search .results .result-content {
+            margin: 0 auto;
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 226px); /*This is the height of all the headers. Its hacky, yes. Wont work on mobile.*/
+            overflow-y: auto;
+        }
+
+    .global-search .result-content .cur-result-page {
+        overflow-y: auto;
+        position: absolute;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        top: 0;
+        left: 0;
+        width: 100%;
+        margin: 0;
+        padding: 12px;
+        height: calc(100% - 30px);
+    }
+
+        /* ============================================= SPEECH =============================================*/
+        .global-search .result-content .cur-result-page .speech {
+            position: relative;
+            border-left: transparent 6px solid;
+            transition: 0.25s;
+            padding: 6px;
+            cursor: pointer;
+        }
+
+            .global-search .result-content .cur-result-page .speech:hover {
+                border-left: gold 6px solid;
+                background-color: lightgray;
+                transition: 0.25s;
+            }
+
+            .global-search .result-content .cur-result-page .speech img {
+                height: 100px;
+                object-fit: cover;
+                width: 100px;
+                border-radius: 50%;
+                border: gray solid 1px;
+            }
+
+            .global-search .result-content .cur-result-page .speech .name {
+                color: black;
+                font-size: small;
+                margin: 0;
+                text-align:center;
+            }
+
+            .global-search .result-content .cur-result-page .speech .info {
+                font-size: small;
+                margin: 0;
+                padding-left: 12px;
+                padding-right: 12px;
+                color: black;
+                text-decoration: underline;
+            }
+
+            .global-search .result-content .cur-result-page .speech .date {
+                font-size: small;
+                margin: 0;
+                padding-left: 12px;
+                padding-right: 12px;
+                color: rgba(0,0,0,0.7);
+            }
+
+            .global-search .result-content .cur-result-page .speech .sneekpeak {
+                font-size: small;
+                padding: 12px;
+            }
+
+                .global-search .result-content .cur-result-page .speech .sneekpeak .word {
+                    background-color: gold;
+                    font-size: medium;
+                    color: black;
+                }
+
+        /* ============================================= SPEAKER =============================================*/
+        .global-search .result-content .cur-result-page .speaker {
+            margin: 15px;
+            box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+        }
+
+            .global-search .result-content .cur-result-page .speaker img {
+                height: 250px;
+                object-fit: cover;
+                width: 200px;
+            }
+
+            .global-search .result-content .cur-result-page .speaker .name {
+                text-align:center;
+                color:black;
+                margin-bottom:5px;
+                margin-top:5px;
+                font-size:small;
+            }
+
+
+    .global-search .result-content .all-result-pages {
+        display: flex !important;
+        width: 100%;
+        position: absolute;
+        top: calc(100% - 30px); /*This 30px must be changed in the cur-result-page as well.*/
+        height: 30px;
+        justify-content: space-around;
+    }
+
+        .global-search .result-content .all-result-pages button {
+            width: 100%;
+            color: black;
+            background-color: transparent;
+            padding: 2px !important;
+            transition: 0.15s;
+            margin: 0;
+            border-top: gray 1px solid;
+        }
+
+            .global-search .result-content .all-result-pages button:hover {
+                background-color: lightgray;
+                border: 1px gray solid;
+                transition: 0.15s;
+            }
+
+        .global-search .result-content .all-result-pages .cur-offset {
+            background-color: #f6c23e !important;
+            color: black !important;
+            border-right: gray 1px solid;
+            border-left: gray 1px solid;
+        }

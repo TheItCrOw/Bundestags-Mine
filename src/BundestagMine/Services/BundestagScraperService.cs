@@ -105,8 +105,15 @@ namespace BundestagMine.Services
                 var imgTag = elements[0].GetElementsByTag("img")[0];
                 var imgUrl = ConfigManager.GetPortraitDatabaseUrl() + imgTag.Attr("src");
 
-                // We want this to run async in the background
-                Task.Run(() => DownloadAndStoreDeputyPortrait(imgUrl, deputy.SpeakerId));
+                try
+                {
+                    // We want this to run async in the background
+                    Task.Run(() => DownloadAndStoreDeputyPortrait(imgUrl, deputy.SpeakerId));
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError(ex, "Error storing new deputy portraits.");
+                }
 
                 return imgUrl;
             }
@@ -122,10 +129,11 @@ namespace BundestagMine.Services
         {
             using (var client = new WebClient())
             {
-                // Download the file
-                var filename = ConfigManager.GetCachedPortraitPath() + speakerId + ".jpg";
                 try
                 {
+                    // Download the file
+                    var filename = ConfigManager.GetCachedPortraitPath() + speakerId + ".jpg";
+
                     if (!File.Exists(filename))
                         client.DownloadFile(new Uri(imgUrl), filename);
                 }

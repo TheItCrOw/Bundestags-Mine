@@ -15,6 +15,8 @@ namespace BundestagMine.RequestModels
         public DateTime From { get; set; }
         public DateTime To { get; set; }
         public int Offset { get; set; }
+        public int TotalCount { get; set; }
+        public int Take { get; set; }
 
         public override string ToString()
         {

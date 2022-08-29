@@ -1,6 +1,7 @@
 ﻿using BundestagMine.RequestModels;
 using BundestagMine.Services;
 using BundestagMine.SqlDatabase;
+using BundestagMine.ViewModels.GlobalSearch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -41,14 +42,17 @@ namespace BundestagMine.Controllers
                 // Build the data viewmodel, then render the view with the viewrenderservice and send back the html.
                 if(globalSearchRequest.SearchSpeeches)
                 {
-                    var data = _globalSearchService.SearchSpeeches(globalSearchRequest.SearchString.ToLower(),
-                        globalSearchRequest.From, globalSearchRequest.To, globalSearchRequest.Offset);
-                    response.result = await _viewRenderService.RenderToStringAsync("GlobalSearch/Results/_GlobalSpeechesSearchResultView", data);
+                    var data = _globalSearchService.SearchSpeeches(globalSearchRequest.SearchString,
+                        globalSearchRequest.From, globalSearchRequest.To, globalSearchRequest.TotalCount, 
+                        globalSearchRequest.Offset, globalSearchRequest.Take);
+                    response.result = await _viewRenderService.RenderToStringAsync("GlobalSearch/Results/_GlobalSearchResultView", data);
                 }
                 else if (globalSearchRequest.SearchSpeakers)
                 {
-                    var data = _globalSearchService.SearchSpeakers(globalSearchRequest.SearchString.ToLower(),
-                        globalSearchRequest.From, globalSearchRequest.To, globalSearchRequest.Offset);
+                    var data = _globalSearchService.SearchSpeakers(globalSearchRequest.SearchString,
+                        globalSearchRequest.From, globalSearchRequest.To, globalSearchRequest.TotalCount,
+                        globalSearchRequest.Offset, globalSearchRequest.Take);
+                    response.result = await _viewRenderService.RenderToStringAsync("GlobalSearch/Results/_GlobalSearchResultView", data);
                 }
                 else if (globalSearchRequest.SearchAgendaItems)
                 {
