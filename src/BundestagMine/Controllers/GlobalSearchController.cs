@@ -19,7 +19,7 @@ namespace BundestagMine.Controllers
         private readonly ILogger<GlobalSearchController> _logger;
         private readonly BundestagMineDbContext _db;
 
-        public GlobalSearchController(BundestagMineDbContext db, 
+        public GlobalSearchController(BundestagMineDbContext db,
             ILogger<GlobalSearchController> logger,
             GlobalSearchService globalSearchService,
             ViewRenderService viewRenderService)
@@ -38,38 +38,41 @@ namespace BundestagMine.Controllers
             try
             {
                 response.status = "200";
+                object data = null;
 
                 // Build the data viewmodel, then render the view with the viewrenderservice and send back the html.
-                if(globalSearchRequest.SearchSpeeches)
+                if (globalSearchRequest.SearchSpeeches)
                 {
-                    var data = _globalSearchService.SearchSpeeches(globalSearchRequest.SearchString,
-                        globalSearchRequest.From, globalSearchRequest.To, globalSearchRequest.TotalCount, 
+                    data = _globalSearchService.SearchSpeeches(globalSearchRequest.SearchString,
+                        globalSearchRequest.From, globalSearchRequest.To, globalSearchRequest.TotalCount,
                         globalSearchRequest.Offset, globalSearchRequest.Take);
-                    response.result = await _viewRenderService.RenderToStringAsync("GlobalSearch/Results/_GlobalSearchResultView", data);
                 }
                 else if (globalSearchRequest.SearchSpeakers)
                 {
-                    var data = _globalSearchService.SearchSpeakers(globalSearchRequest.SearchString,
+                    data = _globalSearchService.SearchSpeakers(globalSearchRequest.SearchString,
                         globalSearchRequest.From, globalSearchRequest.To, globalSearchRequest.TotalCount,
                         globalSearchRequest.Offset, globalSearchRequest.Take);
-                    response.result = await _viewRenderService.RenderToStringAsync("GlobalSearch/Results/_GlobalSearchResultView", data);
                 }
                 else if (globalSearchRequest.SearchAgendaItems)
                 {
-                    var data = _globalSearchService.SearchSpeakers(globalSearchRequest.SearchString.ToLower(),
-                        globalSearchRequest.From, globalSearchRequest.To, globalSearchRequest.Offset);
+                    data = _globalSearchService.SearchAgendaItems(globalSearchRequest.SearchString,
+                        globalSearchRequest.From, globalSearchRequest.To, globalSearchRequest.TotalCount,
+                        globalSearchRequest.Offset, globalSearchRequest.Take);
                 }
                 else if (globalSearchRequest.SearchPolls)
                 {
-                    var data = _globalSearchService.SearchSpeakers(globalSearchRequest.SearchString.ToLower(),
+                    data = _globalSearchService.SearchSpeakers(globalSearchRequest.SearchString.ToLower(),
                         globalSearchRequest.From, globalSearchRequest.To, globalSearchRequest.Offset);
                 }
+
+                if (data != null)
+                    response.result = await _viewRenderService.RenderToStringAsync("GlobalSearch/Results/_GlobalSearchResultView", data);
             }
             catch (Exception ex)
             {
                 response.status = "400";
                 response.message = "Couldn't global search, error in logs";
-                _logger.LogError(ex, $"Error global searching with request: {globalSearchRequest.ToString()}");
+                _logger.LogError(ex, $"Error global searching with request: {globalSearchRequest}");
             }
 
             return Json(response);

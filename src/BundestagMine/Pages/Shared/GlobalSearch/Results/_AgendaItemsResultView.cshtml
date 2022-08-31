@@ -1,0 +1,27 @@
+﻿@using BundestagMine.Models.Database.MongoDB
+@using BundestagMine.ViewModels.GlobalSearch
+@using BundestagMine.ViewModels
+@using BundestagMine.Services
+@model GlobalSearchResultViewModel
+@inject BundestagScraperService BundestagScraperService
+
+<div class="flexed align-items-center justify-content-around flex-wrap">
+    @foreach (var agendaItem in Model.ResultList as List<AgendaItemViewModel>)
+    {
+        <div class="agendaItem">
+            <img src="./img/deutscher-bundestag-adler-weiß.png" />
+            <div class="hovered">
+                <p class="description">
+                    @Html.Raw(agendaItem.AgendaItem.Description)
+                </p>
+            </div>
+            <p class="info">
+                @(agendaItem.Protocol?.LegislaturePeriod). Legislatureperiode - @(agendaItem.Protocol?.Number). Sitzung
+            </p>
+            <p class="date">
+                @agendaItem.AgendaItem.Date
+            </p>
+            <p class="name">@agendaItem.AgendaItem.Title</p>
+        </div>
+    }
+</div>

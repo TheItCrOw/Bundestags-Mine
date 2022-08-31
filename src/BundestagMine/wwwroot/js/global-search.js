@@ -1,6 +1,8 @@
 ﻿var GlobalSearchHandler = (function () {
     // The default value of how many searchresults we want to show per page.
     GlobalSearchHandler.prototype.defaultTakeSize = 30;
+    GlobalSearchHandler.prototype.defaultSpeakersTakeSize = 60;
+    GlobalSearchHandler.prototype.defaultAgendaItemTakeSize = 60;
     // We need a way to store running reqeusts to potentially abort them.
     GlobalSearchHandler.prototype.searchingSpeakersRequest = undefined;
     GlobalSearchHandler.prototype.searchingSpeechesRequest = undefined;
@@ -31,6 +33,33 @@
         })
     }
 
+    // Starts a global search for agenda items, fetches the returned html view and puts it into UI
+    GlobalSearchHandler.prototype.globalSearchAgendaItems = async function (obj) {
+        // Show loader
+        $('.global-search .results').find('.result[data-id="agendaItems"]').find('.loader').fadeIn(100);
+
+        // Set all the other filters to false.
+        obj.searchSpeakers = false;
+        obj.searchAgendaItems = true;
+        obj.searchPolls = false;
+        obj.searchSpeeches = false;
+        obj.take = this.defaultAgendaItemTakeSize;
+
+        // Do the request
+        this.searchingAgendaItemsRequest = postNewGlobalSearch(obj,
+            // On success
+            function (response) {
+                $('.global-search .results').find('.result[data-id="agendaItems"]').find('.result-content').html(response.result);
+                this.searchingAgendaItemsRequest = undefined;
+                $('.global-search .results').find('.result[data-id="agendaItems"]').find('.loader').fadeOut(100);
+            },
+            // On error
+            function (response) {
+                this.searchingAgendaItemsRequest = undefined;
+                $('.global-search .results').find('.result[data-id="agendaItems"]').find('.loader').fadeOut(100);
+            });
+    }
+
     // Starts a global search for speakers, fetches the returned html view and puts it into UI
     GlobalSearchHandler.prototype.globalSearchSpeakers = async function (obj) {
         // Show loader
@@ -41,6 +70,7 @@
         obj.searchAgendaItems = false;
         obj.searchPolls = false;
         obj.searchSpeeches = false;
+        obj.take = this.defaultSpeakersTakeSize;
 
         // Do the request
         this.searchingSpeakersRequest = postNewGlobalSearch(obj,
@@ -123,6 +153,7 @@
         }
         //agenda items
         if (obj.searchAgendaItems) {
+            this.globalSearchAgendaItems(jQuery.extend(true, {}, obj));
             $('.global-search .tabs').find('.tab[data-id="agendaItems"]').show(100);
             this.switchTab('agendaItems');
         } else {
@@ -174,6 +205,10 @@ $('body').on('click', '.global-search .result-content .all-result-pages .switch-
     console.log(obj);
     if (type == 'speeches') {
         globalSearchHandler.globalSearchSpeeches(obj);
+    } else if (type == 'speakers') {
+        globalSearchHandler.globalSearchSpeakers(obj);
+    } else if (type == 'agendaItems') {
+        globalSearchHandler.globalSearchAgendaItems(obj);
     }
 })
 

@@ -47,9 +47,16 @@ namespace BundestagMine.Services
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        public List<AgendaItemViewModel> SearchAgendaItems(string search, DateTime from, DateTime to, int offset = 0, int take = 15)
+        public GlobalSearchResultViewModel SearchAgendaItems(string search,
+            DateTime from,
+            DateTime to,
+            int totalCount = -1,
+            int offset = 0,
+            int take = 20)
         {
-            return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
+            return new GlobalSearchResultViewModel()
+            {
+                ResultList = _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
                     .SelectMany(p => _db.AgendaItems.Where(a => a.ProtocolId == p.Id && a.Title.ToLower().Contains(search)))
                     .Skip(offset)
                     .Take(take)
@@ -58,7 +65,19 @@ namespace BundestagMine.Services
                         AgendaItem = a,
                         Protocol = _db.Protocols.FirstOrDefault(p => p.Id == a.ProtocolId)
                     })
-                    .ToList();
+                    .ToList(),
+                // Get the total count, but only, if we didnt fetch it already.
+                // If its -1, then we need to fetch it. Otherwise, we got it already and avoid the request.
+                TotalResults = totalCount == -1 ?
+                    _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
+                    .SelectMany(p => _db.AgendaItems.Where(a => a.ProtocolId == p.Id && a.Title.ToLower().Contains(search)))
+                    .Count()
+                : totalCount,
+                CurrentPage = offset,
+                TakeResults = take,
+                SearchString = search,
+                Type = ResultType.AgendaItems
+            };
         }
 
         /// <summary>
@@ -77,13 +96,14 @@ namespace BundestagMine.Services
         {
             return new GlobalSearchResultViewModel()
             {
-                ResultList = 
+                ResultList =
                 _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
                     .SelectMany(p => _db.Speeches
                          .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
                     .SelectMany(s => _db.Deputies.Where(d => d.SpeakerId == s.SpeakerId
                                 && string.Concat(d.FirstName ?? "", d.LastName ?? "", d.Fraction ?? "", d.Party ?? "").ToLower().Contains(search)))
-                    .Distinct()
+                    .AsEnumerable()
+                    .DistinctBy(s => s.SpeakerId)
                     .Skip(offset)
                     .Take(take)
                     .ToList(),
@@ -95,7 +115,8 @@ namespace BundestagMine.Services
                          .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
                     .SelectMany(s => _db.Deputies.Where(d => d.SpeakerId == s.SpeakerId
                                 && string.Concat(d.FirstName ?? "", d.LastName ?? "", d.Fraction ?? "", d.Party ?? "").ToLower().Contains(search)))
-                    .Distinct()
+                    .AsEnumerable()
+                    .DistinctBy(s => s.SpeakerId)
                     .Count()
                 : totalCount,
                 CurrentPage = offset,
@@ -112,8 +133,8 @@ namespace BundestagMine.Services
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        public GlobalSearchResultViewModel SearchSpeeches(string search, 
-            DateTime from, 
+        public GlobalSearchResultViewModel SearchSpeeches(string search,
+            DateTime from,
             DateTime to,
             int totalCount = -1,
             int offset = 0,

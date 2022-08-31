@@ -1,4 +1,5 @@
-﻿@using BundestagMine.ViewModels.GlobalSearch
+﻿@using BundestagMine.Utility
+@using BundestagMine.ViewModels.GlobalSearch
 @using BundestagMine.ViewModels
 @using System.Text.RegularExpressions
 @using BundestagMine.Services
@@ -7,6 +8,10 @@
 
 <div>
     <div class="cur-result-page">
+        @if(Model.ResultList == null || ((IEnumerable<object>)Model.ResultList).Count() == 0)
+        {
+            <h6 class="text-center w-100 mt-5 text-dark">Keine Treffer</h6>
+        }
         @if (Model.Type == ResultType.Speeches)
         {
             <partial name="~/Pages/Shared/GlobalSearch/Results/_SpeechesResultView.cshtml" model="Model" />
@@ -15,17 +20,22 @@
         {
             <partial name="~/Pages/Shared/GlobalSearch/Results/_SpeakersResultView.cshtml" model="Model" />
         }
+        else if (Model.Type == ResultType.AgendaItems)
+        {
+            <partial name="~/Pages/Shared/GlobalSearch/Results/_AgendaItemsResultView.cshtml" model="Model" />
+        }
     </div>
     <div class="all-result-pages">
         @{
-            var totalPages = (Model.TotalResults - 1) / Model.TakeResults + 1;
             var offset = 0;
             for (int i = 0; i < Model.TotalResults; i += Model.TakeResults)
             {
                 var c = "";
                 // Highlight the current page
                 if (offset == Model.CurrentPage) c = "cur-offset";
-                <button class="btn rounded-0 switch-page-btn @c" data-total="@Model.TotalResults" data-id="speeches">@(offset+1)</button>
+                <button class="btn rounded-0 switch-page-btn @c" data-total="@Model.TotalResults" data-id="@Model.Type.ToString().FirstCharToLowerCase()">
+                    @(offset+1)
+                </button>
                 offset++;
             }
         }

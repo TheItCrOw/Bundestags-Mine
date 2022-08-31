@@ -85,37 +85,44 @@ namespace BundestagMine.Services
 
         public string GetDeputyPortraitFromImageDatabase(Deputy deputy)
         {
-            // We check if we have fetched the image already onto our harddrive. If yes, then fetch it from there
-            // and return it as a base64 string. Else fetch it from the bundestag website and in parallel cache it.
-            var filename = ConfigManager.GetCachedPortraitPath() + deputy.SpeakerId + ".jpg";
-            if (File.Exists(filename))
+            try
             {
-                var imageArray = File.ReadAllBytes(filename);
-                return ConfigManager.GetBase64SourcePrefix() + Convert.ToBase64String(imageArray);
+                // We check if we have fetched the image already onto our harddrive. If yes, then fetch it from there
+                // and return it as a base64 string. Else fetch it from the bundestag website and in parallel cache it.
+                var filename = ConfigManager.GetCachedPortraitPath() + deputy.SpeakerId + ".jpg";
+                if (File.Exists(filename))
+                {
+                    var imageArray = File.ReadAllBytes(filename);
+                    return ConfigManager.GetBase64SourcePrefix() + Convert.ToBase64String(imageArray);
+                }
+                // Else scrape it, store it, return it
+                var name = (deputy.FirstName + "+" + deputy.LastName);
+                var url = ConfigManager.GetPortraitDatabaseQueryUrl() + name;
+                var imagesOverview = Dcsoup.Parse(new Uri(url), 3000);
+                var test = imagesOverview.GetElementsByClass("rowGridContainer");
+                var container = imagesOverview.GetElementsByClass("rowGridContainer")[0];
+                var elements = container.GetElementsByClass("item");
+                if (elements.Count != 0)
+                {
+                    var imgTag = elements[0].GetElementsByTag("img")[0];
+                    var imgUrl = ConfigManager.GetPortraitDatabaseUrl() + imgTag.Attr("src");
+
+                    try
+                    {
+                        // We want this to run async in the background
+                        Task.Run(() => DownloadAndStoreDeputyPortrait(imgUrl, deputy.SpeakerId));
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error storing new deputy portraits.");
+                    }
+
+                    return imgUrl;
+                }
             }
-            // Else scrape it, store it, return it
-            var name = (deputy.FirstName + "+" + deputy.LastName);
-            var url = ConfigManager.GetPortraitDatabaseQueryUrl() + name;
-            var imagesOverview = Dcsoup.Parse(new Uri(url), 3000);
-            var test = imagesOverview.GetElementsByClass("rowGridContainer");
-            var container = imagesOverview.GetElementsByClass("rowGridContainer")[0];
-            var elements = container.GetElementsByClass("item");
-            if (elements.Count != 0)
+            catch (Exception ex)
             {
-                var imgTag = elements[0].GetElementsByTag("img")[0];
-                var imgUrl = ConfigManager.GetPortraitDatabaseUrl() + imgTag.Attr("src");
-
-                try
-                {
-                    // We want this to run async in the background
-                    Task.Run(() => DownloadAndStoreDeputyPortrait(imgUrl, deputy.SpeakerId));
-                }
-                catch(Exception ex)
-                {
-                    _logger.LogError(ex, "Error storing new deputy portraits.");
-                }
-
-                return imgUrl;
+                _logger.LogError(ex, "Error while trying to fetch portraits from harddrive.");
             }
 
             return string.Empty;
