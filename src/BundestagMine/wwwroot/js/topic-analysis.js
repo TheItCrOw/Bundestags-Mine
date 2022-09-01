@@ -494,9 +494,15 @@ async function buildTopicComparedToOtherTopicsChart(pageId, data) {
 }
 
 // Open more of the poll
-$('body').on('click', '.topic-analysis-content .open-poll', async function () {
+$('body').on('click', '.open-poll', async function () {
     var pre = $(this).html();
     $(this).html('Lädt...');
-    await openPoll($(this).data('id'));
+
+    try {
+        await openPoll($(this).data('id'));
+    } catch (ex) {
+        console.log('Error opening poll: ' + ex);
+    }
+
     $(this).html(pre);
 })

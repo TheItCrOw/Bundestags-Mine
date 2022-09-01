@@ -11,6 +11,7 @@ namespace BundestagMine.RequestModels
         public bool SearchSpeakers { get; set; }
         public bool SearchAgendaItems { get; set; }
         public bool SearchPolls { get; set; }
+        public bool SearchShouts { get; set; }
         public string SearchString { get; set; }
         public DateTime From { get; set; }
         public DateTime To { get; set; }
@@ -20,7 +21,7 @@ namespace BundestagMine.RequestModels
 
         public override string ToString()
         {
-            return $"Speeches: {SearchSpeeches}, Speakers: {SearchSpeakers}, AgendaItems: {SearchAgendaItems}, Polls: {SearchPolls}\n" +
+            return $"Speeches: {SearchSpeeches}, Speakers: {SearchSpeakers}, AgendaItems: {SearchAgendaItems}, Polls: {SearchPolls}, Shouts: {SearchShouts}\n" +
                 $"Search: {SearchString}, From: {From}, To: {To}, Offset {Offset}";
         }
     }

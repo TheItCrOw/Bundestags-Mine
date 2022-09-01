@@ -1,0 +1,22 @@
+﻿@using BundestagMine.Models.Database.MongoDB
+@using BundestagMine.ViewModels.GlobalSearch
+@using BundestagMine.Models.Database
+@using BundestagMine.Services
+@model GlobalSearchResultViewModel
+@inject BundestagScraperService BundestagScraperService
+
+<div class="flexed align-items-center justify-content-around flex-wrap">
+    @foreach (var poll in Model.ResultList as List<Poll>)
+    {
+        <div class="poll open-poll" data-id="@poll.Id">
+            <img src="./img/deutscher-bundestag-adler-weiß.png" />
+            <p class="info">
+                @(poll.LegislaturePeriod). Legislatureperiode - @(poll.ProtocolNumber). Sitzung
+            </p>
+            <p class="date">
+                @poll.Date
+            </p>
+            <p class="name">@poll.Title</p>
+        </div>
+    }
+</div>

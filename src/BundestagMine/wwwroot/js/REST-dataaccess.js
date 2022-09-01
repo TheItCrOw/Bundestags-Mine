@@ -633,8 +633,8 @@ async function postNewTopicAnalysis(obj) {
 
 // ============================================== Global Search ======================================
 // Starts a new global search with the given obj parameters,
-async function postNewGlobalSearch(obj, onSuccess, onError) {
-    return $.ajax({
+function postNewGlobalSearch(obj, onSuccess, onError) {
+    var request = $.ajax({
         url: "/api/GlobalSearchController/GlobalSearch/",
         type: "POST",
         data: JSON.stringify(obj),
@@ -650,4 +650,5 @@ async function postNewGlobalSearch(obj, onSuccess, onError) {
             text: "application/json"
         },
     });
+    return request;
 }

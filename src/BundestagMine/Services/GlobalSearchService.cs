@@ -22,22 +22,91 @@ namespace BundestagMine.Services
         }
 
         /// <summary>
-        /// Searches the polls and returns them as PollViewModels
+        /// Searches the shouts and returns them as <see cref="Poll"/>
         /// </summary>
         /// <param name="search"></param>
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        public List<PollViewModel> SearchPolls(string search, DateTime from, DateTime to, int offset = 0, int take = 15)
+        public GlobalSearchResultViewModel SearchShouts(string search,
+            DateTime from,
+            DateTime to,
+            int totalCount = -1,
+            int offset = 0,
+            int take = 20)
         {
-            return _db.Polls
-                    .Where(p => p.Title.ToLower().Contains(search) && p.Date >= from && p.Date <= to)
-                    .Select(p => new PollViewModel()
+            return new GlobalSearchResultViewModel()
+            {
+                ResultList = _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
+                    .SelectMany(p => _db.Speeches.Include(s => s.Segments).ThenInclude(s => s.Shouts)
+                        .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
+                            && s.Segments.Any(ss => ss.Shouts.Any(sh => sh.Text.ToLower().Contains(search.ToLower())))))
+                    .Skip(offset)
+                    .Take(take)
+                    .AsEnumerable()
+                    .SelectMany(speech =>
                     {
-                        Poll = p,
-                        Entries = _db.PollEntries.Where(pe => pe.PollId == p.Id).ToList()
+                        var speechSegment = speech.Segments
+                            .Where(ss => ss.Shouts.Any(sh => sh.Text.ToLower().Contains(search.ToLower())));
+
+                        var speaker = _db.Deputies.FirstOrDefault(d => d.SpeakerId == speech.SpeakerId);
+
+                        return speechSegment.Where(ss => ss != null).Select(ss => new SpeechCommentViewModel()
+                        {
+                            Speaker = speaker,
+                            SpeechId = speech.Id,
+                            SpeechSegment = ss
+                        });
                     })
-                    .ToList();
+                    .ToList(),
+                // Get the total count, but only, if we didnt fetch it already.
+                // If its -1, then we need to fetch it. Otherwise, we got it already and avoid the request.
+                TotalResults = totalCount == -1 ?
+                    _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
+                    .SelectMany(p => _db.Speeches.Where(s => s.LegislaturePeriod == p.LegislaturePeriod && s.ProtocolNumber == p.Number))
+                    .SelectMany(s => _db.SpeechSegment.Where(ss => ss.SpeechId == s.Id && ss.Shouts.Any(sh => sh.Text.ToLower().Contains(search.ToLower()))))
+                    .Count()
+                : totalCount,
+                CurrentPage = offset,
+                TakeResults = take,
+                SearchString = search,
+                Type = ResultType.Shouts
+            };
+        }
+
+        /// <summary>
+        /// Searches the polls and returns them as <see cref="Poll"/>
+        /// </summary>
+        /// <param name="search"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        public GlobalSearchResultViewModel SearchPolls(string search,
+            DateTime from,
+            DateTime to,
+            int totalCount = -1,
+            int offset = 0,
+            int take = 20)
+        {
+            return new GlobalSearchResultViewModel()
+            {
+                ResultList = _db.Polls
+                    .Where(p => p.Title.ToLower().Contains(search.ToLower()) && p.Date >= from && p.Date <= to)
+                    .Skip(offset)
+                    .Take(take)
+                    .ToList(),
+                // Get the total count, but only, if we didnt fetch it already.
+                // If its -1, then we need to fetch it. Otherwise, we got it already and avoid the request.
+                TotalResults = totalCount == -1 ?
+                    _db.Polls
+                    .Where(p => p.Title.ToLower().Contains(search.ToLower()) && p.Date >= from && p.Date <= to)
+                    .Count()
+                : totalCount,
+                CurrentPage = offset,
+                TakeResults = take,
+                SearchString = search,
+                Type = ResultType.Polls
+            };
         }
 
         /// <summary>
@@ -57,7 +126,7 @@ namespace BundestagMine.Services
             return new GlobalSearchResultViewModel()
             {
                 ResultList = _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
-                    .SelectMany(p => _db.AgendaItems.Where(a => a.ProtocolId == p.Id && a.Title.ToLower().Contains(search)))
+                    .SelectMany(p => _db.AgendaItems.Where(a => a.ProtocolId == p.Id && a.Title.ToLower().Contains(search.ToLower())))
                     .Skip(offset)
                     .Take(take)
                     .Select(a => new AgendaItemViewModel()
@@ -70,7 +139,7 @@ namespace BundestagMine.Services
                 // If its -1, then we need to fetch it. Otherwise, we got it already and avoid the request.
                 TotalResults = totalCount == -1 ?
                     _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
-                    .SelectMany(p => _db.AgendaItems.Where(a => a.ProtocolId == p.Id && a.Title.ToLower().Contains(search)))
+                    .SelectMany(p => _db.AgendaItems.Where(a => a.ProtocolId == p.Id && a.Title.ToLower().Contains(search.ToLower())))
                     .Count()
                 : totalCount,
                 CurrentPage = offset,
@@ -101,7 +170,7 @@ namespace BundestagMine.Services
                     .SelectMany(p => _db.Speeches
                          .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
                     .SelectMany(s => _db.Deputies.Where(d => d.SpeakerId == s.SpeakerId
-                                && string.Concat(d.FirstName ?? "", d.LastName ?? "", d.Fraction ?? "", d.Party ?? "").ToLower().Contains(search)))
+                                && string.Concat(d.FirstName ?? "", d.LastName ?? "", d.Fraction ?? "", d.Party ?? "").ToLower().Contains(search.ToLower())))
                     .AsEnumerable()
                     .DistinctBy(s => s.SpeakerId)
                     .Skip(offset)
@@ -114,7 +183,7 @@ namespace BundestagMine.Services
                     .SelectMany(p => _db.Speeches
                          .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
                     .SelectMany(s => _db.Deputies.Where(d => d.SpeakerId == s.SpeakerId
-                                && string.Concat(d.FirstName ?? "", d.LastName ?? "", d.Fraction ?? "", d.Party ?? "").ToLower().Contains(search)))
+                                && string.Concat(d.FirstName ?? "", d.LastName ?? "", d.Fraction ?? "", d.Party ?? "").ToLower().Contains(search.ToLower())))
                     .AsEnumerable()
                     .DistinctBy(s => s.SpeakerId)
                     .Count()

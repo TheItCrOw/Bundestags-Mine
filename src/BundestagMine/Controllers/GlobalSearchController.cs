@@ -47,6 +47,12 @@ namespace BundestagMine.Controllers
                         globalSearchRequest.From, globalSearchRequest.To, globalSearchRequest.TotalCount,
                         globalSearchRequest.Offset, globalSearchRequest.Take);
                 }
+                else if (globalSearchRequest.SearchShouts)
+                {
+                    data = _globalSearchService.SearchShouts(globalSearchRequest.SearchString,
+                        globalSearchRequest.From, globalSearchRequest.To, globalSearchRequest.TotalCount,
+                        globalSearchRequest.Offset, globalSearchRequest.Take);
+                }
                 else if (globalSearchRequest.SearchSpeakers)
                 {
                     data = _globalSearchService.SearchSpeakers(globalSearchRequest.SearchString,
@@ -61,8 +67,9 @@ namespace BundestagMine.Controllers
                 }
                 else if (globalSearchRequest.SearchPolls)
                 {
-                    data = _globalSearchService.SearchSpeakers(globalSearchRequest.SearchString.ToLower(),
-                        globalSearchRequest.From, globalSearchRequest.To, globalSearchRequest.Offset);
+                    data = _globalSearchService.SearchPolls(globalSearchRequest.SearchString,
+                        globalSearchRequest.From, globalSearchRequest.To, globalSearchRequest.TotalCount,
+                        globalSearchRequest.Offset, globalSearchRequest.Take);
                 }
 
                 if (data != null)

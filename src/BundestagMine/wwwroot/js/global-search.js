@@ -1,13 +1,17 @@
 ﻿var GlobalSearchHandler = (function () {
+
     // The default value of how many searchresults we want to show per page.
     GlobalSearchHandler.prototype.defaultTakeSize = 30;
+    GlobalSearchHandler.prototype.defaultShoutsTakeSize = 20;
     GlobalSearchHandler.prototype.defaultSpeakersTakeSize = 60;
     GlobalSearchHandler.prototype.defaultAgendaItemTakeSize = 60;
+    GlobalSearchHandler.prototype.defaultPollsTakeSize = 60;
     // We need a way to store running reqeusts to potentially abort them.
     GlobalSearchHandler.prototype.searchingSpeakersRequest = undefined;
     GlobalSearchHandler.prototype.searchingSpeechesRequest = undefined;
     GlobalSearchHandler.prototype.searchingAgendaItemsRequest = undefined;
     GlobalSearchHandler.prototype.searchingPollsRequest = undefined;
+    GlobalSearchHandler.prototype.searchingShoutsRequest = undefined;
 
     // Constructor
     function GlobalSearchHandler() { }
@@ -33,6 +37,62 @@
         })
     }
 
+    // Starts a global search for shouts, fetches the returned html view and puts it into UI
+    GlobalSearchHandler.prototype.globalSearchShouts = async function (obj) {
+        // Show loader
+        $('.global-search .results').find('.result[data-id="shouts"]').find('.loader').fadeIn(100);
+
+        // Set all the other filters to false.
+        obj.searchSpeakers = false;
+        obj.searchAgendaItems = false;
+        obj.searchShouts = true;
+        obj.searchPolls = false;
+        obj.searchSpeeches = false;
+        obj.take = this.defaultShoutsTakeSize;
+
+        // Do the request
+        this.searchingShoutsRequest = postNewGlobalSearch(obj,
+            // On success
+            function (response) {
+                $('.global-search .results').find('.result[data-id="shouts"]').find('.result-content').html(response.result);
+                this.searchingShoutsRequest = undefined;
+                $('.global-search .results').find('.result[data-id="shouts"]').find('.loader').fadeOut(100);
+            },
+            // On error
+            function (response) {
+                this.searchingShoutsRequest = undefined;
+                $('.global-search .results').find('.result[data-id="shouts"]').find('.loader').fadeOut(100);
+            });
+    }
+
+    // Starts a global search for polls, fetches the returned html view and puts it into UI
+    GlobalSearchHandler.prototype.globalSearchPolls = async function (obj) {
+        // Show loader
+        $('.global-search .results').find('.result[data-id="polls"]').find('.loader').fadeIn(100);
+
+        // Set all the other filters to false.
+        obj.searchSpeakers = false;
+        obj.searchAgendaItems = false;
+        obj.searchShouts = false;
+        obj.searchPolls = true;
+        obj.searchSpeeches = false;
+        obj.take = this.defaultPollsTakeSize;
+
+        // Do the request
+        this.searchingPollsRequest = postNewGlobalSearch(obj,
+            // On success
+            function (response) {
+                $('.global-search .results').find('.result[data-id="polls"]').find('.result-content').html(response.result);
+                this.searchingPollsRequest = undefined;
+                $('.global-search .results').find('.result[data-id="polls"]').find('.loader').fadeOut(100);
+            },
+            // On error
+            function (response) {
+                this.searchingPollsRequest = undefined;
+                $('.global-search .results').find('.result[data-id="polls"]').find('.loader').fadeOut(100);
+            });
+    }
+
     // Starts a global search for agenda items, fetches the returned html view and puts it into UI
     GlobalSearchHandler.prototype.globalSearchAgendaItems = async function (obj) {
         // Show loader
@@ -41,6 +101,7 @@
         // Set all the other filters to false.
         obj.searchSpeakers = false;
         obj.searchAgendaItems = true;
+        obj.searchShouts = false;
         obj.searchPolls = false;
         obj.searchSpeeches = false;
         obj.take = this.defaultAgendaItemTakeSize;
@@ -70,6 +131,7 @@
         obj.searchAgendaItems = false;
         obj.searchPolls = false;
         obj.searchSpeeches = false;
+        obj.searchShouts = false;
         obj.take = this.defaultSpeakersTakeSize;
 
         // Do the request
@@ -96,6 +158,7 @@
         obj.searchSpeakers = false;
         obj.searchAgendaItems = false;
         obj.searchPolls = false;
+        obj.searchShouts = false;
         obj.searchSpeeches = true;
 
         // Do the request
@@ -103,12 +166,12 @@
             // On success
             function (response) {
                 $('.global-search .results').find('.result[data-id="speeches"]').find('.result-content').html(response.result);
-                searchingSpeechesRequest = undefined;
+                this.searchingSpeechesRequest = undefined;
                 $('.global-search .results').find('.result[data-id="speeches"]').find('.loader').fadeOut(100);
             },
             // On error
             function (response) {
-                searchingSpeechesRequest = undefined;
+                this.searchingSpeechesRequest = undefined;
                 $('.global-search .results').find('.result[data-id="speeches"]').find('.loader').fadeOut(100);
             });
     }
@@ -118,6 +181,13 @@
         var searchString = $('.global-search-input').val();
         if (searchString == '') return;
 
+        // Cancel potential running requests
+        if (this.searchingSpeechesRequest != undefined) this.searchingSpeechesRequest.abort();
+        if (this.searchingSpeakersRequest != undefined) this.searchingSpeakersRequest.abort();
+        if (this.searchingAgendaItemsRequest != undefined) this.searchingAgendaItemsRequest.abort();
+        if (this.searchingPollsRequest != undefined) this.searchingPollsRequest.abort();
+        if (this.searchingShoutsRequest != undefined) this.searchingShoutsRequest.abort();
+
         // Build the request model
         var obj = {
             searchString,
@@ -125,6 +195,7 @@
             searchSpeakers: $('.global-search-filter').find('input[data-id="speakers"]').is(':checked'),
             searchAgendaItems: $('.global-search-filter').find('input[data-id="agendaItems"]').is(':checked'),
             searchPolls: $('.global-search-filter').find('input[data-id="polls"]').is(':checked'),
+            searchShouts: $('.global-search-filter').find('input[data-id="shouts"]').is(':checked'),
             from: $('.global-search-filter').find('input[data-id="from"]').val(),
             to: $('.global-search-filter').find('input[data-id="to"]').val(),
             offset: 0,
@@ -161,10 +232,19 @@
         }
         //polls
         if (obj.searchPolls) {
+            this.globalSearchPolls(jQuery.extend(true, {}, obj));
             $('.global-search .tabs').find('.tab[data-id="polls"]').show(100);
             this.switchTab('polls');
         } else {
             $('.global-search .tabs').find('.tab[data-id="polls"]').hide();
+        }
+        //shouts
+        if (obj.searchShouts) {
+            this.globalSearchShouts(jQuery.extend(true, {}, obj));
+            $('.global-search .tabs').find('.tab[data-id="shouts"]').show(100);
+            this.switchTab('shouts');
+        } else {
+            $('.global-search .tabs').find('.tab[data-id="shouts"]').hide();
         }
 
         // Set the search result infos
@@ -202,14 +282,19 @@ $('body').on('click', '.global-search .result-content .all-result-pages .switch-
         totalCount: $(this).data('total'),
         take: globalSearchHandler.defaultTakeSize
     }
-    console.log(obj);
+
     if (type == 'speeches') {
         globalSearchHandler.globalSearchSpeeches(obj);
     } else if (type == 'speakers') {
         globalSearchHandler.globalSearchSpeakers(obj);
     } else if (type == 'agendaItems') {
         globalSearchHandler.globalSearchAgendaItems(obj);
+    } else if (type == 'polls') {
+        globalSearchHandler.globalSearchPolls(obj);
+    } else if (type == 'shouts') {
+        globalSearchHandler.globalSearchShouts(obj);
     }
+
 })
 
 // Handles the switching of the tabs

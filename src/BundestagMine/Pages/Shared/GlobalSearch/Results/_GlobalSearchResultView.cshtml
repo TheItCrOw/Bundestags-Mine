@@ -8,13 +8,17 @@
 
 <div>
     <div class="cur-result-page">
-        @if(Model.ResultList == null || ((IEnumerable<object>)Model.ResultList).Count() == 0)
+        @if (Model.ResultList == null || ((IEnumerable<object>)Model.ResultList).Count() == 0)
         {
             <h6 class="text-center w-100 mt-5 text-dark">Keine Treffer</h6>
         }
-        @if (Model.Type == ResultType.Speeches)
+        else if (Model.Type == ResultType.Speeches)
         {
             <partial name="~/Pages/Shared/GlobalSearch/Results/_SpeechesResultView.cshtml" model="Model" />
+        }
+        else if (Model.Type == ResultType.Shouts)
+        {
+            <partial name="~/Pages/Shared/GlobalSearch/Results/_ShoutsResultView.cshtml" model="Model" />
         }
         else if (Model.Type == ResultType.Speakers)
         {
@@ -23,6 +27,10 @@
         else if (Model.Type == ResultType.AgendaItems)
         {
             <partial name="~/Pages/Shared/GlobalSearch/Results/_AgendaItemsResultView.cshtml" model="Model" />
+        }
+        else if (Model.Type == ResultType.Polls)
+        {
+            <partial name="~/Pages/Shared/GlobalSearch/Results/_PollsResultView.cshtml" model="Model" />
         }
     </div>
     <div class="all-result-pages">

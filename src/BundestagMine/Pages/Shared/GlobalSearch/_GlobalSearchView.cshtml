@@ -14,8 +14,13 @@
             <div class="flexed justify-content-around align-items-center w-100 flex-wrap">
                 @*speeches*@
                 <div class="flexed align-items-baseline" data-expanded="true" data-toggle="popover" data-content="Reden durchsuchen" data-trigger="hover">
-                    <h6 class="mb-0 mt-0 mr-2"><i class="fas fa-comments"></i></h6>
+                    <h6 class="mb-0 mt-0 mr-2"><i class="fas fa-comment"></i></h6>
                     <input type="checkbox" checked data-id="speeches" />
+                </div>
+                @*Shouts*@
+                <div class="flexed align-items-baseline" data-expanded="true" data-toggle="popover" data-content="Kommentare durchsuchen" data-trigger="hover">
+                    <h6 class="mb-0 mt-0 mr-2"><i class="fas fa-comments"></i></h6>
+                    <input type="checkbox" data-id="shouts" />
                 </div>
                 @*Speakers*@
                 <div class="flexed align-items-baseline" data-expanded="true" data-toggle="popover" data-content="Redner(innen) durchsuchen" data-trigger="hover">
@@ -57,6 +62,7 @@
         @*tabs to switch views*@
         <div class="flexed justify-content-around align-items-center tabs">
             <button class="btn rounded-0 w-100 tab" data-id="speeches">Reden</button>
+            <button class="btn rounded-0 w-100 tab" data-id="shouts">Kommentare</button>
             <button class="btn rounded-0 w-100 tab" data-id="speakers">Redner(innen)</button>
             <button class="btn rounded-0 w-100 tab" data-id="agendaItems">TOP</button>
             <button class="btn rounded-0 w-100 tab" data-id="polls">Abstimmungen</button>
@@ -68,6 +74,10 @@
                 <div class="loader"><div class="lds-ripple"><div></div><div></div></div></div>
                 <div class="result-content"></div>
             </div>
+            <div class="result" data-id="shouts">
+                <div class="loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                <div class="result-content"></div>
+            </div>
             <div class="result" data-id="speakers">
                 <div class="loader"><div class="lds-ripple"><div></div><div></div></div></div>
                 <div class="result-content"></div>
@@ -76,8 +86,8 @@
                 <div class="loader"><div class="lds-ripple"><div></div><div></div></div></div>
                 <div class="result-content"></div>
             </div>
-            <div class="result">
-                <div class="loader" data-id="polls"><div class="lds-ripple"><div></div><div></div></div></div>
+            <div class="result" data-id="polls">
+                <div class="loader"><div class="lds-ripple"><div></div><div></div></div></div>
                 <div class="result-content"></div>
             </div>
         </div>

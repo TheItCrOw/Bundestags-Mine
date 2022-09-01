@@ -171,7 +171,7 @@
                 font-size: small;
             }
 
-        /* ============================================= SPEAKER =============================================*/
+        /* ============================================= AGENDA ITEM =============================================*/
         .global-search .result-content .cur-result-page .agendaItem {
             margin: 8px;
             width: 250px;
@@ -231,6 +231,7 @@
                 position: absolute;
                 font-size: medium;
                 opacity: 0.75;
+                word-wrap: break-word;
                 width: 100%;
                 top: 50px;
                 background-color: var(--bg-darkprime);
@@ -256,25 +257,173 @@
                 text-decoration: underline;
             }
 
+        /* ============================================= POLL =============================================*/
+        .global-search .result-content .cur-result-page .poll {
+            margin: 8px;
+            width: 250px;
+            height: 300px;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+            transition: 0.25s;
+            border: gray 1px solid;
+            position: relative;
+            transition: 0.25s;
+            background-color: rgba(215,215,215,1);
+        }
+
+            .global-search .result-content .cur-result-page .poll:hover {
+                transition: 0.25s;
+                transform: scale(1.025, 1.025);
+                cursor: pointer;
+            }
+
+            .global-search .result-content .cur-result-page .poll img {
+                height: 100%;
+                position: absolute;
+                z-index: 0;
+                opacity: 1;
+                width: 100%;
+                object-fit: contain;
+            }
+
+            .global-search .result-content .cur-result-page .poll .name {
+                text-align: center;
+                z-index: 1;
+                color: black;
+                margin-bottom: 5px;
+                margin-top: 5px;
+                position: absolute;
+                font-size: medium;
+                opacity: 0.75;
+                width: 100%;
+                top: 50px;
+                word-wrap: break-word;
+                background-color: var(--bg-darkprime);
+                color: white;
+            }
+
+            .global-search .result-content .cur-result-page .poll .date {
+                font-size: small;
+                margin: 0;
+                padding-left: 12px;
+                text-align: center;
+                padding-right: 12px;
+                color: black;
+            }
+
+            .global-search .result-content .cur-result-page .poll .info {
+                font-size: small;
+                margin: 0;
+                padding-left: 12px;
+                text-align: center;
+                padding-right: 12px;
+                color: black;
+                text-decoration: underline;
+            }
+
+        /* ============================================= SHOUT =============================================*/
+        .global-search .result-content .cur-result-page .shout {
+            position: relative;
+            border-left: transparent 6px solid;
+            transition: 0.25s;
+            padding: 6px;
+            margin:6px;
+            border:lightgray dashed 1px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+            .global-search .result-content .cur-result-page .shout:hover {
+                border-left: gold 6px solid;
+                border-top: gray 1px solid;
+                border-bottom: gray 1px solid;
+                border-right: gray 1px solid;
+                background-color: lightgray;
+                transition: 0.25s;
+            }
+
+            .global-search .result-content .cur-result-page .shout .img-speaker {
+                height: 100px;
+                object-fit: cover;
+                width: 100px;
+                border-radius: 50% 0% 50% 50%;
+                border-left: gray 1px solid;
+                border-bottom: gray 1px solid;
+                border-top: var(--bg-darkprime) 1px solid;
+            }
+
+            .global-search .result-content .cur-result-page .shout .divider {
+                border-left: 1px gray solid;
+                height: 100%;
+                width: 100%;
+            }
+
+            .global-search .result-content .cur-result-page .shout .name {
+                color: black;
+                font-size: small;
+                margin: 0;
+                text-align: center;
+                text-decoration: underline;
+            }
+
+            .global-search .result-content .cur-result-page .shout .info {
+                font-size: small;
+                margin: 0;
+                padding-left: 12px;
+                width:100%;
+                padding-right: 12px;
+                border-bottom:gray 1px solid;
+                padding-bottom:6px;
+            }
+
+            .global-search .result-content .cur-result-page .shout .sneekpeak {
+                font-size: medium;
+                margin-left:6px;
+                margin-bottom:6px;
+                margin-right:6px;
+            }
+
+                .global-search .result-content .cur-result-page .shout .sneekpeak .word {
+                    background-color: gold;
+                    font-size: medium;
+                    color: black;
+                }
+
+            .global-search .result-content .cur-result-page .shout .shouter {
+                text-align:right;
+            }
+
+            .global-search .result-content .cur-result-page .shout .shouter img {
+                height: 40px;
+                object-fit: cover;
+                border-radius:50% 0% 50% 50%;
+                width: 40px;
+            }
+
+                .global-search .result-content .cur-result-page .shout .shouter p {
+                    font-size: small;
+                    margin: 0px;
+                    text-decoration: underline;
+                }
 
     .global-search .result-content .all-result-pages {
         display: flex !important;
+        flex-wrap:wrap;
+        width:100%;
         border-top: gray 1px solid;
-        width: 100%;
         position: absolute;
         top: calc(100% - 30px); /*This 30px must be changed in the cur-result-page as well.*/
-        height: 30px;
+        min-height: 30px;
         justify-content: space-around;
     }
 
         .global-search .result-content .all-result-pages button {
-            width: 100%;
             color: black;
+            width:100%;
             background-color: transparent;
             padding: 2px !important;
             transition: 0.15s;
             margin: 0;
-            max-width: 100px;
+            max-width: 50px;
         }
 
             .global-search .result-content .all-result-pages button:hover {

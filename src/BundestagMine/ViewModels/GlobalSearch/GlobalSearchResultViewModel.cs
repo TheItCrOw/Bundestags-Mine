@@ -30,6 +30,7 @@
     public enum ResultType
     {
         Speeches,
+        Shouts,
         Speakers,
         AgendaItems,
         Polls

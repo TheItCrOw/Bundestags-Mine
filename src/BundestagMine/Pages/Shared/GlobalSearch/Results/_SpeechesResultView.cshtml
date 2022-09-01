@@ -12,7 +12,7 @@
                 var imgSrc = BundestagScraperService.GetDeputyPortraitFromImageDatabase(speech.Speaker?.SpeakerId);
                 if (string.IsNullOrEmpty(imgSrc)) imgSrc = "./img/Unbekannt.jpg";
                 <img src="@imgSrc" />
-                <p class="name">@speech.Speaker.FirstName @speech.Speaker.LastName (@(speech.Speaker.Fraction ?? speech.Speaker.Party))</p>
+                <p class="name">@speech.Speaker?.FirstName @speech.Speaker?.LastName (@(speech.Speaker?.Fraction ?? speech.Speaker?.Party))</p>
             }
         </div>
         <div>
