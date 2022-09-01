@@ -1,0 +1,13 @@
+﻿#speakerInspectorModal {
+}
+
+    #speakerInspectorModal .speaker-name {
+        margin-top: 6px;
+    }
+
+    #speakerInspectorModal .portrait{
+        object-fit:cover;
+        width:100%;
+        height:100%;
+        border-radius:0px;
+    }

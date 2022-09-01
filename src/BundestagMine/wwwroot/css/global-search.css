@@ -411,7 +411,7 @@
         width:100%;
         border-top: gray 1px solid;
         position: absolute;
-        top: calc(100% - 30px); /*This 30px must be changed in the cur-result-page as well.*/
+        top: calc(100% - 31px); /*This 30px must be changed in the cur-result-page as well.*/
         min-height: 30px;
         justify-content: space-around;
     }

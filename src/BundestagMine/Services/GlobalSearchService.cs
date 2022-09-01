@@ -41,7 +41,7 @@ namespace BundestagMine.Services
                     .SelectMany(p => _db.Speeches.Include(s => s.Segments).ThenInclude(s => s.Shouts)
                         .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && s.Segments.Any(ss => ss.Shouts.Any(sh => sh.Text.ToLower().Contains(search.ToLower())))))
-                    .Skip(offset)
+                    .Skip(offset * take)
                     .Take(take)
                     .AsEnumerable()
                     .SelectMany(speech =>
@@ -92,7 +92,7 @@ namespace BundestagMine.Services
             {
                 ResultList = _db.Polls
                     .Where(p => p.Title.ToLower().Contains(search.ToLower()) && p.Date >= from && p.Date <= to)
-                    .Skip(offset)
+                    .Skip(offset * take)
                     .Take(take)
                     .ToList(),
                 // Get the total count, but only, if we didnt fetch it already.
@@ -127,7 +127,7 @@ namespace BundestagMine.Services
             {
                 ResultList = _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
                     .SelectMany(p => _db.AgendaItems.Where(a => a.ProtocolId == p.Id && a.Title.ToLower().Contains(search.ToLower())))
-                    .Skip(offset)
+                    .Skip(offset * take)
                     .Take(take)
                     .Select(a => new AgendaItemViewModel()
                     {
@@ -173,7 +173,7 @@ namespace BundestagMine.Services
                                 && string.Concat(d.FirstName ?? "", d.LastName ?? "", d.Fraction ?? "", d.Party ?? "").ToLower().Contains(search.ToLower())))
                     .AsEnumerable()
                     .DistinctBy(s => s.SpeakerId)
-                    .Skip(offset)
+                    .Skip(offset * take)
                     .Take(take)
                     .ToList(),
                 // Get the total count, but only, if we didnt fetch it already.
