@@ -202,75 +202,7 @@
 
                         <div class="protocol-tree mt-2">
                         </div>
-                    </div>
-
-                    <!--fulltext search btn-->
-                    <div class="fulltext-search-btn" id="fulltextOpenBtn" data-expanded="true" data-toggle="popover" data-content="Volltextsuche öffnen" data-trigger="hover">
-                        <i class="fas fa-search"></i>
-                    </div>
-
-                    <!--fulltext search interface-->
-                    <div class="fulltext-search-container display-none bg-gradient-light" id="fulltextSearchContainer">
-                        <div class="container">
-                            <div class="flexed justify-content-between align-items-center">
-                                <h1>Suche</h1>
-                                <div class="close-btn"><i class="far fa-times-circle"></i></div>
-                            </div>
-                            <p>
-                                Dies ist eine Volltextsuche. Sie durchkämmt alle Reden nach dem eingegeben Begriff,
-                                betrachtet dabei Inhalt samt Redner(in)-Namen und listet alle Reden (max. 500) mit einem Treffer auf.
-                            </p>
-                            <div class="mt-3 flexed">
-                                <input class="search-input form-control" />
-                                <button class="btn btn-dark rounded-0 apply-search-btn"><i class="fas fa-search"></i></button>
-                            </div>
-                            <p class="error-message text-danger"></p>
-                            <p>
-                                Die Suche kann einen Moment dauern. Sie können diese Suchansicht jedoch sicher schließen - die Suche wird weiterhin im Hintergrund stattfinden.
-                                Sobald die Anfrage beendet wurde, werden Sie per Popup informiert.
-                            </p>
-                            <div class="search-results-list">
-                                <div class="search-result-wrapper search-result-template display-none">
-                                    <div class="header">
-                                        <p class="m-0 text-dark">Suchanfrage "<span class="font-weight-bold text-primary searchterm">Template</span>"</p>
-                                        <div class="flexed align-items-center">
-                                            <div class="expander mr-3 text-dark" data-expanded="false">
-                                                <i class="fas fa-chevron-circle-up"></i>
-                                            </div>
-                                            <div class="status dots-bars-6"></div>
-                                            <button class="cancel-request-btn ml-3 btn btn-outline-danger border-0"
-                                                    data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Suche abbrechen">
-                                                <i class="fas fa-ban"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <p class="mb-0 small-font">Suchergebnisse: <span class="count">0</span></p>
-                                    <div class="content mt-3 display-none">
-                                        <div class="speech-result-wrapper speech-result-template display-none">
-                                            <div class="header">
-                                                <p class="mb-0">
-                                                    Legislaturperiode
-                                                    <span class="period">20</span>
-                                                    <i class="fas fa-angle-double-right"></i>
-                                                    Sitzung
-                                                    <span class="protocol">15</span>
-                                                    <i class="fas fa-angle-double-right"></i>
-                                                    <span class="agenda">6</span>
-                                                    <i class="fas fa-angle-double-right"></i>
-                                                    <span class="date">22-01-2022</span>
-                                                </p>
-                                                <div class="flexed align-items-center">
-                                                    <p class="mb-0 name mr-1">Unbekannt</p>
-                                                    <img class="portrait" src="./img/Unbekannt.jpg" onerror="$(this).attr('src', './img/Unbekannt.jpg')" />
-                                                </div>
-                                            </div>
-                                            <p class="text">"... Kein match ..."</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </div>                    
 
                     <!--right contetn-->
                     <div class="w-100 mt-3 pl-3 pr-3">
