@@ -83,11 +83,11 @@ namespace BundestagMine.Services
                     .Count(),
 
                 TotalSpeechesAmountTopic = _db.Speeches.Where(s => s.SpeakerId == deputy.SpeakerId
-                    && _db.NamedEntity.FirstOrDefault(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == topic) != null).Count(),
+                    && _db.NamedEntity.FirstOrDefault(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == topic && ne.ShoutId == Guid.Empty) != null).Count(),
                 TotalSpeechesAmountTopicTimeFramed = _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
                     .SelectMany(p => _db.Speeches
                         .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
-                            && s.SpeakerId == deputy.SpeakerId && _db.NamedEntity.FirstOrDefault(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == topic) != null))
+                            && s.SpeakerId == deputy.SpeakerId && _db.NamedEntity.FirstOrDefault(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == topic && ne.ShoutId == Guid.Empty) != null))
                     .Count(),
 
                 PortraitUrl = _bundestagScraperService.GetDeputyPortraitFromImageDatabase(deputy)
@@ -130,12 +130,12 @@ namespace BundestagMine.Services
                     .Count(),
 
                 TotalSpeechesAmountTopic = _db.Speeches.Where(s => _db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId && d.Fraction == fraction) != null
-                    && _db.NamedEntity.FirstOrDefault(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == topic) != null).Count(),
+                    && _db.NamedEntity.FirstOrDefault(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == topic && ne.ShoutId == Guid.Empty) != null).Count(),
                 TotalSpeechesAmountTopicTimeFramed = _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
                     .SelectMany(p => _db.Speeches
                         .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && _db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId && d.Fraction == fraction) != null
-                            && _db.NamedEntity.FirstOrDefault(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == topic) != null))
+                            && _db.NamedEntity.FirstOrDefault(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == topic && ne.ShoutId == Guid.Empty) != null))
                     .Count(),
 
                 PortraitUrl = ""
@@ -178,12 +178,12 @@ namespace BundestagMine.Services
                     .Count(),
 
                 TotalSpeechesAmountTopic = _db.Speeches.Where(s => _db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId && d.Party == party) != null
-                    && _db.NamedEntity.FirstOrDefault(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == topic) != null).Count(),
+                    && _db.NamedEntity.FirstOrDefault(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == topic && ne.ShoutId == Guid.Empty) != null).Count(),
                 TotalSpeechesAmountTopicTimeFramed = _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
                     .SelectMany(p => _db.Speeches
                         .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && _db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId && d.Party == party) != null
-                            && _db.NamedEntity.FirstOrDefault(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == topic) != null))
+                            && _db.NamedEntity.FirstOrDefault(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == topic && ne.ShoutId == Guid.Empty) != null))
                     .Count(),
 
                 PortraitUrl = ""

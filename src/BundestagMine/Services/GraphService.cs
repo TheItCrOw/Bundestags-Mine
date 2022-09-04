@@ -1,5 +1,6 @@
 ﻿using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.SqlDatabase;
+using BundestagMine.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -64,13 +65,6 @@ namespace BundestagMine.Services
             // This stores the last value of a topic
             var topicToLastValue = new Dictionary<string, int>();
 
-            // Some ne are just not good showing in a bar race or are redundant. We blacklist them so they dont
-            // take away space.
-            var neBlackList = new List<string>()
-            {
-                "deutsch", "Präsident !", "europäisch", "europäische", "Zeit", "lieben Kollegin"
-            };
-
             // We step through the years in monthly steps.
             for (; from < to; from = from.AddMonths(1))
             {
@@ -78,7 +72,7 @@ namespace BundestagMine.Services
                 var topics = _db.Protocols.Where(p => p.Date >= from && p.Date <= curTo)
                     .SelectMany(p => _db.Speeches
                         .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
-                    .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId && !neBlackList.Contains(t.LemmaValue)))
+                    .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId && !TopicHelper.TopicBlackList.Contains(t.LemmaValue)))
                     .AsEnumerable()
                     .GroupBy(n => n.LemmaValue)
                     .Select(g1 =>
@@ -150,7 +144,8 @@ namespace BundestagMine.Services
                     .SelectMany(p => _db.Speeches
                         .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod &&
                             _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Fraction == graphFraction.Name))
-                    .SelectMany(s => _db.NamedEntity.Where(n => s.Id == n.NLPSpeechId && n.LemmaValue != null))
+                    .SelectMany(s => _db.NamedEntity.Where(n => s.Id == n.NLPSpeechId && n.LemmaValue != null 
+                                && !TopicHelper.TopicBlackList.Contains(n.LemmaValue)))
                     .AsEnumerable()
                     .GroupBy(n => n.LemmaValue.ToLower())
                     .Select(g1 => new TopicMapGraphObject()

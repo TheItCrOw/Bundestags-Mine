@@ -543,7 +543,7 @@ namespace BundestagMine.Controllers
                 searchString = searchString.ToCleanRequestString();
                 response.status = "200";
                 response.result = _db.NamedEntity
-                    .Where(ne => ne.LemmaValue.ToLower().Trim().Contains(searchString.ToLower().Trim()))
+                    .Where(ne => !TopicHelper.TopicBlackList.Contains(ne.LemmaValue) && ne.LemmaValue.ToLower().Trim().Contains(searchString.ToLower().Trim()))
                     .GroupBy(ne => ne.LemmaValue)
                     .OrderByDescending(kv => kv.Count())
                     .Take(50)

@@ -1,5 +1,6 @@
 ﻿using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.SqlDatabase;
+using BundestagMine.Utility;
 using BundestagMine.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -246,7 +247,8 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Fraction == fraction))
-                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
+                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty 
+                                && !TopicHelper.TopicBlackList.Contains(t.LemmaValue)))
                 .AsEnumerable()
                 .GroupBy(n => n.Value)
                 .Select(g1 => new
@@ -266,7 +268,8 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Party == party))
-                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
+                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty 
+                            && !TopicHelper.TopicBlackList.Contains(t.LemmaValue)))
                 .AsEnumerable()
                 .GroupBy(n => n.Value)
                 .Select(g1 => new
@@ -285,7 +288,8 @@ namespace BundestagMine.Services
                 return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.SpeakerId == speakerId && s.LegislaturePeriod == p.LegislaturePeriod))
-                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
+                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty 
+                            && !TopicHelper.TopicBlackList.Contains(t.LemmaValue)))
                 .AsEnumerable()
                 .GroupBy(n => n.Value)
                 .Select(g1 => new
@@ -304,7 +308,8 @@ namespace BundestagMine.Services
                 return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
-                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
+                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty 
+                                && !TopicHelper.TopicBlackList.Contains(t.LemmaValue)))
                 .AsEnumerable()
                 .GroupBy(n => n.Value)
                 .Select(g1 => new
@@ -340,7 +345,8 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Fraction == fraction))
-                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId))
+                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty
+                                && !TopicHelper.TopicBlackList.Contains(t.LemmaValue)))
                 .AsEnumerable()
                 .GroupBy(n => n.LemmaValue)
                 .Select(kv => new
@@ -357,7 +363,8 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Party == party))
-                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId))
+                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty
+                                && !TopicHelper.TopicBlackList.Contains(t.LemmaValue)))
                 .AsEnumerable()
                 .GroupBy(n => n.LemmaValue)
                 .Select(kv => new
@@ -374,7 +381,8 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Id.ToString() == deputyId))
-                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId))
+                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty
+                                && !TopicHelper.TopicBlackList.Contains(t.LemmaValue)))
                 .AsEnumerable()
                 .GroupBy(n => n.LemmaValue)
                 .Select(kv => new
@@ -390,7 +398,8 @@ namespace BundestagMine.Services
                 return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
-                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId))
+                .SelectMany(s => _db.NamedEntity.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty
+                                && !TopicHelper.TopicBlackList.Contains(t.LemmaValue)))
                 .AsEnumerable()
                 .GroupBy(n => n.LemmaValue)
                 .Select(kv => new
@@ -403,40 +412,6 @@ namespace BundestagMine.Services
                 .Take(limit)
                 .ToList();
         }
-
-        /// <summary>
-        /// Fetches the sentiment values of a speaker about a given namedentity
-        /// </summary>
-        /// <returns></returns>
-        public dynamic GetSentimentOfSpeakerNamedEntity(string namedEntity, string speakerId, DateTime from, DateTime to)
-        {
-            return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
-            .SelectMany(p => _db.Speeches
-                .Where(s => s.ProtocolNumber == p.Number && s.SpeakerId == speakerId && s.LegislaturePeriod == p.LegislaturePeriod))
-            .SelectMany(s => _db.NamedEntity
-                .Where(n => s.Id == n.NLPSpeechId && n.LemmaValue.ToLower() == namedEntity.ToLower()))
-            .AsEnumerable()
-            .Select(ne =>
-            {
-                var sentiment = _db.Sentiment.SingleOrDefault(s => s.NLPSpeechId == ne.NLPSpeechId && s.Begin <= ne.Begin && s.End >= ne.End);
-                if (sentiment == null) return null;
-                var value = "neu";
-                if (sentiment.SentimentSingleScore > 0) value = "pos";
-                else if (sentiment.SentimentSingleScore < 0) value = "neg";
-                return new
-                {
-                    SentimentStringScore = value
-                };
-            })
-            .GroupBy(e => e?.SentimentStringScore)
-            .Select(e => new
-            {
-                Count = e.Count(),
-                Value = e.Key
-            })
-            .ToList();
-        }
-
 
         /// <summary>
         /// Gets the comments of speeches which contain the given topic by the given speaker, fraction, party.
@@ -571,7 +546,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                         && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Fraction == fraction
-                        && _db.NamedEntity.Any(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == neLemmaValue)))
+                        && _db.NamedEntity.Any(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == neLemmaValue && ne.ShoutId == Guid.Empty)))
                 .Select(s => new SpeechViewModel()
                 {
                     Speech = s,
@@ -588,7 +563,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                         && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Party == party
-                        && _db.NamedEntity.Any(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == neLemmaValue)))
+                        && _db.NamedEntity.Any(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == neLemmaValue && ne.ShoutId == Guid.Empty)))
                 .Select(s => new SpeechViewModel()
                 {
                     Speech = s,
@@ -605,7 +580,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                         && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Id.ToString() == deputyId
-                        && _db.NamedEntity.Any(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == neLemmaValue)))
+                        && _db.NamedEntity.Any(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == neLemmaValue && ne.ShoutId == Guid.Empty)))
                 .Select(s => new SpeechViewModel()
                 {
                     Speech = s,
@@ -621,7 +596,7 @@ namespace BundestagMine.Services
                 return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
                     .SelectMany(p => _db.Speeches
                         .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
-                            && _db.NamedEntity.Any(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == neLemmaValue)))
+                        && _db.NamedEntity.Any(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == neLemmaValue && ne.ShoutId == Guid.Empty)))
                     .Select(s => new SpeechViewModel()
                     {
                         Speech = s,
@@ -653,7 +628,7 @@ namespace BundestagMine.Services
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                         && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Fraction == fraction))
                 .SelectMany(s => _db.NamedEntity
-                    .Where(n => s.Id == n.NLPSpeechId && n.LemmaValue == searchTerm))
+                    .Where(n => s.Id == n.NLPSpeechId && n.LemmaValue == searchTerm && n.ShoutId == Guid.Empty))
                 .AsEnumerable()
                 .Select(ne =>
                 {
@@ -680,7 +655,7 @@ namespace BundestagMine.Services
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                         && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Party == party))
                 .SelectMany(s => _db.NamedEntity
-                    .Where(n => s.Id == n.NLPSpeechId && n.LemmaValue == searchTerm))
+                    .Where(n => s.Id == n.NLPSpeechId && n.LemmaValue == searchTerm && n.ShoutId == Guid.Empty))
                 .AsEnumerable()
                 .Select(ne =>
                 {
@@ -707,7 +682,7 @@ namespace BundestagMine.Services
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                         && s.SpeakerId == speakerId))
                 .SelectMany(s => _db.NamedEntity
-                    .Where(n => s.Id == n.NLPSpeechId && n.LemmaValue == searchTerm))
+                    .Where(n => s.Id == n.NLPSpeechId && n.LemmaValue == searchTerm && n.ShoutId == Guid.Empty))
                 .AsEnumerable()
                 .Select(ne =>
                 {
@@ -733,7 +708,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
                 .SelectMany(s => _db.NamedEntity
-                    .Where(n => s.Id == n.NLPSpeechId && n.LemmaValue == searchTerm))
+                    .Where(n => s.Id == n.NLPSpeechId && n.LemmaValue == searchTerm && n.ShoutId == Guid.Empty))
                 .AsEnumerable()
                 .Select(ne =>
                 {
