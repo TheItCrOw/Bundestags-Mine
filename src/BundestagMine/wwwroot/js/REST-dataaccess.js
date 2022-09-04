@@ -58,6 +58,23 @@ async function getSpeakerById(speakerId) {
     }
 }
 
+// Gets a speaker inspector by id
+async function getSpeakerInspectorView(speakerId) {
+    try {
+        const result = await $.ajax({
+            url: "/api/DashboardController/GetSpeakerInspectorView/" + speakerId,
+            type: "GET",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result.result;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 // Gets the portrait of a speaker
 async function getSpeakerPortrait(speakerId) {
     try {

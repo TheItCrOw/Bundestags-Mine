@@ -1,4 +1,5 @@
 ﻿using BundestagMine.Models.Database.MongoDB;
+using BundestagMine.Utility;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ namespace BundestagMine.Synchronisation.Services
             if (mongoEntity.AsBsonDocument.TryGetValue("begin", out var begin)) entity.Begin = begin.AsInt32;
             if (mongoEntity.AsBsonDocument.TryGetValue("end", out var end)) entity.End = end.AsInt32;
             if (mongoEntity.AsBsonDocument.TryGetValue("value", out var value)) entity.Value = value.AsString;
-            if (mongoEntity.AsBsonDocument.TryGetValue("coveredText", out var coveredText)) entity.LemmaValue = coveredText.AsString;
+            if (mongoEntity.AsBsonDocument.TryGetValue("coveredText", out var coveredText)) entity.LemmaValue = coveredText.AsString.ToCleanNE();
 
             return entity;
         }

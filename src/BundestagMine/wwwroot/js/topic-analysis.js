@@ -78,6 +78,7 @@ async function searchTopic(input) {
     $('.topic-list-container .loader').show();
 
     try {
+        if (input == '') input = '{NULL}';
         var nes = await getNamedEntitiesWithSearchString(input);
         for (var i = 0; i < nes.length; i++) {
             var ne = nes[i];

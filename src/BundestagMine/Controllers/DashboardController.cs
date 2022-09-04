@@ -26,6 +26,7 @@ namespace BundestagMine.Controllers
     [ApiController]
     public class DashboardController : Controller
     {
+        private readonly GlobalSearchService _globalSearchService;
         private readonly ILogger<DashboardController> _logger;
         private readonly TopicAnalysisService _topicAnalysisService;
         private readonly BundestagScraperService _bundestagScraperService;
@@ -41,8 +42,10 @@ namespace BundestagMine.Controllers
             GraphService graphService,
             BundestagScraperService bundestagScraperService,
             TopicAnalysisService topicAnalysisService,
-            ILogger<DashboardController> logger)
+            ILogger<DashboardController> logger,
+            GlobalSearchService globalSearchService)
         {
+            _globalSearchService = globalSearchService;
             _logger = logger;
             _topicAnalysisService = topicAnalysisService;
             _bundestagScraperService = bundestagScraperService;
@@ -218,6 +221,27 @@ namespace BundestagMine.Controllers
                 response.status = "400";
                 response.message = "Couldn't fetch fractions, error in logs";
                 _logger.LogError(ex, "Error fetching speaker by id:");
+            }
+
+            return Json(response);
+        }
+
+        [HttpGet("/api/DashboardController/GetSpeakerInspectorView/{speakerId}")]
+        public async Task<IActionResult> GetSpeakerInspectorView(string speakerId)
+        {
+            dynamic response = new ExpandoObject();
+
+            try
+            {
+                response.status = "200";
+                var inspectorViewModel = _globalSearchService.BuildSpeakerInspectorViewModel(speakerId);
+                response.result = await _viewRenderService.RenderToStringAsync("_SpeakerInspectorView", inspectorViewModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error building speaker inspector:");
+                response.status = "400";
+                response.message = "Couldn't build speaker inspector, error in logs";
             }
 
             return Json(response);
@@ -546,7 +570,7 @@ namespace BundestagMine.Controllers
                     .Where(ne => !TopicHelper.TopicBlackList.Contains(ne.LemmaValue) && ne.LemmaValue.ToLower().Trim().Contains(searchString.ToLower().Trim()))
                     .GroupBy(ne => ne.LemmaValue)
                     .OrderByDescending(kv => kv.Count())
-                    .Take(50)
+                    .Take(125)
                     .Select(kv => new { Element = kv.Key, Count = kv.Count() })
                     .ToList();
             }
@@ -559,7 +583,6 @@ namespace BundestagMine.Controllers
 
             return Json(response);
         }
-
 
         [HttpGet("/api/DashboardController/GetSpeakerSentimentsAboutNamedEntity/{param}")]
         public IActionResult GetSpeakerSentimentsAboutNamedEntity(string param)

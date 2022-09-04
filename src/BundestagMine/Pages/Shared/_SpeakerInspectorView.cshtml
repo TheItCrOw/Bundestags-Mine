@@ -1,16 +1,84 @@
 ﻿@using BundestagMine.ViewModels
+@using BundestagMine.Services
+@inject BundestagScraperService BundestagScraperService
 @model SpeakerInspectorViewModel
 
 <div class="modal-header bg-darkprime rounded-0 text-light pl-3 pr-3 pb-1 pt-1">
-    <h5 class="modal-title">Angela Merkel</h5>
+    <h5 class="modal-title">@Model.Deputy.FirstName @Model.Deputy.LastName</h5>
     <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
 <div class="modal-body">
     <div class="row m-0 p-0">
-        <div class="col-4">
-            <img class="portrait" src="/img/portrait-beispiel-2.jpg"/>
+        @*image*@
+        <div class="col-lg-4 m-0 text-center">
+            @{
+                var imgSrc = BundestagScraperService.GetDeputyPortraitFromImageDatabase(Model.Deputy.SpeakerId);
+                if (string.IsNullOrEmpty(imgSrc)) imgSrc = "./img/Unbekannt.jpg";
+                <img class="portrait" src="@imgSrc" />
+            }
+        </div>
+        @*visitenkarte*@
+        <div class="col-lg-8 m-0 pl-2 pb-1 pt-1 pr-1 visiten-karte">
+            <div class="w-100 font-small">
+                <div class="info-field">
+                    <label>Geschlecht:</label>
+                    <label>@Model.Deputy.Gender</label>
+                </div>
+                <div class="info-field">
+                    <label>Geburtstag:</label>
+                    <label>@Model.Deputy.BirthDate</label>
+                </div>
+                <div class="info-field">
+                    <label>Religion:</label>
+                    <label>@Model.Deputy.Religion</label>
+                </div>
+                <div class="info-field">
+                    <label>Familienstand:</label>
+                    <label>@Model.Deputy.MaritalStatus</label>
+                </div>
+                <div class="info-field">
+                    <label>Fraktion:</label>
+                    <label>@Model.Deputy.Fraction</label>
+                </div>
+                <div class="info-field">
+                    <label>Partei:</label>
+                    <label>@Model.Deputy.Party</label>
+                </div>
+                <div class="info-field">
+                    <label>Beruf:</label>
+                    <label>@Model.Deputy.Profession</label>
+                </div>
+                <div class="info-field">
+                    <label>Im Bundestag seit:</label>
+                    <label>@Model.Deputy.HistorySince</label>
+                </div>
+                <div class="info-field">
+                    <label>Akademischer Grad:</label>
+                    <label>@Model.Deputy.AcademicTitle</label>
+                </div>
+            </div>
+        </div>
+        @*different tabs*@
+        <div class="tabs">
+            <button class="btn tab" data-type="speeches">Reden</button>
+            <button class="btn tab" data-type="shouts">Kommentare</button>
+            <button class="btn tab" data-type="polls">Abstimmungen</button>
+        </div>
+
+        @*different content*@
+        <div class="tab-content">
+            <div class="content" data-type="speeches">
+                <div>
+                    @foreach (var speech in Model.Speeches)
+                    {
+
+                    }
+                </div>
+            </div>
+            <div class="content" data-type="shouts"></div>
+            <div class="content" data-type="polls"></div>
         </div>
     </div>
 </div>

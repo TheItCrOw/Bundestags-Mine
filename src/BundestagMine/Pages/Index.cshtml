@@ -202,7 +202,7 @@
 
                         <div class="protocol-tree mt-2">
                         </div>
-                    </div>                    
+                    </div>
 
                     <!--right contetn-->
                     <div class="w-100 mt-3 pl-3 pr-3">
@@ -856,13 +856,13 @@
     <div class="modal fade bg-gradient-light" id="speakerInspectorModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content w-100 rounded-0 card-shadow">
-                <partial name="~/Pages/Shared/_SpeakerInspectorView.cshtml" model="null" />
+                <div class="view">
+                </div>
             </div>
         </div>
     </div>
 
     @section scripts{
-        <script>$('#speakerInspectorModal').modal('show');</script>
         <!-- Chart js stuff -->
         <!--<script src="vendor/chart.js/dist/chart.min.js"></script>-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js" integrity="sha512-TW5s0IT/IppJtu76UbysrBH9Hy/5X41OTAbQuffZFU6lQ1rdcLHzpU5BzVvr/YFykoiMYZVWlr/PX1mDcfM9Qg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -891,6 +891,7 @@
         <script src="./js/utility.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/speech-fulltext.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/global-search.js" charset="utf-8" type="text/javascript"></script>
+        <script src="./js/speaker-inspector.js" charset="utf-8" type="text/javascript"></script>
         <!--charts-->
         <script src="./js/charts/token-chart.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/charts/pos-chart.js" charset="utf-8" type="text/javascript"></script>

@@ -1,4 +1,5 @@
-﻿using BundestagMine.Models.Database.MongoDB;
+﻿using BundestagMine.Models.Database;
+using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.RequestModels;
 using BundestagMine.SqlDatabase;
 using BundestagMine.ViewModels;
@@ -19,6 +20,82 @@ namespace BundestagMine.Services
         {
             _metadataService = metadataService;
             _db = db;
+        }
+
+        /// <summary>
+        /// Takes in a speakerid and builds the speakerinspectorviewmodel from it
+        /// </summary>
+        /// <param name="speakerId"></param>
+        /// <returns></returns>
+        public SpeakerInspectorViewModel BuildSpeakerInspectorViewModel(string speakerId)
+        {
+            var result = new SpeakerInspectorViewModel();
+
+            result.Deputy = _db.Deputies.FirstOrDefault(d => d.SpeakerId == speakerId);
+            if (result.Deputy == null) return null;
+
+            // speeches
+            result.Speeches = _db.Speeches
+                .Where(s => s.SpeakerId == speakerId)
+                .Take(30)
+                .Select(s => new SpeechViewModel()
+                {
+                    Speech = s,
+                    Agenda = _metadataService.GetAgendaItemOfSpeech(s),
+                    // Topics are the 3 most used NE in the speech
+                    Topics = _db.NamedEntity
+                        .Where(ne => ne.ShoutId == Guid.Empty && ne.NLPSpeechId == s.Id)
+                        .GroupBy(ne => ne.LemmaValue)
+                        .OrderByDescending(ne => ne.Count())
+                        .Take(3)
+                        .Select(ne => ne.Key)
+                        .ToList()
+                })
+                .ToList();
+
+            // 5 most topics overall
+            result.Topics = _db.NamedEntity
+                .Where(ne => ne.ShoutId == Guid.Empty && result.Speeches.Select(s => s.Speech.Id).Contains(ne.NLPSpeechId))
+                .GroupBy(ne => ne.LemmaValue)
+                .OrderByDescending(ne => ne.Count())
+                .Take(5)
+                .Select(ne => ne.Key)
+                .ToList();
+
+            // comments
+            result.Comments = _db.Shouts
+                .Where(sh => sh.SpeakerId == speakerId)
+                .Take(30)
+                .AsEnumerable()
+                .Select(shout =>
+                {
+                    var segment = _db.SpeechSegment.FirstOrDefault(ss => ss.Id == shout.SpeechSegmentId);
+                    segment.Shouts = new List<Shout>() { shout };
+
+                    var speech = _db.Speeches.FirstOrDefault(s => s.Id == segment.SpeechId);
+
+                    return new SpeechCommentViewModel()
+                    {
+                        SpeechSegment = segment,
+                        SpeechId = segment.SpeechId,
+                        Speaker = _db.Deputies.FirstOrDefault(d => d.SpeakerId == speech.SpeakerId)
+                    };
+                })
+                .ToList();
+
+            // polls
+            result.Polls = _db.Polls
+                .Where(p => _db.PollEntries.Any(pe => pe.PollId == p.Id && pe.FirstName + pe.LastName == result.Deputy.FirstName + result.Deputy.LastName))
+                .Take(30)
+                .Select(p => new PollViewModel()
+                {
+                    Poll = p,
+                    Entries = _db.PollEntries.Where(pe => pe.PollId == p.Id && pe.FirstName + pe.LastName == result.Deputy.FirstName + result.Deputy.LastName).ToList()
+                })
+                .Where(p => p.Entries.Count > 0)
+                .ToList();
+
+            return result;
         }
 
         /// <summary>

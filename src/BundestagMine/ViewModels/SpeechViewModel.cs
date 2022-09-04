@@ -12,5 +12,6 @@ namespace BundestagMine.ViewModels
         public Deputy Speaker { get; set; }
         public int TopicMentionCount { get; set; }
         public AgendaItem Agenda { get; set; }
+        public List<string> Topics { get; set; }
     }
 }

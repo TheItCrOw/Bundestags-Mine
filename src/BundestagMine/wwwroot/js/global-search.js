@@ -294,7 +294,6 @@ $('body').on('click', '.global-search .result-content .all-result-pages .switch-
     } else if (type == 'shouts') {
         globalSearchHandler.globalSearchShouts(obj);
     }
-
 })
 
 // Handles the switching of the tabs
