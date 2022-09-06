@@ -1,6 +1,23 @@
 ﻿#speakerInspectorModal {
 }
 
+    #speakerInspectorModal .loader {
+        position: absolute;
+        width: 100%;
+        z-index: 5;
+        background-color: rgba(255,255,255,0.8);
+        top: 0;
+        z-index: 2;
+        height: 100vh; /*This is the height of all the headers. Its hacky, yes. Wont work on mobile.*/
+        left: 0;
+    }
+
+        #speakerInspectorModal .loader .lds-ripple {
+            position: absolute;
+            left: calc(50% - 40px);
+            top: calc(50% - 40px);
+        }
+
     #speakerInspectorModal .modal-body {
         background-image: url('/img/deutscher-bundestag-adler-weiß.png');
         background-color: ghostwhite;
@@ -26,6 +43,7 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 12px;
+        border-bottom: lightgray 1px solid;
     }
 
         #speakerInspectorModal .info-field label {
@@ -36,7 +54,7 @@
             #speakerInspectorModal .info-field label:first-child {
                 color: black;
                 border-left: 3px gray solid;
-                box-shadow: -4px 1px darkgray;
+                box-shadow: -4px 1px lightgray;
             }
 
     #speakerInspectorModal .tabs {
@@ -61,10 +79,20 @@
         #speakerInspectorModal .tab:hover {
             background-color: gray;
             transition: 0.15s;
-            color:white;
+            color: white;
         }
 
     #speakerInspectorModal .selected-tab {
-        background-color: #f6c23e;        
+        background-color: #f6c23e;
         color: black;
     }
+
+    #speakerInspectorModal .tab-content .content {
+        display: none;
+        max-height: 35vh;
+        width: 100%;
+        position:relative;
+        overflow-y: auto;
+    }
+
+   

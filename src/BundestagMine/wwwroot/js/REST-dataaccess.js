@@ -62,7 +62,7 @@ async function getSpeakerById(speakerId) {
 async function getSpeakerInspectorView(speakerId) {
     try {
         const result = await $.ajax({
-            url: "/api/DashboardController/GetSpeakerInspectorView/" + speakerId,
+            url: "/api/GlobalSearchController/GetSpeakerInspectorView/" + speakerId,
             type: "GET",
             dataType: "json",
             accepts: {
@@ -668,4 +668,22 @@ function postNewGlobalSearch(obj, onSuccess, onError) {
         },
     });
     return request;
+}
+
+// Get all speeches of a speaker as SpeechViewModels
+async function getSpeechViewModelListViewOfSpeaker(speakerId) {
+    try {
+        const result = await $.ajax({
+            url: "/api/GlobalSearchController/GetSpeechViewModelListViewOfSpeaker/" + speakerId,
+            type: "GET",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result.result;
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
 }

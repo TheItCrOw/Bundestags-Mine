@@ -304,8 +304,8 @@ $('body').on('click', '.read-more-agenda', async function () {
     $('.agenda-item-inspector .content').html($(this).data('text'));
 
     // Move the inspector
-    var left = $(this).offset().left + $(this).width() + 20;
-    var top = $(this).offset().top - $('.agenda-item-inspector .content').height() / 2;
+    var left = $(this).offset().left;
+    var top = $(this).offset().top + $(this).height();
     $('.agenda-item-inspector').offset({ top: top, left: left });
 })
 
@@ -318,6 +318,8 @@ $('body').on('click', '.speech-item', async function () {
 
 // Open the speech when opned from different views. We change that in the future maybe...
 $('body').on('click', '.open-speech-btn', async function () {
+    // Hide potential modals
+    $('#speakerInspectorModal').modal('hide');
     $('.nav-item-switcher[data-id="speechContent"]').trigger('click');
     var speechId = $(this).data('id');
     insertSpeechIntoFulltextAnalysis(speechId);

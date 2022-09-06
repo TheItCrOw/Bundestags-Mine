@@ -747,8 +747,8 @@
             @*a modal that shows the details of an agenda item when clicked*@
             <div class="agenda-item-inspector">
                 <div class="flexed justify-content-between align-items-center">
-                    <p class="mr-5 mb-0 font-weight-bold">Detailansicht</p>
-                    <i class="fas fa-times mr-1 close" onclick="$('.agenda-item-inspector').hide(100);"></i>
+                    <p class="mr-5 mb-0 text-dark">Detailansicht</p>
+                    <i class="fas fa-times mr-1 close small-font" onclick="$('.agenda-item-inspector').hide(100);"></i>
                 </div>
                 <div class="content">
                 </div>
@@ -854,6 +854,7 @@
 
     @*speaker inspector modal*@
     <div class="modal fade bg-gradient-light" id="speakerInspectorModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="loader"><div class="lds-ripple"><div></div><div></div></div></div>
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content w-100 rounded-0 card-shadow">
                 <div class="view">

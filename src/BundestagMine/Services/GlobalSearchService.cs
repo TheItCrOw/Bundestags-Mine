@@ -23,21 +23,17 @@ namespace BundestagMine.Services
         }
 
         /// <summary>
-        /// Takes in a speakerid and builds the speakerinspectorviewmodel from it
+        /// Gets all speeches of a speaker as <see cref="SpeechViewModel"/>
         /// </summary>
         /// <param name="speakerId"></param>
         /// <returns></returns>
-        public SpeakerInspectorViewModel BuildSpeakerInspectorViewModel(string speakerId)
+        public List<SpeechViewModel> GetSpeechViewModelsOfSpeaker(string speakerId, int limit = int.MaxValue)
         {
-            var result = new SpeakerInspectorViewModel();
-
-            result.Deputy = _db.Deputies.FirstOrDefault(d => d.SpeakerId == speakerId);
-            if (result.Deputy == null) return null;
-
-            // speeches
-            result.Speeches = _db.Speeches
+            return _db.Speeches
                 .Where(s => s.SpeakerId == speakerId)
-                .Take(30)
+                .OrderByDescending(s => s.LegislaturePeriod)
+                .ThenByDescending(s => s.ProtocolNumber)
+                .Take(limit)
                 .Select(s => new SpeechViewModel()
                 {
                     Speech = s,
@@ -52,6 +48,22 @@ namespace BundestagMine.Services
                         .ToList()
                 })
                 .ToList();
+        }
+
+        /// <summary>
+        /// Takes in a speakerid and builds the speakerinspectorviewmodel from it
+        /// </summary>
+        /// <param name="speakerId"></param>
+        /// <returns></returns>
+        public SpeakerInspectorViewModel BuildSpeakerInspectorViewModel(string speakerId)
+        {
+            var result = new SpeakerInspectorViewModel();
+
+            result.Deputy = _db.Deputies.FirstOrDefault(d => d.SpeakerId == speakerId);
+            if (result.Deputy == null) return null;
+
+            // speeches
+            result.Speeches = GetSpeechViewModelsOfSpeaker(speakerId, 5);
 
             // 5 most topics overall
             result.Topics = _db.NamedEntity
@@ -65,7 +77,7 @@ namespace BundestagMine.Services
             // comments
             result.Comments = _db.Shouts
                 .Where(sh => sh.SpeakerId == speakerId)
-                .Take(30)
+                .Take(5)
                 .AsEnumerable()
                 .Select(shout =>
                 {
@@ -86,7 +98,7 @@ namespace BundestagMine.Services
             // polls
             result.Polls = _db.Polls
                 .Where(p => _db.PollEntries.Any(pe => pe.PollId == p.Id && pe.FirstName + pe.LastName == result.Deputy.FirstName + result.Deputy.LastName))
-                .Take(30)
+                .Take(5)
                 .Select(p => new PollViewModel()
                 {
                     Poll = p,

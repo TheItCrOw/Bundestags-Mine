@@ -226,27 +226,6 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
-        [HttpGet("/api/DashboardController/GetSpeakerInspectorView/{speakerId}")]
-        public async Task<IActionResult> GetSpeakerInspectorView(string speakerId)
-        {
-            dynamic response = new ExpandoObject();
-
-            try
-            {
-                response.status = "200";
-                var inspectorViewModel = _globalSearchService.BuildSpeakerInspectorViewModel(speakerId);
-                response.result = await _viewRenderService.RenderToStringAsync("_SpeakerInspectorView", inspectorViewModel);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error building speaker inspector:");
-                response.status = "400";
-                response.message = "Couldn't build speaker inspector, error in logs";
-            }
-
-            return Json(response);
-        }
-
         /// <summary>
         /// Param[0] = limit, Param[1] = from, Param[2] = to, Param[3] = fraction, Param[4] = party,
         /// </summary>

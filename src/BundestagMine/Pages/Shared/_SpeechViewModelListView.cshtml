@@ -1,0 +1,43 @@
+﻿@using BundestagMine.ViewModels
+@model List<SpeechViewModel>
+
+<div class="speechviewmodel-list">
+    @foreach (var speech in Model)
+    {
+        <div class="speech">
+            <div>
+                <div class="flexed align-items-center justify-content-between">
+                    <p class="mb-0 agenda read-more-agenda" data-text="@speech.Agenda?.Description">
+                        @(speech.Speech?.LegislaturePeriod). Legislaturperiode - @(speech.Speech?.ProtocolNumber). Sitzung - @speech.Agenda?.Title
+                    </p>
+                    <a class="ml-2 open-speech-btn mr-2" data-toggle="popover" data-trigger="hover" data-placement="left"
+                        data-content="Rede lesen" data-id="@speech.Speech?.Id">
+                        <i class="fab fa-readme"></i>
+                    </a>
+                </div>
+
+                <div class="flexed align-items-center justify-content-between">
+                    <p class="mb-0 date">@speech.Agenda?.Date</p>
+                    <p class="topic mb-0">#@string.Join(", ", speech.Topics)</p>
+                </div>
+
+                <hr class="mt-0 mb-1" />
+                <p class="mb-0 text">
+                    @{
+                        // show X amount of words.
+                        var counter = 65;
+                        foreach (var word in speech.Speech?.Text.Split(' '))
+                        {
+                            if (counter > 0)
+                            {
+                                <span>@word </span>
+                            }
+                            counter--;
+                        }
+                        <span>...</span>
+                    }
+                </p>
+            </div>
+        </div>
+    }
+</div>

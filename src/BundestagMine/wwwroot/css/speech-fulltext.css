@@ -160,7 +160,7 @@
     border: gray 1px solid;
     background-color: white;
     box-shadow: rgba(0, 0, 0, 0.7) 0px 2px 7px;
-    z-index: 10;
+    z-index: 9999999;
     padding: 8px;
     display: none;
 }
@@ -169,6 +169,7 @@
         max-height: 300px;
         max-width: 350px;
         overflow-y: auto;
+        font-size:small;
         overflow-x: no-content;
     }
 

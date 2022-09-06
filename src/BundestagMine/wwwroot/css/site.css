@@ -467,6 +467,41 @@ body {
 }
 
     #faqContent .question-container h5 {
-        color:var(--bg-darkprime);
-        font-weight:600;
+        color: var(--bg-darkprime);
+        font-weight: 600;
+    }
+
+/*SpeechViewModelsList*/
+.speechviewmodel-list .speech {
+    margin: 15px 0px;
+    width: 100%;
+}
+
+    .speechviewmodel-list .speech .agenda {
+        font-size: small;
+        color: black;
+        cursor: pointer !important;
+    }
+
+        .speechviewmodel-list .speech .agenda:hover {
+            text-decoration: underline;
+        }
+
+    .speechviewmodel-list .speech .date {
+        font-size: small;
+    }
+
+    .speechviewmodel-list .speech .topic {
+        font-size: small;
+        font-style: italic;
+        padding-right: 6px;
+    }
+
+    .speechviewmodel-list .speech .text {
+        font-size: small;
+    }
+
+    .speechviewmodel-list .speech .open-speech-btn{
+        cursor:pointer;
+        color:gray;
     }

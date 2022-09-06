@@ -30,6 +30,49 @@ namespace BundestagMine.Controllers
             _db = db;
         }
 
+        [HttpGet("/api/GlobalSearchController/GetSpeechViewModelListViewOfSpeaker/{speakerId}")]
+        public async Task<IActionResult> GetSpeechViewModelListViewOfSpeaker(string speakerId)
+        {
+            dynamic response = new ExpandoObject();
+
+            try
+            {
+                response.status = "200";
+                var speechesList = _globalSearchService.GetSpeechViewModelsOfSpeaker(speakerId);
+                response.result = await _viewRenderService.RenderToStringAsync("_SpeechViewModelListView", speechesList);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching speeches:");
+                response.status = "400";
+                response.message = "Couldn't fetch speeches, error in logs";
+            }
+
+            return Json(response);
+        }
+
+
+        [HttpGet("/api/GlobalSearchController/GetSpeakerInspectorView/{speakerId}")]
+        public async Task<IActionResult> GetSpeakerInspectorView(string speakerId)
+        {
+            dynamic response = new ExpandoObject();
+
+            try
+            {
+                response.status = "200";
+                var inspectorViewModel = _globalSearchService.BuildSpeakerInspectorViewModel(speakerId);
+                response.result = await _viewRenderService.RenderToStringAsync("_SpeakerInspectorView", inspectorViewModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error building speaker inspector:");
+                response.status = "400";
+                response.message = "Couldn't build speaker inspector, error in logs";
+            }
+
+            return Json(response);
+        }
+
         [HttpPost("/api/GlobalSearchController/GlobalSearch/")]
         public async Task<IActionResult> GlobalSearch(GlobalSearchRequest globalSearchRequest)
         {
