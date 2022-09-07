@@ -57,6 +57,8 @@
                 $('.global-search .results').find('.result[data-id="shouts"]').find('.result-content').html(response.result);
                 this.searchingShoutsRequest = undefined;
                 $('.global-search .results').find('.result[data-id="shouts"]').find('.loader').fadeOut(100);
+                // activate popovers
+                $('[data-toggle="popover"]').popover();
             },
             // On error
             function (response) {
@@ -85,6 +87,8 @@
                 $('.global-search .results').find('.result[data-id="polls"]').find('.result-content').html(response.result);
                 this.searchingPollsRequest = undefined;
                 $('.global-search .results').find('.result[data-id="polls"]').find('.loader').fadeOut(100);
+                // activate popovers
+                $('[data-toggle="popover"]').popover();
             },
             // On error
             function (response) {
@@ -113,6 +117,8 @@
                 $('.global-search .results').find('.result[data-id="agendaItems"]').find('.result-content').html(response.result);
                 this.searchingAgendaItemsRequest = undefined;
                 $('.global-search .results').find('.result[data-id="agendaItems"]').find('.loader').fadeOut(100);
+                // activate popovers
+                $('[data-toggle="popover"]').popover();
             },
             // On error
             function (response) {
@@ -141,6 +147,8 @@
                 $('.global-search .results').find('.result[data-id="speakers"]').find('.result-content').html(response.result);
                 this.searchingSpeakersRequest = undefined;
                 $('.global-search .results').find('.result[data-id="speakers"]').find('.loader').fadeOut(100);
+                // activate popovers
+                $('[data-toggle="popover"]').popover();
             },
             // On error
             function (response) {
@@ -168,6 +176,8 @@
                 $('.global-search .results').find('.result[data-id="speeches"]').find('.result-content').html(response.result);
                 this.searchingSpeechesRequest = undefined;
                 $('.global-search .results').find('.result[data-id="speeches"]').find('.loader').fadeOut(100);
+                // activate popovers
+                $('[data-toggle="popover"]').popover();
             },
             // On error
             function (response) {

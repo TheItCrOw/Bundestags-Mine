@@ -350,8 +350,15 @@
             border-radius: 50%;
             border: 1px solid var(--bg-darkprime);
             box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+            transition: 0.25s;
             z-index: 2 !important;
         }
+
+            .analysis-wrapper .header .portrait:hover {
+                transition: 0.25s;
+                transform:scale(1.05, 1.05);
+                cursor:pointer;
+            }
 
     .analysis-wrapper .analysis-content {
         height: calc(100% - 220px);
@@ -418,6 +425,7 @@
     padding-right: 1.2em;
     padding-top: 3px;
     padding-bottom: 3px;
+    border-left:var(--bg-darkprime) 4px solid;
     transition: 0.15s;
     background-color: gray;
     color: white;
@@ -432,16 +440,14 @@
 }
 
     .fulltext-analysis-div .shout:hover {
-        padding: 5px;
         transition: 0.15s;
         background-color: var(--bg-darkprime);
     }
 
-        .fulltext-analysis-div .shout:hover .shout-img {
-            transition: 0.15s;
-            width: 100px !important;
-            height: 100px !important;
-        }
+    .fulltext-analysis-div .shout:hover .open-speaker-inspector{
+        text-decoration:underline;
+        cursor:pointer;
+    }
 
 .fulltext-analysis-div .shout-img {
     transition: 0.15s;

@@ -64,6 +64,12 @@ $(document).ready(async function () {
     $('#faqContent').hide();
 })
 
+// Open the speaker inspector
+$('body').on('click', '.open-speaker-inspector', function () {
+    var speakerId = $(this).data('id');
+    speakerInspectorHandler.openSpeakerInspector(speakerId);
+})
+
 // Adds a new dsahboard to the Parlament radar
 async function addNewDashboard(name, fetchId, type, from, to) {
     // Create a uniqe dashboard id

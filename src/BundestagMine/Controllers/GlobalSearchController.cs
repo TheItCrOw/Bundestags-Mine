@@ -30,6 +30,48 @@ namespace BundestagMine.Controllers
             _db = db;
         }
 
+        [HttpGet("/api/GlobalSearchController/GetPollViewModelListViewOfSpeaker/{speakerId}")]
+        public async Task<IActionResult> GetPollViewModelListViewOfSpeaker(string speakerId)
+        {
+            dynamic response = new ExpandoObject();
+
+            try
+            {
+                response.status = "200";
+                var pollList = _globalSearchService.GetPollViewModelsOfSpeaker(speakerId);
+                response.result = await _viewRenderService.RenderToStringAsync("_PollViewModelListView", pollList);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching polls:");
+                response.status = "400";
+                response.message = "Couldn't fetch polls, error in logs";
+            }
+
+            return Json(response);
+        }
+
+        [HttpGet("/api/GlobalSearchController/GetSpeechCommentViewModelListViewOfSpeaker/{speakerId}")]
+        public async Task<IActionResult> GetSpeechCommentViewModelListViewOfSpeaker(string speakerId)
+        {
+            dynamic response = new ExpandoObject();
+
+            try
+            {
+                response.status = "200";
+                var commentList = _globalSearchService.GetSpeechCommentViewModelsOfSpeaker(speakerId);
+                response.result = await _viewRenderService.RenderToStringAsync("_SpeechCommentViewModelListView", commentList);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching comments:");
+                response.status = "400";
+                response.message = "Couldn't fetch comments, error in logs";
+            }
+
+            return Json(response);
+        }
+
         [HttpGet("/api/GlobalSearchController/GetSpeechViewModelListViewOfSpeaker/{speakerId}")]
         public async Task<IActionResult> GetSpeechViewModelListViewOfSpeaker(string speakerId)
         {

@@ -14,7 +14,7 @@
                 @(poll.LegislaturePeriod). Legislatureperiode - @(poll.ProtocolNumber). Sitzung
             </p>
             <p class="date">
-                @poll.Date
+                @poll.Date.ToShortDateString()
             </p>
             <p class="name">@poll.Title</p>
         </div>

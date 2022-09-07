@@ -69,18 +69,48 @@
 
             @*different content*@
             <div class="tab-content w-100">
+                @*speeches*@
                 <div class="content" data-type="speeches">
                     <div class="loader"><div class="lds-ripple"><div></div><div></div></div></div>
                     <div class="result">
                         <partial name="~/Pages/Shared/_SpeechViewModelListView.cshtml" model="Model.Speeches" />
-                        <button class="mb-0 btn btn-outline-dark rounded-0 small-font load-all" data-type="speeches"
+                        @if (Model.Speeches.Count == 5)
+                        {
+                            <button class="mb-0 btn btn-outline-dark rounded-0 small-font load-all" data-type="speeches"
                                 data-id="@Model.Deputy.SpeakerId">
-                            Alle Reden laden
-                        </button>
+                                Alle Reden laden
+                            </button>
+                        }
                     </div>
                 </div>
-                <div class="content" data-type="shouts"></div>
-                <div class="content" data-type="polls"></div>
+                @*speeches*@
+                <div class="content" data-type="shouts">
+                    <div class="loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                    <div class="result">
+                        <partial name="~/Pages/Shared/_SpeechCommentViewModelListView.cshtml" model="Model.Comments" />
+                        @if (Model.Comments.Count == 5)
+                        {
+                            <button class="mb-0 btn btn-outline-dark rounded-0 small-font load-all" data-type="shouts"
+                                data-id="@Model.Deputy.SpeakerId">
+                                Alle Kommentare laden
+                            </button>
+                        }
+                    </div>
+                </div>
+                @*polls*@
+                <div class="content" data-type="polls">
+                    <div class="loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                    <div class="result">
+                        <partial name="~/Pages/Shared/_PollViewModelListView.cshtml" model="Model.Polls" />
+                        @if (Model.Polls.Count == 5)
+                        {
+                            <button class="mb-0 btn btn-outline-dark rounded-0 small-font load-all" data-type="polls"
+                                data-id="@Model.Deputy.SpeakerId">
+                                Alle Abstimmungen laden
+                            </button>
+                        }
+                    </div>
+                </div>
             </div>
         </div>
     </div>

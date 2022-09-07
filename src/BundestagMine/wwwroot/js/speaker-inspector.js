@@ -17,21 +17,36 @@
             console.log(exception);
         } finally {
             $('#speakerInspectorModal .loader').fadeOut(150);
+            // activate popovers
+            $('[data-toggle="popover"]').popover();
         }
     }
 
     // Handles the full loading of the given entity type such as speeches, polls etc.
     SpeakerInspectorHandler.prototype.loadAll = async function (speakerId, type) {
+        // Show loader
+        $(`#speakerInspectorModal .content[data-type="${type}"] .loader`).fadeIn(150);
+        var dataView = 'Fehler beim Laden';
+
         // Handle the loading of speeches
         if (type == 'speeches') {
-            // Show loader
-            $('#speakerInspectorModal .content[data-type="speeches"] .loader').fadeIn(150);
             // Fetch the data
-            var allSpeechesView = await getSpeechViewModelListViewOfSpeaker(speakerId);
-            $('#speakerInspectorModal .content[data-type="speeches"] .result').html(allSpeechesView);
-            // Hide loader
-            $('#speakerInspectorModal .content[data-type="speeches"] .loader').fadeOut(150);
+            dataView = await getSpeechViewModelListViewOfSpeaker(speakerId);
+        } else if (type == 'shouts') {
+            // Fetch the data
+            dataView = await getSpeechCommentViewModelListViewOfSpeaker(speakerId);
+        } else if (type == 'polls') {
+            // Fetch the data
+            dataView = await getPollViewModelListViewOfSpeaker(speakerId);
         }
+
+        // Add the data
+        $(`#speakerInspectorModal .content[data-type="${type}"] .result`).html(dataView);
+
+        // Hide loader
+        $(`#speakerInspectorModal .content[data-type="${type}"] .loader`).fadeOut(150);
+        // activate popovers
+        $('[data-toggle="popover"]').popover();
     }
 
     // Handles the switching of the tabs and views
@@ -50,7 +65,7 @@
             if ($(this).data('type') == type) {
                 $(this).show(100);
             } else {
-                $(this).hide();
+                $(this).hide(100);
             }
         })
     }
@@ -60,7 +75,7 @@
 var speakerInspectorHandler = new SpeakerInspectorHandler();
 
 // Testing
-speakerInspectorHandler.openSpeakerInspector('11003638');
+//speakerInspectorHandler.openSpeakerInspector('11003638');
 
 // Handles the switching of the tabs
 $('#speakerInspectorModal').on('click', '.tabs .tab', function () {

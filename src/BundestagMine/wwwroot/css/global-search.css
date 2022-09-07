@@ -89,7 +89,6 @@
             border-left: transparent 6px solid;
             transition: 0.25s;
             padding: 6px;
-            cursor: pointer;
         }
 
             .global-search .result-content .cur-result-page .speech:hover {
@@ -327,9 +326,8 @@
             transition: 0.25s;
             padding: 6px;
             margin:6px;
-            border:lightgray dashed 1px;
+            border:lightgray solid 1px;
             width: 100%;
-            cursor: pointer;
         }
 
             .global-search .result-content .cur-result-page .shout:hover {

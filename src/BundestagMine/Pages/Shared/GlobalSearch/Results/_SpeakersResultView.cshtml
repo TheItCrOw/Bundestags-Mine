@@ -7,7 +7,7 @@
 <div class="flexed align-items-center justify-content-around flex-wrap">
     @foreach (var deputy in Model.ResultList as List<Deputy>)
     {
-        <div class="speaker" data-id="@deputy.SpeakerId">
+        <div class="speaker open-speaker-inspector" data-id="@deputy.SpeakerId">
             <div>
                 @{
                     var imgSrc = BundestagScraperService.GetDeputyPortraitFromImageDatabase(deputy.SpeakerId);

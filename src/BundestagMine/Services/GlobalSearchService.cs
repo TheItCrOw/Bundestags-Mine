@@ -51,33 +51,16 @@ namespace BundestagMine.Services
         }
 
         /// <summary>
-        /// Takes in a speakerid and builds the speakerinspectorviewmodel from it
+        /// Gets all comments of a speaker as <see cref="SpeechCommentViewModel"/>
         /// </summary>
         /// <param name="speakerId"></param>
         /// <returns></returns>
-        public SpeakerInspectorViewModel BuildSpeakerInspectorViewModel(string speakerId)
+        public List<SpeechCommentViewModel> GetSpeechCommentViewModelsOfSpeaker(string speakerId, int limit = int.MaxValue)
         {
-            var result = new SpeakerInspectorViewModel();
-
-            result.Deputy = _db.Deputies.FirstOrDefault(d => d.SpeakerId == speakerId);
-            if (result.Deputy == null) return null;
-
-            // speeches
-            result.Speeches = GetSpeechViewModelsOfSpeaker(speakerId, 5);
-
-            // 5 most topics overall
-            result.Topics = _db.NamedEntity
-                .Where(ne => ne.ShoutId == Guid.Empty && result.Speeches.Select(s => s.Speech.Id).Contains(ne.NLPSpeechId))
-                .GroupBy(ne => ne.LemmaValue)
-                .OrderByDescending(ne => ne.Count())
-                .Take(5)
-                .Select(ne => ne.Key)
-                .ToList();
-
-            // comments
-            result.Comments = _db.Shouts
+            return _db.Shouts
                 .Where(sh => sh.SpeakerId == speakerId)
-                .Take(5)
+                .OrderBy(sh => sh.SpeakerId)
+                .Take(limit)
                 .AsEnumerable()
                 .Select(shout =>
                 {
@@ -94,18 +77,50 @@ namespace BundestagMine.Services
                     };
                 })
                 .ToList();
+        }
 
-            // polls
-            result.Polls = _db.Polls
-                .Where(p => _db.PollEntries.Any(pe => pe.PollId == p.Id && pe.FirstName + pe.LastName == result.Deputy.FirstName + result.Deputy.LastName))
-                .Take(5)
+        /// <summary>
+        /// Gets all polls of a speaker as <see cref="PollViewModel"/>
+        /// </summary>
+        /// <param name="speakerId"></param>
+        /// <returns></returns>
+        public List<PollViewModel> GetPollViewModelsOfSpeaker(string speakerId, int limit = int.MaxValue)
+        {
+            var deputy = _db.Deputies.FirstOrDefault(d => d.SpeakerId == speakerId);
+            if (deputy == null) return null;
+
+            return _db.Polls
+                .Where(p => _db.PollEntries.Any(pe => pe.PollId == p.Id && pe.FirstName + pe.LastName == deputy.FirstName + deputy.LastName))
+                .Take(limit)
                 .Select(p => new PollViewModel()
                 {
                     Poll = p,
-                    Entries = _db.PollEntries.Where(pe => pe.PollId == p.Id && pe.FirstName + pe.LastName == result.Deputy.FirstName + result.Deputy.LastName).ToList()
+                    Entries = _db.PollEntries.Where(pe => pe.PollId == p.Id && pe.FirstName + pe.LastName == deputy.FirstName + deputy.LastName).ToList()
                 })
                 .Where(p => p.Entries.Count > 0)
                 .ToList();
+        }
+
+        /// <summary>
+        /// Takes in a speakerid and builds the speakerinspectorviewmodel from it
+        /// </summary>
+        /// <param name="speakerId"></param>
+        /// <returns></returns>
+        public SpeakerInspectorViewModel BuildSpeakerInspectorViewModel(string speakerId)
+        {
+            var result = new SpeakerInspectorViewModel();
+
+            result.Deputy = _db.Deputies.FirstOrDefault(d => d.SpeakerId == speakerId);
+            if (result.Deputy == null) return null;
+
+            // speeches
+            result.Speeches = GetSpeechViewModelsOfSpeaker(speakerId, 5);
+
+            // comments
+            result.Comments = GetSpeechCommentViewModelsOfSpeaker(speakerId, 5);
+
+            // polls
+            result.Polls = GetPollViewModelsOfSpeaker(speakerId, 5);
 
             return result;
         }
@@ -135,12 +150,12 @@ namespace BundestagMine.Services
                     .AsEnumerable()
                     .SelectMany(speech =>
                     {
-                        var speechSegment = speech.Segments
+                        var speechSegments = speech.Segments
                             .Where(ss => ss.Shouts.Any(sh => sh.Text.ToLower().Contains(search.ToLower())));
 
                         var speaker = _db.Deputies.FirstOrDefault(d => d.SpeakerId == speech.SpeakerId);
 
-                        return speechSegment.Where(ss => ss != null).Select(ss => new SpeechCommentViewModel()
+                        return speechSegments.Where(ss => ss != null).Select(ss => new SpeechCommentViewModel()
                         {
                             Speaker = speaker,
                             SpeechId = speech.Id,
@@ -259,7 +274,7 @@ namespace BundestagMine.Services
                     .SelectMany(p => _db.Speeches
                          .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
                     .SelectMany(s => _db.Deputies.Where(d => d.SpeakerId == s.SpeakerId
-                                && string.Concat(d.FirstName ?? "", d.LastName ?? "", d.Fraction ?? "", d.Party ?? "").ToLower().Contains(search.ToLower())))
+                                && string.Concat(d.FirstName ?? "", d.LastName ?? "", d.Fraction ?? "", d.Party ?? "").ToLower().Contains(search.Replace(" ", "").ToLower())))
                     .AsEnumerable()
                     .DistinctBy(s => s.SpeakerId)
                     .Skip(offset * take)
@@ -272,7 +287,7 @@ namespace BundestagMine.Services
                     .SelectMany(p => _db.Speeches
                          .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
                     .SelectMany(s => _db.Deputies.Where(d => d.SpeakerId == s.SpeakerId
-                                && string.Concat(d.FirstName ?? "", d.LastName ?? "", d.Fraction ?? "", d.Party ?? "").ToLower().Contains(search.ToLower())))
+                                && string.Concat(d.FirstName ?? "", d.LastName ?? "", d.Fraction ?? "", d.Party ?? "").ToLower().Contains(search.Replace(" ", "").ToLower())))
                     .AsEnumerable()
                     .DistinctBy(s => s.SpeakerId)
                     .Count()

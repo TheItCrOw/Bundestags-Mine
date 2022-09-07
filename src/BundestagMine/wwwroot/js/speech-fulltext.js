@@ -341,6 +341,7 @@ async function insertSpeechIntoFulltextAnalysis(speechId) {
     var speaker = await getSpeakerById(speech.speakerId);
     // Set the speaker image
     $('.fulltext-analysis-div').find('.portrait').attr('src', imgSrc);
+    $('.fulltext-analysis-div').find('.portrait').attr('data-id', speaker.speakerId);
     // Set the date
     var protocol = allProtocols.find(p => p.legislaturePeriod == speech.legislaturePeriod && p.number == speech.protocolNumber);
     $('.fulltext-analysis-div').find('.name-badge').html(parseToGermanDate(protocol.date));
@@ -504,14 +505,17 @@ async function buildHtmlOfFulltextAnalysis(speech) {
                 for (var k = 0; k < keys.length; k++) {
                     var shout = shouts[keys[k]];
                     var shoutImage = 'img/Unbekannt.jpg';
-                    var shoutName = 'Unbekannt'
+                    var shoutName = 'Unbekannt';
+                    var shoutClass = '';
+
                     if (shout.speakerId != undefined) {
                         shoutImage = await getSpeakerPortrait(shout.speakerId);
                         shoutName = shout.firstName + " " + shout.lastName;
+                        shoutClass = 'open-speaker-inspector';
                     }
 
                     var shoutHtml = `<div class="shout">
-                                <span class="m-0 p-0">
+                                <span class="m-0 p-0 ${shoutClass}" data-id="${shout.speakerId}">
                                 <img class="shout-img" src=\"${shoutImage}\" onerror="$(this).attr('src', 'img/Unbekannt.jpg')"/>
                                 <i class="ml-2 mr-1 fas fa-comment-dots"></i>
                                 ${shoutName}:

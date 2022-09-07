@@ -687,3 +687,39 @@ async function getSpeechViewModelListViewOfSpeaker(speakerId) {
         return undefined;
     }
 }
+
+// Get all shouts of a speaker as SpeechCommentViewModels
+async function getSpeechCommentViewModelListViewOfSpeaker(speakerId) {
+    try {
+        const result = await $.ajax({
+            url: "/api/GlobalSearchController/GetSpeechCommentViewModelListViewOfSpeaker/" + speakerId,
+            type: "GET",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result.result;
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+}
+
+// Get all polls of a speaker as PollViewModels
+async function getPollViewModelListViewOfSpeaker(speakerId) {
+    try {
+        const result = await $.ajax({
+            url: "/api/GlobalSearchController/GetPollViewModelListViewOfSpeaker/" + speakerId,
+            type: "GET",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result.result;
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+}

@@ -6,8 +6,8 @@
 
 @foreach (var speech in Model.ResultList as List<SpeechViewModel>)
 {
-    <div class="flexed align-items-center speech col-lg-6 open-speech-btn" data-id="@speech.Speech?.Id">
-        <div>
+    <div class="flexed align-items-center speech col-lg-6">
+        <div class="open-speaker-inspector clickable" data-id="@speech.Speaker?.SpeakerId">
             @{
                 var imgSrc = BundestagScraperService.GetDeputyPortraitFromImageDatabase(speech.Speaker?.SpeakerId);
                 if (string.IsNullOrEmpty(imgSrc)) imgSrc = "./img/Unbekannt.jpg";
@@ -16,12 +16,20 @@
             }
         </div>
         <div>
-            <p class="info">
-                @(speech.Speech?.LegislaturePeriod). Legislatureperiode - @(speech.Speech?.ProtocolNumber). Sitzung - @speech.Agenda?.Title
-            </p>
-            <p class="date">
-                @speech.Agenda?.Date
-            </p>
+            <div class="flexed justify-content-between align-items-center">
+                <div>
+                    <p class="info clickable read-more-agenda" data-text="@speech.Agenda?.Description">
+                        @(speech.Speech?.LegislaturePeriod). Legislatureperiode - @(speech.Speech?.ProtocolNumber). Sitzung - @speech.Agenda?.Title
+                    </p>
+                    <p class="date">
+                        @speech.Agenda?.Date
+                    </p>
+                </div>
+                <a class="ml-2 open-speech-btn mr-2 clickable" data-toggle="popover" data-trigger="hover" data-placement="left"
+               data-content="Rede lesen" data-id="@speech.Speech?.Id">
+                    <i class="fab fa-readme"></i>
+                </a>
+            </div>
             @{
                 // We want a sneekpeak of the speech that contains the searchstring. We earlier fetched all the segments
                 // that fit the criteria. Showcase the segment.
