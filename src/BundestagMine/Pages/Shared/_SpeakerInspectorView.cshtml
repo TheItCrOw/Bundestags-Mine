@@ -3,16 +3,21 @@
 @inject BundestagScraperService BundestagScraperService
 @model SpeakerInspectorViewModel
 
-@{
+<div class="modal-header bg-transparent rounded-0 text-dark pl-3 pr-3 pb-1 pt-1">
+    <h5 class="modal-title">@Model?.Deputy.FirstName @Model?.Deputy.LastName</h5>
+    <button type="button" class="close text-dark" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">-</span>
+    </button>
+</div>
+
+@if(Model == null)
+{
+    <p class="mt-3 text-center">Klicken Sie auf ein(e) Redner(in) in eine der Ansichten.</p>
+}
+else
+{
     var imgSrc = BundestagScraperService.GetDeputyPortraitFromImageDatabase(Model.Deputy.SpeakerId);
     if (string.IsNullOrEmpty(imgSrc)) imgSrc = "./img/Unbekannt.jpg";
-
-    <div class="modal-header bg-transparent rounded-0 text-dark pl-3 pr-3 pb-1 pt-1">
-        <h5 class="modal-title">@Model.Deputy.FirstName @Model.Deputy.LastName</h5>
-        <button type="button" class="close text-dark" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
     <div class="modal-body">
         <div class="row m-0 p-0">
             @*image*@
@@ -77,7 +82,7 @@
                         @if (Model.Speeches.Count == 5)
                         {
                             <button class="mb-0 btn btn-outline-dark rounded-0 small-font load-all" data-type="speeches"
-                                data-id="@Model.Deputy.SpeakerId">
+                            data-id="@Model.Deputy.SpeakerId">
                                 Alle Reden laden
                             </button>
                         }
@@ -91,7 +96,7 @@
                         @if (Model.Comments.Count == 5)
                         {
                             <button class="mb-0 btn btn-outline-dark rounded-0 small-font load-all" data-type="shouts"
-                                data-id="@Model.Deputy.SpeakerId">
+                            data-id="@Model.Deputy.SpeakerId">
                                 Alle Kommentare laden
                             </button>
                         }
@@ -105,7 +110,7 @@
                         @if (Model.Polls.Count == 5)
                         {
                             <button class="mb-0 btn btn-outline-dark rounded-0 small-font load-all" data-type="polls"
-                                data-id="@Model.Deputy.SpeakerId">
+                            data-id="@Model.Deputy.SpeakerId">
                                 Alle Abstimmungen laden
                             </button>
                         }

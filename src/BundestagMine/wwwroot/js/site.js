@@ -4,7 +4,6 @@ var allSpeaker = [];
 var allParties = [];
 var allFractions = [];
 var allProtocols = [];
-var allAgendaItems = [];
 
 // set the dimensions and margins of each of the d3 svg graphs
 var margin = { top: 10, right: 30, bottom: 30, left: 40 },
@@ -65,10 +64,8 @@ $(document).ready(async function () {
 })
 
 // Open the speaker inspector
-$('body').on('click', '.open-speaker-inspector', function () {
-    var speakerId = $(this).data('id');
-    speakerInspectorHandler.openSpeakerInspector(speakerId);
-})
+$('body').on('click', '.open-speaker-inspector', function () { speakerInspectorHandler.openSpeakerInspector($(this).data('id')) })
+$('body').on('click', '#speakerInspectorButton', function () { speakerInspectorHandler.openSpeakerInspector('') })
 
 // Adds a new dsahboard to the Parlament radar
 async function addNewDashboard(name, fetchId, type, from, to) {

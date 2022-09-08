@@ -442,7 +442,6 @@ body {
     z-index: 3;
     position: absolute;
     background-color: var(--bg-darkprime);
-    border: black 1px solid;
     color: rgba(255,255,255, 0.8);
     padding-top: 20px;
     padding-bottom: 20px;

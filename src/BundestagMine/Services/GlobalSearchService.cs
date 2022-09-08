@@ -91,6 +91,8 @@ namespace BundestagMine.Services
 
             return _db.Polls
                 .Where(p => _db.PollEntries.Any(pe => pe.PollId == p.Id && pe.FirstName + pe.LastName == deputy.FirstName + deputy.LastName))
+                .OrderByDescending(p => p.LegislaturePeriod)
+                .ThenByDescending(p => p.ProtocolNumber)
                 .Take(limit)
                 .Select(p => new PollViewModel()
                 {

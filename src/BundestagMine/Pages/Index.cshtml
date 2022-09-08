@@ -858,9 +858,15 @@
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content w-100 rounded-0 card-shadow">
                 <div class="view">
+                    <partial name="~/Pages/Shared/_SpeakerInspectorView.cshtml" model="null"/>
                 </div>
             </div>
         </div>
+    </div>
+
+    @*show this when the speak inspector is not opened*@
+    <div id="speakerInspectorButton" data-expanded="true" data-toggle="popover" data-content="Redner(innen) öffnen" data-trigger="hover">
+        <i class="fas fa-users"></i>
     </div>
 
     @section scripts{

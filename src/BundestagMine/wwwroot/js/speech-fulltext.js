@@ -361,8 +361,8 @@ async function insertSpeechIntoFulltextAnalysis(speechId) {
     // Set the breadcrumbps
     $('.breadcrumbs').find('.period').html('Legislaturperiode ' + speech.legislaturePeriod);
     $('.breadcrumbs').find('.protocol').html('Sitzung ' + speech.protocolNumber);
-    $('.breadcrumbs').find('.agenda').html(agendaItem.title);
-    $('.breadcrumbs').find('.agenda').data('text', agendaItem.description);
+    $('.breadcrumbs').find('.agenda').html(agendaItem?.title);
+    $('.breadcrumbs').find('.agenda').data('text', agendaItem?.description);
 
     // Set the topic of the speech
     if (topics != undefined && topics.length >= 3) {

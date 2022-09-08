@@ -143,8 +143,10 @@
     }
 
         .page-container .page-content .speech-list-item:hover {
-            border-left: 10px dodgerblue solid;
+            border-left: 8px dodgerblue solid;
             border-color: dodgerblue;
+            border-top-style: solid;
+            border-bottom-style: solid;
             transition: 0.15s;
         }
 

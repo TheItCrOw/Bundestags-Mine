@@ -35,7 +35,8 @@
                 <div class="row m-0 p-0">
                     @if (Model.StatisticsViewModel is ReportDeputyViewModel reportDeputyViewModel)
                     {
-                        <img src="@Model.StatisticsViewModel.PortraitUrl" class="col-3 m-0 p-0 img-fit" />
+                        <img src="@Model.StatisticsViewModel.PortraitUrl" class="col-3 m-0 p-0 img-fit open-speaker-inspector clickable"
+                             data-id="@reportDeputyViewModel.Deputy?.SpeakerId"/>
                     }
                     else
                     {
@@ -59,7 +60,7 @@
                                 <tr>
                                     <th scope="row">
                                         <i class="fas fa-info-circle mr-2" data-toggle="popover" data-trigger="hover" data-placement="top"
-                                           data-content="Gesamtanzahl der Reden."></i>
+                                       data-content="Gesamtanzahl der Reden."></i>
                                         Anzahl Reden
                                     </th>
                                     <td>@Model.StatisticsViewModel.TotalSpeechesAmount</td>
@@ -68,7 +69,7 @@
                                 <tr>
                                     <th scope="row">
                                         <i class="fas fa-info-circle mr-2" data-toggle="popover" data-trigger="hover" data-placement="top"
-                                           data-content="Anzahl Reden, die das gewählte Thema mindestens einmal erwähnen."></i>
+                                       data-content="Anzahl Reden, die das gewählte Thema mindestens einmal erwähnen."></i>
                                         Anzahl Reden im Thema
                                     </th>
                                     <td>@Model.StatisticsViewModel.TotalSpeechesAmountTopic</td>
@@ -77,7 +78,7 @@
                                 <tr>
                                     <th scope="row">
                                         <i class="fas fa-info-circle mr-2" data-toggle="popover" data-trigger="hover" data-placement="top"
-                                           data-content="Durschnittliche Redenanzahl pro Sitzung."></i>
+                                       data-content="Durschnittliche Redenanzahl pro Sitzung."></i>
                                         Reden pro Sitzung
                                     </th>
                                     <td>@(Math.Round(Model.StatisticsViewModel.AverageSpeechesAmount, 2))</td>
@@ -86,7 +87,7 @@
                                 <tr>
                                     <th scope="row">
                                         <i class="fas fa-info-circle mr-2" data-toggle="popover" data-trigger="hover" data-placement="top"
-                                           data-content="Durschnittliche Redenanzahl pro Sitzung, die das gewählte Thema mindestens einmal erwähnen."></i>
+                                       data-content="Durschnittliche Redenanzahl pro Sitzung, die das gewählte Thema mindestens einmal erwähnen."></i>
                                         Reden pro Sitzung im Thema
                                     </th>
                                     <td>@(Math.Round(Model.StatisticsViewModel.AverageSpeechesAmountTopic, 2))</td>
@@ -100,7 +101,7 @@
                 {
                     <div class="w-100">
                         <a class="w-100 btn p-1 text-center align-items-center expand" data-expanded="false"
-                           onclick="var exp = $(this).data('expanded');
+                   onclick="var exp = $(this).data('expanded');
                     if (!exp) {
                         $(this).next().show(50);
                         $(this).find('i').removeClass('fa-chevron-down');
@@ -217,9 +218,9 @@
                     {
                         <div class="speech-list-item flexed align-items-center justify-content-between" data-id="@speechVm.Speech.Id">
                             <div class="m-0 p-0">
-                                <img src="./img/Unbekannt.jpg" onerror="$(this).attr('src', './img/Unbekannt.jpg')" class="img-fit"
-                                     data-id="@speechVm.Speaker.SpeakerId" />
-                                <p class="mb-0 small-font">
+                                <img src="./img/Unbekannt.jpg" onerror="$(this).attr('src', './img/Unbekannt.jpg')"
+                                class="img-fit open-speaker-inspector clickable" data-id="@speechVm.Speaker.SpeakerId" />
+                                <p class="mb-0 small-font open-speaker-inspector clickable" data-id="@speechVm.Speaker.SpeakerId">
                                     @speechVm.Speaker?.FirstName @speechVm.Speaker?.LastName
                                 </p>
                             </div>
@@ -239,7 +240,7 @@
                                     @speechVm.TopicMentionCount
                                 </p>
                                 <a class="ml-2 open-speech-btn mr-2" data-toggle="popover" data-trigger="hover" data-placement="left"
-                                   data-content="Rede lesen" data-id="@speechVm.Speech?.Id">
+                                    data-content="Rede lesen" data-id="@speechVm.Speech?.Id">
                                     <i class="fab fa-readme"></i>
                                 </a>
                             </div>
@@ -281,9 +282,9 @@
                         <div>
                             <div class="speech-list-item flexed align-items-center justify-content-between" data-id="@comment.SpeechId">
                                 <div class="m-0 p-0">
-                                    <img src="./img/Unbekannt.jpg" onerror="$(this).attr('src', './img/Unbekannt.jpg')" class="img-fit"
-                                         data-id="@comment.Speaker?.SpeakerId" />
-                                    <p class="mb-0 small-font">
+                                    <img src="./img/Unbekannt.jpg" onerror="$(this).attr('src', './img/Unbekannt.jpg')" 
+                                    class="img-fit open-speaker-inspector clickable" data-id="@comment.Speaker?.SpeakerId" />
+                                    <p class="mb-0 small-font open-speaker-inspector clickable" data-id="@comment.Speaker?.SpeakerId">
                                         @{
                                             var org = "(Plos)";
                                             if (!string.IsNullOrEmpty(comment.Speaker?.Fraction)) org = comment.Speaker.Fraction;
@@ -301,7 +302,7 @@
 
                                 <div class="flexed align-items-center">
                                     <a class="ml-2 open-speech-btn mr-2" data-toggle="popover" data-trigger="hover" data-placement="left"
-                                       data-content="Rede lesen" data-id="@comment.SpeechId">
+                               data-content="Rede lesen" data-id="@comment.SpeechId">
                                         <i class="fab fa-readme"></i>
                                     </a>
                                 </div>
@@ -312,9 +313,9 @@
                                     <div class="shout">
                                         <label class="m-0"><b>-----</b> @shout.Text</label>
                                         <div class="text-right">
-                                            <img src="./img/Unbekannt.jpg" onerror="$(this).attr('src', './img/Unbekannt.jpg')" class="img-fit"
-                                                 data-id="@shout?.SpeakerId" />
-                                            <p class="m-0 small-font">
+                                            <img src="./img/Unbekannt.jpg" onerror="$(this).attr('src', './img/Unbekannt.jpg')" 
+                                            class="img-fit open-speaker-inspector clickable" data-id="@shout?.SpeakerId" />
+                                            <p class="m-0 small-font open-speaker-inspector clickable" data-id="@shout?.SpeakerId">
                                                 @{
                                                     org = "";
                                                     if (!string.IsNullOrEmpty(shout.Fraction)) org = "(" + shout.Fraction + ")";
@@ -413,7 +414,7 @@
                                     </p>
                                 </div>
                                 <a data-id="@poll.Poll.Id" class="btn border-0 open-poll" data-toggle="popover" data-trigger="hover" data-placement="top"
-                                   data-content="Erfahre mehr über die Abstimmung (Öffnet neuen Tab).">
+                           data-content="Erfahre mehr über die Abstimmung (Öffnet neuen Tab).">
                                     <i class="fas fa-external-link-alt"></i>
                                 </a>
                             </div>
@@ -453,18 +454,18 @@
 
 <script>
 
-// Build the charts.
-$(document).ready(function () {
-    buildSentimentChartForPage('@(Model.Id)', '@(Html.Raw(Json.Serialize(Model.SentimentGraphData)))');
-    buildTopicComparedToOtherTopicsChart('@(Model.Id)', '@(Html.Raw(Json.Serialize(Model.TopicToOtherTopicsCompareGraphData)))');
+    // Build the charts.
+    $(document).ready(function() {
+        buildSentimentChartForPage('@(Model.Id)', '@(Html.Raw(Json.Serialize(Model.SentimentGraphData)))');
+        buildTopicComparedToOtherTopicsChart('@(Model.Id)', '@(Html.Raw(Json.Serialize(Model.TopicToOtherTopicsCompareGraphData)))');
 
-    // Add speech list item portraits
-    // Lets skip this because our server is way too slow to handle that many img requests right now...
-    $('.speech-list-item img, .shout img').each(async function () {
-        $(this).attr('src', await getSpeakerPortrait($(this).data('id')));
+        // Add speech list item portraits
+        // Lets skip this because our server is way too slow to handle that many img requests right now...
+        $('.speech-list-item img, .shout img').each(async function() {
+            $(this).attr('src', await getSpeakerPortrait($(this).data('id')));
+        })
+
+        //activate popoers
+        $('[data-toggle="popover"]').popover();
     })
-
-    //activate popoers
-    $('[data-toggle="popover"]').popover();
-})
 </script>

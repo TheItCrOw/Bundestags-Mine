@@ -5,14 +5,17 @@
         try {
             // Open the modal.
             $('#speakerInspectorModal').modal('show');
-            // Show a loading screen
-            $('#speakerInspectorModal .loader').fadeIn(150);
-            // Fetch the rendered view
-            var modalContent = await getSpeakerInspectorView(speakerId);
-            // Fill the modal
-            $('#speakerInspectorModal .view').html(modalContent);
-            // Show speeches
-            this.switchTabs('speeches');
+
+            if (speakerId != '') {
+                // Show a loading screen
+                $('#speakerInspectorModal .loader').fadeIn(150);
+                // Fetch the rendered view
+                var modalContent = await getSpeakerInspectorView(speakerId);
+                // Fill the modal
+                $('#speakerInspectorModal .view').html(modalContent);
+                // Show speeches
+                this.switchTabs('speeches');
+            }
         } catch (exception) {
             console.log(exception);
         } finally {

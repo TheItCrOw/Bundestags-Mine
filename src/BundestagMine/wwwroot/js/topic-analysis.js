@@ -194,7 +194,7 @@ $('body').on('click', '.speakers-list .delete', function () {
 
 // Handles the selecting of a topic in the topic configurator.
 $('body').on('click', '#analysisConfiguratorModal .topic-list .topic-list-item', function () {
-    $('#analysisConfiguratorModal .selected-topic').val($(this).find('span').first().html());
+    $('#analysisConfiguratorModal .selected-topic').val($(this).find('span').first().html().replace('&nbsp;', ' '));
 })
 
 // Handles the switching of the pages
