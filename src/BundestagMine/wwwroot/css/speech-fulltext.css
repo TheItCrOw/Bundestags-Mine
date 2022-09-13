@@ -79,6 +79,12 @@
         display: none;
     }
 
+/*Used when the item should be highlighted an marked.*/
+.tree-item-marked{
+    background-color:gold !important;
+    color:white !important;
+}
+
 .item-divider {
     background-color: var(--bg-darkprime);
     padding: 3px;

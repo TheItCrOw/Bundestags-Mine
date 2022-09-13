@@ -2,11 +2,9 @@
 // In here we store whether we have already added a divider for a new period
 var periodToAdded = {};
 var showSentimentColors = true;
-var isSearching = false;
-var pendingRequest = undefined;
 
 // Takes in a list of protocols and builds the protocol tree
-async function buildProtocolTree(protocols, agendaItems) {
+async function buildProtocolTree(protocols) {
     // Go through each protocol and put it into the tree
     for (var i = 0; i < protocols.length; i++) {
         var protocol = protocols[i];
@@ -87,6 +85,9 @@ $('body').on('click', '.tree-item', async function () {
     if ($(this).hasClass('agenda-item')) itemType = 'agenda';
     if ($(this).hasClass('protocol-item')) itemType = 'protocol';
     if ($(this).hasClass('speech-item')) itemType = 'speech';
+
+    // Remove any one time markers
+    $(this).removeClass('tree-item-marked');
 
     // If it is currently NOT expanded, we want to expand it!
     var foundEnd = false;
@@ -323,6 +324,41 @@ $('body').on('click', '.open-speech-btn', async function () {
     $('.nav-item-switcher[data-id="speechContent"]').trigger('click');
     var speechId = $(this).data('id');
     insertSpeechIntoFulltextAnalysis(speechId);
+})
+
+// Handles the opening of a protocol/agenda in the protocol tree from a different view.
+$('body').on('click', '.open-agenda-item-btn', async function () {
+    // Hide potential modals.
+    $('#speakerInspectorModal').modal('hide');
+    $('.nav-item-switcher[data-id="speechContent"]').trigger('click');
+
+    var $protocol = undefined;
+    var $container = $('.protocol-tree');
+    var protocolParam = $(this).data('protocolparam');
+    var agendaId = $(this).data('agendaid');
+
+    // If we open the agendaitem by legislature and protocl number
+    if (protocolParam == undefined || protocolParam == '') return;
+
+    // Open the protocol
+    $protocol = $container.find(`.tree-item[data-param="${protocolParam}"]`);
+    // If the protocol is alread expanded, dont expand it.
+    if ($protocol.data('expanded') == false) {
+        $protocol.trigger('click');
+    }
+
+    // scroll into vision, but only after the animation
+    setTimeout(function () {
+        // If we have an agendaitem to highlight, then highlight it.
+        var agendaItem = $container.find(`.agenda-item[data-id="${agendaId}"]`);
+        if (agendaItem != undefined) {
+            agendaItem.addClass('tree-item-marked');
+        }
+        // Scroll into view.
+        $container.animate({
+            scrollTop: $protocol.offset().top - $container.offset().top + $container.scrollTop()
+        })
+    }, 1000);
 })
 
 // Handles the preparing of a speech for the fulltext analysis

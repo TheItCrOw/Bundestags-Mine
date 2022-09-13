@@ -11,6 +11,11 @@
         <div class="agendaItem">
             <img src="./img/deutscher-bundestag-adler-weiß.png" />
             <div class="hovered">
+                <button class="btn btn-warning rounded-0 text-black w-100 open-agenda-item-btn" 
+                        data-protocolparam="@(agendaItem.Protocol.LegislaturePeriod),@(agendaItem.Protocol.Number)" 
+                        data-agendaid="@agendaItem.AgendaItem.Id">
+                    Öffnen
+                </button>
                 <p class="description">
                     @Html.Raw(agendaItem.AgendaItem.Description)
                 </p>
