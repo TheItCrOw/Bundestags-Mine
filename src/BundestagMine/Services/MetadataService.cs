@@ -1,5 +1,7 @@
-﻿using BundestagMine.Models.Database.MongoDB;
+﻿using BundestagMine.Models.Database;
+using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.SqlDatabase;
+using BundestagMine.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -35,6 +37,6 @@ namespace BundestagMine.Services
         public AgendaItem GetAgendaItemOfSpeech(Speech speech) => _db.AgendaItems.FirstOrDefault(a =>
                         a.ProtocolId == _db.Protocols.SingleOrDefault(p =>
                             p.Number == speech.ProtocolNumber && p.LegislaturePeriod == speech.LegislaturePeriod).Id
-                        && a.Order == speech.AgendaItemNumber);
+                        && a.Order == speech.AgendaItemNumber);        
     }
 }

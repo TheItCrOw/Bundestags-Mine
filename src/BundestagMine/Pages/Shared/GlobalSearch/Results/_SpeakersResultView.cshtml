@@ -1,0 +1,21 @@
+﻿@using BundestagMine.Models.Database.MongoDB
+@using BundestagMine.ViewModels.GlobalSearch
+@using BundestagMine.Services
+@model GlobalSearchResultViewModel
+@inject BundestagScraperService BundestagScraperService
+
+<div class="flexed align-items-center justify-content-around flex-wrap">
+    @foreach (var deputy in Model.ResultList as List<Deputy>)
+    {
+        <div class="speaker open-speaker-inspector" data-id="@deputy.SpeakerId">
+            <div>
+                @{
+                    var imgSrc = BundestagScraperService.GetDeputyPortraitFromImageDatabase(deputy.SpeakerId);
+                    if (string.IsNullOrEmpty(imgSrc)) imgSrc = "./img/Unbekannt.jpg";
+                    <img src="@imgSrc" />
+                    <p class="name">@deputy.FirstName @deputy.LastName (@(deputy.Fraction ?? deputy.Party))</p>
+                }
+            </div>
+        </div>
+    }
+</div>

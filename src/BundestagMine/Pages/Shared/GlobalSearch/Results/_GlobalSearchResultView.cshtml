@@ -1,0 +1,51 @@
+﻿@using BundestagMine.Utility
+@using BundestagMine.ViewModels.GlobalSearch
+@using BundestagMine.ViewModels
+@using System.Text.RegularExpressions
+@using BundestagMine.Services
+@model GlobalSearchResultViewModel
+@inject BundestagScraperService BundestagScraperService
+
+<div>
+    <div class="cur-result-page">
+        @if (Model.ResultList == null || ((IEnumerable<object>)Model.ResultList).Count() == 0)
+        {
+            <h6 class="text-center w-100 mt-5 text-dark">Keine Treffer</h6>
+        }
+        else if (Model.Type == ResultType.Speeches)
+        {
+            <partial name="~/Pages/Shared/GlobalSearch/Results/_SpeechesResultView.cshtml" model="Model" />
+        }
+        else if (Model.Type == ResultType.Shouts)
+        {
+            <partial name="~/Pages/Shared/GlobalSearch/Results/_ShoutsResultView.cshtml" model="Model" />
+        }
+        else if (Model.Type == ResultType.Speakers)
+        {
+            <partial name="~/Pages/Shared/GlobalSearch/Results/_SpeakersResultView.cshtml" model="Model" />
+        }
+        else if (Model.Type == ResultType.AgendaItems)
+        {
+            <partial name="~/Pages/Shared/GlobalSearch/Results/_AgendaItemsResultView.cshtml" model="Model" />
+        }
+        else if (Model.Type == ResultType.Polls)
+        {
+            <partial name="~/Pages/Shared/GlobalSearch/Results/_PollsResultView.cshtml" model="Model" />
+        }
+    </div>
+    <div class="all-result-pages">
+        @{
+            var offset = 0;
+            for (int i = 0; i < Model.TotalResults; i += Model.TakeResults)
+            {
+                var c = "";
+                // Highlight the current page
+                if (offset == Model.CurrentPage) c = "cur-offset";
+                <button class="btn rounded-0 switch-page-btn @c" data-total="@Model.TotalResults" data-id="@Model.Type.ToString().FirstCharToLowerCase()">
+                    @(offset+1)
+                </button>
+                offset++;
+            }
+        }
+    </div>
+</div>

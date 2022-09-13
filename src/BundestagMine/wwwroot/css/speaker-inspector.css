@@ -1,0 +1,122 @@
+﻿#speakerInspectorModal {
+}
+
+    #speakerInspectorModal .loader {
+        position: absolute;
+        width: 100%;
+        z-index: 5;
+        background-color: rgba(255,255,255,0.8);
+        top: 0;
+        z-index: 2;
+        height: 100vh; /*This is the height of all the headers. Its hacky, yes. Wont work on mobile.*/
+        left: 0;
+    }
+
+        #speakerInspectorModal .loader .lds-ripple {
+            position: absolute;
+            left: calc(50% - 40px);
+            top: calc(50% - 40px);
+        }
+
+    #speakerInspectorModal .modal-body {
+        background-image: url('/img/deutscher-bundestag-adler-weiß.png');
+        background-color: ghostwhite;
+        background-size: cover
+    }
+
+    #speakerInspectorModal .speaker-name {
+        margin-top: 6px;
+    }
+
+    #speakerInspectorModal .portrait {
+        object-fit: cover;
+        width: 100%;
+        max-height: 250px;
+        height: 100%;
+        border: black solid 1px;
+        box-shadow: -12px 10px lightgray;
+    }
+
+    #speakerInspectorModal .info-field {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 3px;
+        border-bottom: lightgray 1px solid;
+    }
+
+        #speakerInspectorModal .info-field label {
+            margin-bottom: 0px;
+            padding-left: 3px;
+        }
+
+            #speakerInspectorModal .info-field label:first-child {
+                color: black;
+                border-left: 3px gray solid;
+                box-shadow: -4px 1px lightgray;
+            }
+
+    #speakerInspectorModal .tabs {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        width: 100%;
+        border-left: lightgray 1px solid;
+        margin-top: 16px;
+    }
+
+    #speakerInspectorModal .tab {
+        border-radius: 0;
+        padding: 3px;
+        border-right: lightgray 1px solid;
+        border-top: lightgray 1px solid;
+        border-bottom: lightgray 1px solid;
+        transition: 0.15s;
+        width: 100%;
+    }
+
+        #speakerInspectorModal .tab:hover {
+            background-color: gray;
+            transition: 0.15s;
+            color: white;
+        }
+
+    #speakerInspectorModal .selected-tab {
+        background-color: #f6c23e;
+        color: black;
+    }
+
+    #speakerInspectorModal .tab-content .content {
+        display: none;
+        max-height: 45vh;
+        width: 100%;
+        position: relative;
+        overflow-y: auto;
+    }
+
+/*when closed*/
+#speakerInspectorButton {
+    position: fixed;
+    width: 50px;
+    height: 50px;
+    background-color: ghostwhite;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    align-items: center;
+    color: rgba(40,40,40, 1);
+    cursor: pointer;
+    font-size: x-large;
+    left: 25px;
+    top: calc(100% - 75px);
+    transition: 0.25s;
+    z-index: 5;
+}
+
+    #speakerInspectorButton:hover {
+        transform: scale(1.1, 1.1);
+        transition: 0.25s;
+        background-color: gray;
+        color: white;
+    }

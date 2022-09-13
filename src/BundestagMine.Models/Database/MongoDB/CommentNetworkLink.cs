@@ -7,16 +7,14 @@ namespace BundestagMine.Models.Database.MongoDB
 {
     public class CommentNetworkLink : DBEntity
     {
-        [BsonElement("source")]
         public string Source { get; set; }
 
-        [BsonElement("target")]
         public string Target { get; set; }
 
-        [BsonElement("sentiment")]
         public double Sentiment { get; set; }
 
-        [BsonElement("value")]
         public int Value { get; set; }
+
+        public Guid NetworkDataId { get; set; }
     }
 }

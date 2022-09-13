@@ -1,0 +1,43 @@
+﻿.login-modal {
+    position: absolute;
+    background-color: white;
+    height: auto;
+    width: 400px;
+    left: calc(50% - 200px);
+    top: calc(50% - 110px);
+    padding: 12px;
+}
+
+.cockpit-container {
+}
+
+.import-list {
+    width: 100%;
+    overflow-y: auto;
+    max-height: 50vh;
+    overflow-x:hidden;
+}
+
+.import-log-list-item {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center !important;
+    justify-content: space-between;
+    width: 100%;
+    transition: 0.15s;
+    text-align: right;
+    padding: 6px;
+    border-bottom:2px transparent solid;
+    text-decoration:none !important;
+}
+
+    .import-log-list-item * {
+        cursor: pointer !important;
+        text-decoration:none !important;
+    }
+
+    .import-log-list-item:hover {
+        transition: 0.15s;
+        background-color: lightgray;
+        border-bottom:black 2px solid;
+    }

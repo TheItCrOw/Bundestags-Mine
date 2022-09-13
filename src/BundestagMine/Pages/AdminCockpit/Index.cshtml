@@ -1,0 +1,103 @@
+﻿@page
+@model AdminCockpitModel
+@{
+    ViewData["Title"] = "Admin Cockpit";
+}
+
+<head>
+    <link href="./css/admin-cockpit.css" rel="stylesheet">
+</head>
+
+@*show a login screen when not logged in*@
+@if (!User.Identity.IsAuthenticated)
+{
+    <div class="vh-100 w-100 position-relative">
+        <form class="login-modal card-shadow" method="post" id="account">
+            <h5 class="mb-3 text-center"> Login</h5>
+            <div class="form-floating mb-3">
+                <input type="text" asp-for="LoginInput.Email" class="form-control rounded-0" placeholder="Email" />
+                <span asp-validation-for="LoginInput.Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="password" asp-for="LoginInput.Password" class="form-control rounded-0" placeholder="Password" />
+                <span asp-validation-for="LoginInput.Password" class="text-danger"></span>
+            </div>
+            <button type="submit" class="w-100 btn btn-warning rounded-0">Log in</button>
+        </form>
+    </div>
+}
+else
+{
+    <div class="container min-vh-100 pb-5">
+        <div class="cockpit-container">
+            @*header*@
+            <div class="flexed justify-content-between align-items-center mt-3 mb-2">
+                <h1 class="m-0">Cockpit</h1>
+                <a asp-page="/Account/Logout" asp-area="Identity" class="btn btn-danger rounded-0">
+                    Logout
+                </a>
+            </div>
+            <hr class="mt-2" />
+            <h5>Import-Logs (@Model.ImportLogsList.Count):</h5>
+            @*Imports*@
+            <div class="import-list">
+                @foreach (var importLog in Model.ImportLogsList)
+                {
+                    <a class="import-log-list-item" asp-page="ImportLog" asp-route-filename="@importLog.FullFilePath">
+                        <div class="flexed align-items-center">
+                            <i class="fas fa-file mr-2 text-dark"></i>
+                            <label class="m-0 font-weight-bold text-dark">@importLog.Name</label>
+                        </div>
+                        <label class="ml-1 mb-0 mt-0 mr-3">@importLog.FullFilePath</label>
+                        @if (importLog.Status == ViewModels.Import.Status.Success)
+                        {
+                            <i class="large-font text-success fas fa-check"></i>
+                        }
+                        else if (importLog.Status == ViewModels.Import.Status.Warning)
+                        {
+                            <i class="large-font text-warning fas fa-exclamation-triangle"></i>
+                        }
+                        else if (importLog.Status == ViewModels.Import.Status.Error)
+                        {
+                            <i class="large-font text-danger fas fa-bug"></i>
+                        }
+                    </a>
+                }
+            </div>
+            <hr class="mt-2" />
+            <h5>Importable Protocols (@Model.ImportableProtocols.Count):</h5>
+            @*Importable protocols*@
+            <div class="import-list">
+                @foreach (var protocol in Model.ImportableProtocols)
+                {
+                    <a class="import-log-list-item text-center">
+                        <div class="flexed align-items-center">
+                            <i class="fas fa-clipboard-list mr-2 text-dark"></i>
+                            <label class="m-0 font-weight-bold text-dark">@protocol.ImportedDate</label>
+                        </div>
+                        <label class="ml-1 mb-0 mt-0 mr-3">@protocol.ProtocolJson</label>
+                        <label class="ml-1 mb-0 mt-0 mr-3 text-center font-weight-bold">@(protocol.SpeechIds.Count) Speeches</label>
+                    </a>
+                }
+            </div>
+            <hr class="mt-2" />
+            <h5>Importable Deputies (@Model.ImportableDeputies.Count):</h5>
+            @*Importable protocols*@
+            <div class="import-list">
+                @foreach (var deputy in Model.ImportableDeputies)
+                {
+                    <a class="import-log-list-item text-center">
+                        <div class="flexed align-items-center">
+                            <i class="fas fa-user mr-2 text-dark"></i>
+                        </div>
+                        <label class="ml-2 mb-0 mt-0 mr-1 text-left text-wrap text-break">@deputy</label>
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

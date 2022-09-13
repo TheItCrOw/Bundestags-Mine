@@ -1,0 +1,98 @@
+﻿@page
+@model BundestagMine.Pages.AdminCockpit.ImportLogModel
+@{
+    ViewData["Title"] = "Import Log";
+}
+
+<head>
+    <link href="~/css/import-log.css" rel="stylesheet">
+</head>
+
+<input type="hidden" asp-for="@Model.ImportLog.FullFilePath" id="logFilePathInput" />
+<div class="container min-vh-100">
+    <div class="flexed justify-content-between algin-items-center mt-3">
+        <div>
+            <h1 class="m-0">@Model.ImportLog.Name</h1>
+            <label class="m-0 text-black-50">@Model.ImportLog.FullFilePath</label>
+        </div>
+        @if (Model.ImportLog.Status == ViewModels.Import.Status.Success)
+        {
+            <i class="large-font text-success fas fa-check align-self-center"></i>
+        }
+        else if (Model.ImportLog.Status == ViewModels.Import.Status.Warning)
+        {
+            <i class="large-font text-warning fas fa-exclamation-triangle align-self-center"></i>
+        }
+        else if (Model.ImportLog.Status == ViewModels.Import.Status.Error)
+        {
+            <i class="large-font text-danger fas fa-bug align-self-center"></i>
+        }
+    </div>
+    <hr class="mt-2" />
+    @*Poll status header*@
+    <div class="flexed justify-content-between align-items-center mb-2">
+        <p class="mr-2 mb-0">Auto-Refreshing every 4 seconds. Status: <span id="refreshCounter" class="font-weight-bold">Good</span></p>
+        <div class="flexed align-items-center">
+            <label class="m-0">Autoscroll: </label>
+            <input type="checkbox" class="ml-2" id="autoscrollInput" checked="checked" placeholder="Autoscroll" />
+        </div>
+    </div>
+    @*actual cointent*@
+    <div class="log-lines">
+        @foreach (var line in Model.ImportLog.LogLines)
+        {
+            var c = "info";
+            if (line.Contains("[WRN]")) c = "warning";
+            else if (line.Contains("[ERR]")) c = "error";
+            <p class="line @c">@line</p>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        var obj = {
+            lineCount: @Model.ImportLog.LogLines.Count,
+            logFilePath: $('#logFilePathInput').val()
+        };
+
+        // Polls every x seconds new lines from the import log if there are any.
+        async function pollNewLines() {
+            const result = await $.ajax({
+                url: "/api/AdminCockpitController/PollImportLogLines/",
+                type: "POST",
+                data: JSON.stringify(obj),
+                dataType: "json",
+                contentType: "application/json",
+                accepts: {
+                    text: "application/json"
+                },
+            });
+
+            // If the request was successfull.
+            if (result.status == "200") {
+                $('#refreshCounter').html('Success at ' + Date.now());
+                for (var i = 0; i < result.result.length; i++) {
+                    var newLine = result.result[i];
+                    var c = 'info';
+                    if (newLine.includes('[WRN]')) c = 'warning';
+                    else if (newLine.includes('[ERR]')) c = 'error';
+                    $('.log-lines').append(`<p class="line ${c}">${newLine}</p>`);
+                }
+
+                obj.lineCount += result.result.length;
+                // scroll down. I know, i know. hacky
+                if ($('#autoscrollInput').is(':checked')) {
+                    $('.log-lines').scrollTop(9999999999);
+                }
+            } else {
+                $('#refreshCounter').html('ERROR WHILE TRYING TO REFRESH at' + Date.now());
+            }
+        }
+
+        // Poll new lines every x seconds.
+        var intervalId = window.setInterval(function() {
+            pollNewLines();
+        }, 4000);
+    </script>
+}

@@ -2,10 +2,14 @@
 using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.SqlDatabase;
 using BundestagMine.Utility;
+using Microsoft.Extensions.Logging;
 using Supremes;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
@@ -14,10 +18,12 @@ namespace BundestagMine.Services
 {
     public class BundestagScraperService
     {
+        private readonly ILogger<BundestagScraperService> _logger;
         private readonly BundestagMineDbContext _db;
 
-        public BundestagScraperService(BundestagMineDbContext db)
+        public BundestagScraperService(BundestagMineDbContext db, ILogger<BundestagScraperService> logger)
         {
+            _logger = logger;
             _db = db;
         }
 
@@ -31,9 +37,9 @@ namespace BundestagMine.Services
         /// <returns></returns>
         private string ToCleanTitle(string s) => Regex.Replace(RemoveWhitespaces(HttpUtility.HtmlDecode(s).ToLower()), @"<[^>]*>", String.Empty);
 
-        public async Task<string> GetBundestagUrlOfPoll(Poll poll)
+        public string GetBundestagUrlOfPoll(Poll poll)
         {
-            var url = "https://www.bundestag.de/ajax/filterlist/de/parlament/plenum/abstimmung/484422-484422?enddate=%ENDDATE%&endfield=date&limit=1000&noFilterSet=false&startdate=%STARTDATE%&startfield=date";
+            var url = ConfigManager.GetPollsQueryUrl();
             // sample page:
             // https://www.bundestag.de/ajax/filterlist/de/parlament/plenum/abstimmung/484422-484422?enddate=1629849600000&endfield=date&limit=1000&noFilterSet=false&startdate=1629849600000&startfield=date
 
@@ -63,18 +69,15 @@ namespace BundestagMine.Services
                 var title = DateHelper.ReplaceInvalidPathChars(ToCleanTitle(titleH3.Html));
                 var edits = levenshtein.Compute(title, ToCleanTitle(poll.Title));
                 // Lets just take all polls into consideration and take the one, which is closest...
-                //if (edits <= poll.Title.Length / 1.2)
-                //{
                 // Now get the href.
-                var href = "https://www.bundestag.de" + pollDiv.GetElementsByTag("a").First?.Attr("href");
+                var href = ConfigManager.GetBundestagUrl() + pollDiv.GetElementsByTag("a").First?.Attr("href");
                 editToSites.Add((edits, href));
-                //}
             }
 
             // If there are multiple hits, we want the hit with the least edits required. Thats the nearest we get.
             if (editToSites.Count > 0) return editToSites.OrderBy(e => e.Item1).First().Item2;
 
-            return "";
+            return string.Empty;
         }
 
         public string GetDeputyPortraitFromImageDatabase(string speakerId)
@@ -82,19 +85,70 @@ namespace BundestagMine.Services
 
         public string GetDeputyPortraitFromImageDatabase(Deputy deputy)
         {
-            var name = (deputy.FirstName + "+" + deputy.LastName);
-            var url = "https://bilddatenbank.bundestag.de/search/picture-result?query=" + name;
-            var imagesOverview = Dcsoup.Parse(new Uri(url), 3000);
-            var test = imagesOverview.GetElementsByClass("rowGridContainer");
-            var container = imagesOverview.GetElementsByClass("rowGridContainer")[0];
-            var elements = container.GetElementsByClass("item");
-            if (elements.Count != 0)
+            try
             {
-                var imgTag = elements[0].GetElementsByTag("img")[0];
-                return "https://bilddatenbank.bundestag.de" + imgTag.Attr("src");
+                // We check if we have fetched the image already onto our harddrive. If yes, then fetch it from there
+                // and return it as a base64 string. Else fetch it from the bundestag website and in parallel cache it.
+                var filename = ConfigManager.GetCachedPortraitPath() + deputy.SpeakerId + ".jpg";
+                if (File.Exists(filename))
+                {
+                    var imageArray = File.ReadAllBytes(filename);
+                    return ConfigManager.GetBase64SourcePrefix() + Convert.ToBase64String(imageArray);
+                }
+                // Else scrape it, store it, return it
+                var name = (deputy.FirstName + "+" + deputy.LastName);
+                var url = ConfigManager.GetPortraitDatabaseQueryUrl() + name;
+                var imagesOverview = Dcsoup.Parse(new Uri(url), 3000);
+                var test = imagesOverview.GetElementsByClass("rowGridContainer");
+                var container = imagesOverview.GetElementsByClass("rowGridContainer")[0];
+                var elements = container.GetElementsByClass("item");
+                if (elements.Count != 0)
+                {
+                    var imgTag = elements[0].GetElementsByTag("img")[0];
+                    var imgUrl = ConfigManager.GetPortraitDatabaseUrl() + imgTag.Attr("src");
+
+                    try
+                    {
+                        // We want this to run async in the background
+                        Task.Run(() => DownloadAndStoreDeputyPortrait(imgUrl, deputy.SpeakerId));
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error storing new deputy portraits.");
+                    }
+
+                    return imgUrl;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while trying to fetch portraits from harddrive.");
             }
 
-            return "";
+            return string.Empty;
+        }
+
+
+        /// <summary>
+        /// Takes in a img url and the speaker id and stores the img on our harddrive with less resolution
+        /// </summary>
+        public void DownloadAndStoreDeputyPortrait(string imgUrl, string speakerId)
+        {
+            using (var client = new WebClient())
+            {
+                try
+                {
+                    // Download the file
+                    var filename = ConfigManager.GetCachedPortraitPath() + speakerId + ".jpg";
+
+                    if (!File.Exists(filename))
+                        client.DownloadFile(new Uri(imgUrl), filename);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error downloading and storing deputy portrait:");
+                }
+            }
         }
     }
 }

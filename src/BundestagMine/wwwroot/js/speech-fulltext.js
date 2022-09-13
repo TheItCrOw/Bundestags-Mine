@@ -2,11 +2,9 @@
 // In here we store whether we have already added a divider for a new period
 var periodToAdded = {};
 var showSentimentColors = true;
-var isSearching = false;
-var pendingRequest = undefined;
 
 // Takes in a list of protocols and builds the protocol tree
-async function buildProtocolTree(protocols, agendaItems) {
+async function buildProtocolTree(protocols) {
     // Go through each protocol and put it into the tree
     for (var i = 0; i < protocols.length; i++) {
         var protocol = protocols[i];
@@ -87,6 +85,9 @@ $('body').on('click', '.tree-item', async function () {
     if ($(this).hasClass('agenda-item')) itemType = 'agenda';
     if ($(this).hasClass('protocol-item')) itemType = 'protocol';
     if ($(this).hasClass('speech-item')) itemType = 'speech';
+
+    // Remove any one time markers
+    $(this).removeClass('tree-item-marked');
 
     // If it is currently NOT expanded, we want to expand it!
     var foundEnd = false;
@@ -304,8 +305,8 @@ $('body').on('click', '.read-more-agenda', async function () {
     $('.agenda-item-inspector .content').html($(this).data('text'));
 
     // Move the inspector
-    var left = $(this).offset().left + $(this).width() + 20;
-    var top = $(this).offset().top - $('.agenda-item-inspector .content').height() / 2;
+    var left = $(this).offset().left;
+    var top = $(this).offset().top + $(this).height();
     $('.agenda-item-inspector').offset({ top: top, left: left });
 })
 
@@ -318,9 +319,46 @@ $('body').on('click', '.speech-item', async function () {
 
 // Open the speech when opned from different views. We change that in the future maybe...
 $('body').on('click', '.open-speech-btn', async function () {
+    // Hide potential modals
+    $('#speakerInspectorModal').modal('hide');
     $('.nav-item-switcher[data-id="speechContent"]').trigger('click');
     var speechId = $(this).data('id');
     insertSpeechIntoFulltextAnalysis(speechId);
+})
+
+// Handles the opening of a protocol/agenda in the protocol tree from a different view.
+$('body').on('click', '.open-agenda-item-btn', async function () {
+    // Hide potential modals.
+    $('#speakerInspectorModal').modal('hide');
+    $('.nav-item-switcher[data-id="speechContent"]').trigger('click');
+
+    var $protocol = undefined;
+    var $container = $('.protocol-tree');
+    var protocolParam = $(this).data('protocolparam');
+    var agendaId = $(this).data('agendaid');
+
+    // If we open the agendaitem by legislature and protocl number
+    if (protocolParam == undefined || protocolParam == '') return;
+
+    // Open the protocol
+    $protocol = $container.find(`.tree-item[data-param="${protocolParam}"]`);
+    // If the protocol is alread expanded, dont expand it.
+    if ($protocol.data('expanded') == false) {
+        $protocol.trigger('click');
+    }
+
+    // scroll into vision, but only after the animation
+    setTimeout(function () {
+        // If we have an agendaitem to highlight, then highlight it.
+        var agendaItem = $container.find(`.agenda-item[data-id="${agendaId}"]`);
+        if (agendaItem != undefined) {
+            agendaItem.addClass('tree-item-marked');
+        }
+        // Scroll into view.
+        $container.animate({
+            scrollTop: $protocol.offset().top - $container.offset().top + $container.scrollTop()
+        })
+    }, 1000);
 })
 
 // Handles the preparing of a speech for the fulltext analysis
@@ -333,11 +371,13 @@ async function insertSpeechIntoFulltextAnalysis(speechId) {
     if (!result) return;
     var speech = result.speech;
     var agendaItem = result.agendaItem;
+    var topics = result.topics;
 
     var imgSrc = await getSpeakerPortrait(speech.speakerId);
     var speaker = await getSpeakerById(speech.speakerId);
     // Set the speaker image
     $('.fulltext-analysis-div').find('.portrait').attr('src', imgSrc);
+    $('.fulltext-analysis-div').find('.portrait').attr('data-id', speaker.speakerId);
     // Set the date
     var protocol = allProtocols.find(p => p.legislaturePeriod == speech.legislaturePeriod && p.number == speech.protocolNumber);
     $('.fulltext-analysis-div').find('.name-badge').html(parseToGermanDate(protocol.date));
@@ -357,23 +397,22 @@ async function insertSpeechIntoFulltextAnalysis(speechId) {
     // Set the breadcrumbps
     $('.breadcrumbs').find('.period').html('Legislaturperiode ' + speech.legislaturePeriod);
     $('.breadcrumbs').find('.protocol').html('Sitzung ' + speech.protocolNumber);
-    $('.breadcrumbs').find('.agenda').html(agendaItem.title);
-    $('.breadcrumbs').find('.agenda').data('text', agendaItem.description);
+    $('.breadcrumbs').find('.agenda').html(agendaItem?.title);
+    $('.breadcrumbs').find('.agenda').data('text', agendaItem?.description);
 
     // Set the topic of the speech
-    var topics = speech.categoryCoveredTags;
-    if (topics != undefined && topics.length >= 2) {
-        $('.fulltext-analysis-div').find('.topic-header .topic-1').html('#' + topics[0]?.value);
+    if (topics != undefined && topics.length >= 3) {
+        $('.fulltext-analysis-div').find('.topic-header .topic-1').html(topics[0]?.value);
         $('.fulltext-analysis-div').find('.topic-header .topic-1').attr('data-content',
-            'Kategorie mit ' + (Math.round(topics[0].score * 100, 0)) + '% Übereinstimmung');
+            'Thema mit ' + topics[0].count + ' Erwähnungen');
 
-        $('.fulltext-analysis-div').find('.topic-header .topic-2').html('#' + topics[1]?.value);
+        $('.fulltext-analysis-div').find('.topic-header .topic-2').html(topics[1]?.value);
         $('.fulltext-analysis-div').find('.topic-header .topic-2').attr('data-content',
-            'Kategorie mit ' + (Math.round(topics[1].score * 100, 0)) + '% Übereinstimmung');
+            'Thema mit ' + topics[1].count + ' Erwähnungen');
 
-        $('.fulltext-analysis-div').find('.topic-header .topic-3').html('#' + topics[2]?.value);
+        $('.fulltext-analysis-div').find('.topic-header .topic-3').html(topics[2]?.value);
         $('.fulltext-analysis-div').find('.topic-header .topic-3').attr('data-content',
-            'Kategorie mit ' + (Math.round(topics[2].score * 100, 0)) + '% Übereinstimmung');
+            'Thema mit ' + topics[2].count + ' Erwähnungen');
     }
 
     // Visualize the nlp speech in the content
@@ -502,14 +541,17 @@ async function buildHtmlOfFulltextAnalysis(speech) {
                 for (var k = 0; k < keys.length; k++) {
                     var shout = shouts[keys[k]];
                     var shoutImage = 'img/Unbekannt.jpg';
-                    var shoutName = 'Unbekannt'
+                    var shoutName = 'Unbekannt';
+                    var shoutClass = '';
+
                     if (shout.speakerId != undefined) {
                         shoutImage = await getSpeakerPortrait(shout.speakerId);
                         shoutName = shout.firstName + " " + shout.lastName;
+                        shoutClass = 'open-speaker-inspector';
                     }
 
                     var shoutHtml = `<div class="shout">
-                                <span class="m-0 p-0">
+                                <span class="m-0 p-0 ${shoutClass}" data-id="${shout.speakerId}">
                                 <img class="shout-img" src=\"${shoutImage}\" onerror="$(this).attr('src', 'img/Unbekannt.jpg')"/>
                                 <i class="ml-2 mr-1 fas fa-comment-dots"></i>
                                 ${shoutName}:
@@ -572,169 +614,3 @@ $('body').on('click', '.small-options-menu .sentiment-color-cb', function () {
     }
     showSentimentColors = !showSentimentColors;
 })
-
-// Open the fulltext search container
-$('body').on('click', '.fulltext-search-btn', function () {
-    $(".fulltext-search-container").show();
-    $(".fulltext-search-container .container").hide();
-    $(".fulltext-search-container").get(0).style.opacity = 0;
-    $(".fulltext-search-container").get(0).style.top = '-100%';
-    $(".fulltext-search-container").get(0).style.right = '-100%';
-    $(".fulltext-search-container").get(0).style.borderRadius = '100vw';
-    $(".fulltext-search-container").animate({
-        opacity: 1,
-        top: "0",
-        left: "0",
-        borderRadius: "0",
-    }, 350, function () {
-        // Animation complete.
-        $(".fulltext-search-container .container").fadeIn(150);
-    });
-})
-
-// Close the fulltext search container
-$('body').on('click', '#fulltextSearchContainer .close-btn', function () {
-    $(".fulltext-search-container").hide(350);
-})
-
-// Handle the potential start of a fulltext search
-$('body').on('click', '#fulltextSearchContainer .apply-search-btn', async function () {
-    if (isSearching) {
-        $('#fulltextSearchContainer').find('.error-message').html('Es läuft grade eine Suche. Bitte warten Sie bis diese fertig ist oder brechen Sie sie ab.');
-        setTimeout(function () { $('#fulltextSearchContainer').find('.error-message').html('') }, 3500);
-        return;
-    }
-
-    var searchTerm = $('.search-input').val();
-    if (searchTerm == '') {
-        $('#fulltextSearchContainer').find('.error-message').html('Bitte geben Sie einen Suchbegriff ein.');
-        setTimeout(function () { $('#fulltextSearchContainer').find('.error-message').html('') }, 3500);
-        return;
-    }
-
-    // Create the request for the search and store it. The request may take a while and we want to store it
-    // so we can cancel it later.
-    pendingRequest = {
-        request: $.ajax({
-            url: "/api/DashboardController/SearchSpeeches/" + searchTerm,
-            type: "GET",
-            dataType: "json",
-            success: function (response) {
-                onSearchRequestEnd(response);
-            },
-            accepts: {
-                text: "application/json"
-            },
-        }),
-        id: generateUUID(),
-        searchTerm: searchTerm
-    }
-
-    // create the ui. We have a html template which we can use to create a new entry into the list
-    var $template = $('.search-result-template').clone();
-    // Add the new element to the list
-    $('.search-results-list').prepend($template);
-    $template.find('.searchterm').html(searchTerm);
-    $template.removeClass('search-result-template');
-    $template.attr('id', pendingRequest.id);
-    $template.show();
-
-    isSearching = true;
-    // Reactive the popovers again for the newly added html
-    $('[data-toggle="popover"]').popover();
-})
-
-// Handles the canceling of a request.
-$('body').on('click', '#fulltextSearchContainer .cancel-request-btn', function () {
-    isSearching = false;
-
-    $('.search-results-list').find(`#${pendingRequest.id}`).find('.status').removeClass('dots-bars-6').html('<i class="fas fa-times text-danger"></i>');
-    $(this).hide();
-    pendingRequest.request.abort();
-    pendingRequest = undefined;
-})
-
-// Handles the expanding and collapsing of the search results
-$('body').on('click', '.search-result-wrapper .expander', function () {
-    var expanded = $(this).data('expanded');
-
-    if (expanded) {
-        $(this).closest('.search-result-wrapper').find('.content').hide();
-        $(this).html('<i class="fas fa-chevron-circle-up"></i>');
-    } else {
-        $(this).closest('.search-result-wrapper').find('.content').show(0);
-        $(this).html('<i class="fas fa-chevron-circle-down"></i>');
-    }
-
-    expanded = !expanded;
-    $(this).data('expanded', expanded);
-})
-
-// Handles the clikcing onto a speech in the fulltext search
-$('body').on('click', '.speech-result-wrapper', function () {
-    var speechId = $(this).data('speechid');
-    $(".fulltext-search-container").hide(350);
-    insertSpeechIntoFulltextAnalysis(speechId);
-})
-
-// This fires once the pending search request finishes.
-async function onSearchRequestEnd(response) {
-    // Request ended. Tell the user
-    showToast('Volltextsuche', `Die Anfrage bzgl. des Suchbegriff <b class="text-primary">"${pendingRequest.searchTerm}"</b> ist fertig.<br/><br/> 
-                Die Ergebnisse werden jedoch erst Stück für Stück aufbereitet. Sie können sich diese unter <b>"Text-Analyse"</b> => <b>"Volltextsuche"</b> (oben rechts) anschauen oder auf die nächste Meldung warten.`);
-    // Cleanup the search header. We are not loading anymore, and the request was successfull.
-    $('.search-results-list').find(`#${pendingRequest.id}`).find('.cancel-request-btn').remove();
-    $('.search-results-list').find(`#${pendingRequest.id}`).find('.status').removeClass('dots-bars-6').html('<i class="fas fa-check-circle text-success"></i>');
-    isSearching = false;
-
-    var matchedSpeeches = response.result;
-    for (var i = 0; i < matchedSpeeches.length; i++) {
-        console.log(matchedSpeeches[i]);
-        var speech = matchedSpeeches[i].speech;
-        var agendaItem = matchedSpeeches[i].agendaItem;
-
-        // Clone the template
-        $template = $('.speech-result-template').first().clone();
-        // Add the item
-        $(`#${pendingRequest.id}`).find('.content').append($template);
-        $template.removeClass('speech-result-template');
-
-        // Set the header info
-        $template.find('.period').html(speech.legislaturePeriod);
-        $template.find('.protocol').html(speech.protocolNumber);
-        $template.find('.agenda').html(agendaItem?.title);
-        var protocol = allProtocols.find(p => p.legislaturePeriod == speech.legislaturePeriod && p.number == speech.protocolNumber);
-        $template.find('.date').html(parseToGermanDate(protocol.date));
-        $template.attr('data-speechid', speech.id);
-
-        // The image and name
-        var speaker = await getSpeakerById(speech.speakerId);
-        if (speaker != null || speaker != undefined) {
-            var org = speaker.party;
-            if (org == undefined || org == '') org = speaker.fraction;
-            $template.find('.name').html(speaker.firstName + ' ' + speaker.lastName + ' (' + org + ')');
-            //var imgSrc = await getSpeakerPortrait(speech.speakerId);
-            //$template.find('.portrait').attr('src', imgSrc);
-        }
-
-        // Get a bit of the searchterm in the text before and after. We do that with matching regex
-        var searchTerm = pendingRequest.searchTerm.toLowerCase();
-        const regExpString = String.raw`(([a-z]+[^a-z]+)|([^a-z]+[a-z]+)){0,5}${searchTerm}(([a-z]+[^a-z]+)|([^a-z]+[a-z]+)){0,5}`;
-        const regExp = new RegExp(regExpString, 'i');
-        var match = speech.text.match(regExp);
-        if (match != null) {
-            var result = match[0];
-            var before = '<b class="text-primary">';
-            result = result.insert_at(match[0].toLowerCase().indexOf(searchTerm), before);
-            result = result.insert_at(match[0].toLowerCase().indexOf(searchTerm) + searchTerm.length + before.length, '</b>');
-            var text = '"...' + result + '..."';
-            $template.find('.text').html(text);
-        }
-
-        $template.show();
-        $('.search-results-list').find(`#${pendingRequest.id}`).find('.count').html(i + 1);
-    }
-
-    showToast('Volltextsuche', `Die Resultate bzgl. des Suchbegriff <b class="text-primary">"${pendingRequest.searchTerm}"</b> sind alle fertig aufbereitet.<br/><br/> 
-                Sie können sich diese unter <b>"Text-Analyse"</b> => <b>"Volltextsuche"</b> (oben rechts) anschauen.`);
-}

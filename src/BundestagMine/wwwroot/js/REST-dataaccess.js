@@ -58,6 +58,23 @@ async function getSpeakerById(speakerId) {
     }
 }
 
+// Gets a speaker inspector by id
+async function getSpeakerInspectorView(speakerId) {
+    try {
+        const result = await $.ajax({
+            url: "/api/GlobalSearchController/GetSpeakerInspectorView/" + speakerId,
+            type: "GET",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result.result;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 // Gets the portrait of a speaker
 async function getSpeakerPortrait(speakerId) {
     try {
@@ -609,24 +626,6 @@ async function getNamedEntitiesWithSearchString(search) {
     }
 }
 
-// Gets all Named Entity with their sentiment value.
-async function getNamedEntityWithSentimentView(searchTerm, minimum, from, to, fraction, party, speakerId) {
-    try {
-        var param = cleanParameter(searchTerm + ',' + minimum + ',' + from + ',' + to + ',' + fraction + ',' + party + ',' + speakerId);
-        const result = await $.ajax({
-            url: "/api/DashboardController/GetNamedEntititesWithSentimentView/" + param,
-            type: "GET",
-            dataType: "json",
-            accepts: {
-                text: "application/json"
-            },
-        });
-        return result.result;
-    } catch (error) {
-        console.error(error);
-    }
-}
-
 //============================================== NE End ===============================================
 
 // ============================================== Topic analysis ======================================
@@ -646,5 +645,81 @@ async function postNewTopicAnalysis(obj) {
         return result.result;
     } catch (error) {
         console.error(error);
+    }
+}
+
+// ============================================== Global Search ======================================
+// Starts a new global search with the given obj parameters,
+function postNewGlobalSearch(obj, onSuccess, onError) {
+    var request = $.ajax({
+        url: "/api/GlobalSearchController/GlobalSearch/",
+        type: "POST",
+        data: JSON.stringify(obj),
+        dataType: "json",
+        contentType: "application/json",
+        success: function (response) {
+            onSuccess(response);
+        },
+        error: function (response) {
+            onError(response);
+        },
+        accepts: {
+            text: "application/json"
+        },
+    });
+    return request;
+}
+
+// Get all speeches of a speaker as SpeechViewModels
+async function getSpeechViewModelListViewOfSpeaker(speakerId) {
+    try {
+        const result = await $.ajax({
+            url: "/api/GlobalSearchController/GetSpeechViewModelListViewOfSpeaker/" + speakerId,
+            type: "GET",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result.result;
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+}
+
+// Get all shouts of a speaker as SpeechCommentViewModels
+async function getSpeechCommentViewModelListViewOfSpeaker(speakerId) {
+    try {
+        const result = await $.ajax({
+            url: "/api/GlobalSearchController/GetSpeechCommentViewModelListViewOfSpeaker/" + speakerId,
+            type: "GET",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result.result;
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+}
+
+// Get all polls of a speaker as PollViewModels
+async function getPollViewModelListViewOfSpeaker(speakerId) {
+    try {
+        const result = await $.ajax({
+            url: "/api/GlobalSearchController/GetPollViewModelListViewOfSpeaker/" + speakerId,
+            type: "GET",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result.result;
+    } catch (error) {
+        console.error(error);
+        return undefined;
     }
 }

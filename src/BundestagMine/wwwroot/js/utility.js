@@ -45,7 +45,10 @@ function doPageTransition() {
     var layerClass = '.left-layer';
     var layers = document.querySelectorAll(layerClass);
     for (const layer of layers) {
+        // For the touch devices, we need to show and hide the divs, otherwise the screen is to wide.
+        $(layer).show();
         layer.classList.toggle("active");
+        setTimeout(function () { $(layer).hide()}, 1000)
     }
 }
 

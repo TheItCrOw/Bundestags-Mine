@@ -99,6 +99,9 @@
                     window.find('.portrait').attr('src', 'img/Unbekannt.jpg');
                     window.find('.portrait').on('error', function () { $(this).attr('src', 'img/Unbekannt.jpg'); });
                     window.find('.portrait').attr('src', await getSpeakerPortrait(d.data.speakerId));
+                    window.find('.portrait').attr('data-id', d.data.speakerId);
+                    window.find('.portrait').addClass('clickable');
+                    window.find('.portrait').addClass('open-speaker-inspector');
 
                     // Load the sentiment values of this speaker.
                     var year = $('.topic-map-info .year').html();

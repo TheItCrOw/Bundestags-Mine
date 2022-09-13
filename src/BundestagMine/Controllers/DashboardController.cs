@@ -18,6 +18,7 @@ using BundestagMine.RequestModels;
 using BundestagMine.ViewModels;
 using System.Text.RegularExpressions;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace BundestagMine.Controllers
 {
@@ -25,6 +26,8 @@ namespace BundestagMine.Controllers
     [ApiController]
     public class DashboardController : Controller
     {
+        private readonly GlobalSearchService _globalSearchService;
+        private readonly ILogger<DashboardController> _logger;
         private readonly TopicAnalysisService _topicAnalysisService;
         private readonly BundestagScraperService _bundestagScraperService;
         private readonly GraphService _graphService;
@@ -38,8 +41,12 @@ namespace BundestagMine.Controllers
             MetadataService metadataService,
             GraphService graphService,
             BundestagScraperService bundestagScraperService,
-            TopicAnalysisService topicAnalysisService)
+            TopicAnalysisService topicAnalysisService,
+            ILogger<DashboardController> logger,
+            GlobalSearchService globalSearchService)
         {
+            _globalSearchService = globalSearchService;
+            _logger = logger;
             _topicAnalysisService = topicAnalysisService;
             _bundestagScraperService = bundestagScraperService;
             _graphService = graphService;
@@ -50,7 +57,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DashboardController/GetProtocols")]
-        public async Task<IActionResult> GetProtocols()
+        public IActionResult GetProtocols()
         {
             dynamic response = new ExpandoObject();
 
@@ -73,16 +80,16 @@ namespace BundestagMine.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error fetching protocols:");
                 response.status = "400";
                 response.message = "Couldn't fetch protocols, error in logs";
-                //TODO: Log
             }
 
             return Json(response);
         }
 
         [HttpGet("/api/DashboardController/GetParties")]
-        public async Task<IActionResult> GetParties()
+        public IActionResult GetParties()
         {
             dynamic response = new ExpandoObject();
 
@@ -105,14 +112,14 @@ namespace BundestagMine.Controllers
             {
                 response.status = "400";
                 response.message = "Couldn't fetch parties, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching parties:");
             }
 
             return Json(response);
         }
 
         [HttpGet("/api/DashboardController/GetFractions")]
-        public async Task<IActionResult> GetFractions()
+        public IActionResult GetFractions()
         {
             dynamic response = new ExpandoObject();
 
@@ -126,14 +133,14 @@ namespace BundestagMine.Controllers
             {
                 response.status = "400";
                 response.message = "Couldn't fetch fractions, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching fractions:");
             }
 
             return Json(response);
         }
 
         [HttpGet("/api/DashboardController/GetAgendaItemsOfProtocol/{protocolIdAsString}")]
-        public async Task<IActionResult> GetAgendaItemsOfProtocol(string protocolIdAsString)
+        public IActionResult GetAgendaItemsOfProtocol(string protocolIdAsString)
         {
             dynamic response = new ExpandoObject();
 
@@ -147,14 +154,14 @@ namespace BundestagMine.Controllers
             {
                 response.status = "400";
                 response.message = "Couldn't fetch agendaitems, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching agenda items of protocol:");
             }
 
             return Json(response);
         }
 
         [HttpGet("/api/DashboardController/GetPollsOfProtocol/{param}")]
-        public async Task<IActionResult> GetPollsOfProtocol(string param)
+        public IActionResult GetPollsOfProtocol(string param)
         {
             dynamic response = new ExpandoObject();
 
@@ -171,7 +178,7 @@ namespace BundestagMine.Controllers
             {
                 response.status = "400";
                 response.message = "Couldn't fetch polls for protocols, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching polls of protocol:");
             }
 
             return Json(response);
@@ -187,20 +194,20 @@ namespace BundestagMine.Controllers
                 var pollId = Guid.Parse(pollIdAsString);
                 var poll = await _db.Polls.FindAsync(pollId);
                 response.status = "200";
-                response.result = await _bundestagScraperService.GetBundestagUrlOfPoll(poll);
+                response.result = _bundestagScraperService.GetBundestagUrlOfPoll(poll);
             }
             catch (Exception ex)
             {
                 response.status = "400";
                 response.message = $"Couldn't fetch url for poll, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching bundestag url for poll:");
             }
 
             return Json(response);
         }
 
         [HttpGet("/api/DashboardController/GetSpeakerById/{speakerId}")]
-        public async Task<IActionResult> GetSpeakerById(string speakerId)
+        public IActionResult GetSpeakerById(string speakerId)
         {
             dynamic response = new ExpandoObject();
 
@@ -213,7 +220,7 @@ namespace BundestagMine.Controllers
             {
                 response.status = "400";
                 response.message = "Couldn't fetch fractions, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching speaker by id:");
             }
 
             return Json(response);
@@ -225,7 +232,7 @@ namespace BundestagMine.Controllers
         /// <param name="param"></param>
         /// <returns></returns>
         [HttpGet("/api/DashboardController/GetSpeaker/{param}")]
-        public async Task<IActionResult> GetSpeaker(string param)
+        public IActionResult GetSpeaker(string param)
         {
             dynamic response = new ExpandoObject();
 
@@ -240,18 +247,15 @@ namespace BundestagMine.Controllers
                 if (DateTime.TryParse(splited[1], out var from) && DateTime.TryParse(splited[2], out var to))
                 {
                     var speakerIdToCount = _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
-                    .SelectMany(p => _db.Speeches
-                        .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod)
-                        .Select(s => _db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId))
-                        .Where(d => d != null
-                            && (string.IsNullOrEmpty(fraction) || d.Fraction == fraction)
-                            && (string.IsNullOrEmpty(party) || d.Party == party)))
-                    .AsEnumerable()
-                    .GroupBy(s => s)
-                    .Select(t => new { Deputy = t.Key, Count = t.Count() })
-                    .OrderByDescending(kv => kv.Count)
-                    .Take(limit)
-                    .ToList();
+                        .SelectMany(p => _db.Speeches
+                            .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
+                        .SelectMany(s => _db.Deputies.Where(d => d.SpeakerId == s.SpeakerId && (string.IsNullOrEmpty(fraction) || d.Fraction == fraction)
+                                && (string.IsNullOrEmpty(party) || d.Party == party)))
+                        .GroupBy(s => s.SpeakerId)
+                        .Select(t => new { Deputy = _db.Deputies.FirstOrDefault(d => d.SpeakerId == t.Key), Count = t.Count() })
+                        .OrderByDescending(kv => kv.Count)
+                        .Take(limit)
+                        .ToList();
 
                     var dynamicDeputies = new List<dynamic>();
                     foreach (var pair in speakerIdToCount)
@@ -278,7 +282,7 @@ namespace BundestagMine.Controllers
             {
                 response.status = "400";
                 response.message = "Couldn't fetch speaker, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching speakers:");
             }
 
             return Json(response);
@@ -286,7 +290,7 @@ namespace BundestagMine.Controllers
 
 
         [HttpGet("/api/DashboardController/GetSpeechesOfAgendaItem/{param}")]
-        public async Task<IActionResult> GetSpeechesOfAgendaItem(string param)
+        public IActionResult GetSpeechesOfAgendaItem(string param)
         {
             dynamic response = new ExpandoObject();
 
@@ -305,7 +309,7 @@ namespace BundestagMine.Controllers
             {
                 response.status = "400";
                 response.message = "Couldn't fetch agenda items, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching speeches of agenda item:");
             }
 
             return Json(response);
@@ -322,16 +326,29 @@ namespace BundestagMine.Controllers
                 response.status = "200";
 
                 var speech = await _db.NLPSpeeches.FindAsync(id);
-                speech.Tokens = _db.Token.Where(t => t.NLPSpeechId == id).OrderBy(t => t.Begin).ToList();
-                speech.NamedEntities = _db.NamedEntity.Where(t => t.NLPSpeechId == id).OrderBy(t => t.Begin).ToList();
-                speech.Sentiments = _db.Sentiment.Where(t => t.NLPSpeechId == id).OrderBy(t => t.Begin).ToList();
+                speech.Tokens = _db.Token.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
+                speech.NamedEntities = _db.NamedEntity.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
+                speech.Sentiments = _db.Sentiment.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
                 speech.Segments = _db.SpeechSegment.Include(s => s.Shouts).Where(s => s.SpeechId == speech.Id).ToList();
-                speech.CategoryCoveredTags = _db.CategoryCoveredTagged.Where(c => c.NLPSpeechId == speech.Id)
-                    .OrderByDescending(t => t.Score).ToList();
+                //speech.CategoryCoveredTags = _db.CategoryCoveredTagged.Where(c => c.NLPSpeechId == speech.Id)
+                //    .OrderByDescending(t => t.Score).ToList();
+
+                // We want the top X named entities which build the topic of this speech.
+                var topics = speech.NamedEntities
+                    .GroupBy(ne => ne.LemmaValue)
+                    .OrderByDescending(g => g.Count())
+                    .Select(ne => new
+                    {
+                        Value = ne.Key,
+                        Count = ne.Count()
+                    })
+                    .Take(5)
+                    .ToList();
 
                 response.result = new
                 {
                     speech,
+                    topics,
                     agendaItem = _metadataService.GetAgendaItemOfSpeech(speech)
                 };
             }
@@ -339,14 +356,14 @@ namespace BundestagMine.Controllers
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp speech, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching nlp speech:");
             }
 
             return Json(response);
         }
 
         [HttpGet("/api/DashboardController/GetCommentNetworkData/")]
-        public async Task<IActionResult> GetCommentNetworkData()
+        public IActionResult GetCommentNetworkData()
         {
             dynamic response = new ExpandoObject();
 
@@ -362,66 +379,54 @@ namespace BundestagMine.Controllers
             {
                 response.status = "400";
                 response.message = "Couldn't fetch netweork data speech, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching comment network data:");
             }
 
             return Json(response);
         }
 
         [HttpGet("/api/DashboardController/GetTopicMapChartData/{year}")]
-        public async Task<IActionResult> GetTopicMapChartData(string year)
+        public IActionResult GetTopicMapChartData(string year)
         {
             dynamic response = new ExpandoObject();
 
             try
             {
                 response.status = "200";
-                //var from = DateTime.Parse("01.01.2022");
-                //var to = DateTime.Parse("31.12.2022");
-                //var graphData = _graphService.GetTopicMapData(from, to);
-                //var dataString = JsonConvert.SerializeObject(graphData);
-                //System.IO.File.WriteAllText($".\\wwwroot\\data\\topicMap_{from.Year.ToString()}.json", dataString);
                 var jsonString = System.IO.File.ReadAllText($"{ConfigManager.GetDataDirectoryPath()}topicMap_{year}.json");
-                var data = JsonConvert.DeserializeObject(jsonString, typeof(TopicMapGraphObject));
-                response.result = data;
+                response.result = JsonConvert.DeserializeObject(jsonString, typeof(TopicMapGraphObject));
             }
             catch (Exception ex)
             {
                 response.status = "400";
-                response.message = $"Couldn't fetch topic map data, error {ex.Message} {ex.InnerException} in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching topic map chart data:");
             }
 
             return Json(response);
         }
 
         [HttpGet("/api/DashboardController/GetTopicBarRaceChartData/")]
-        public async Task<IActionResult> GetTopicBarRaceChartData()
+        public IActionResult GetTopicBarRaceChartData()
         {
             dynamic response = new ExpandoObject();
 
             try
             {
                 response.status = "200";
-                //var graphData = _graphService.BuildTopicBarRaceChartData();
-                //var dataString = JsonConvert.SerializeObject(graphData);
-                //System.IO.File.WriteAllText($".\\wwwroot\\data\\2022-05-24_topicBarRaceData.json", dataString);
-                var jsonString = System.IO.File.ReadAllText($"{ConfigManager.GetDataDirectoryPath()}2022-05-24_topicBarRaceData.json");
-                var data = JsonConvert.DeserializeObject(jsonString, typeof(List<TopicBarRaceGraphObject>));
-                response.result = data;
+                var jsonString = System.IO.File.ReadAllText($"{ConfigManager.GetDataDirectoryPath()}topicBarRaceData.json");
+                response.result = JsonConvert.DeserializeObject(jsonString, typeof(List<TopicBarRaceGraphObject>));
             }
             catch (Exception ex)
             {
                 response.status = "400";
-                response.message = $"Couldn't fetch topic bar race chart data, error {ex.Message} {ex.InnerException} in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching topic bar race data:");
             }
 
             return Json(response);
         }
 
         [HttpGet("/api/DashboardController/GetTokens/{param}")]
-        public async Task<IActionResult> GetTokens(string param)
+        public IActionResult GetTokens(string param)
         {
             dynamic response = new ExpandoObject();
 
@@ -442,14 +447,14 @@ namespace BundestagMine.Controllers
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp tokens, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching tokens:");
             }
 
             return Json(response);
         }
 
         [HttpGet("/api/DashboardController/GetPOS/{param}")]
-        public async Task<IActionResult> GetPOS(string param)
+        public IActionResult GetPOS(string param)
         {
             dynamic response = new ExpandoObject();
 
@@ -470,14 +475,14 @@ namespace BundestagMine.Controllers
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp pos, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching POS:");
             }
 
             return Json(response);
         }
 
         [HttpGet("/api/DashboardController/GetSentiments/{param}")]
-        public async Task<IActionResult> GetSentiments(string param)
+        public IActionResult GetSentiments(string param)
         {
             dynamic response = new ExpandoObject();
 
@@ -497,14 +502,14 @@ namespace BundestagMine.Controllers
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp sentiments, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching sentiments:");
             }
 
             return Json(response);
         }
 
         [HttpGet("/api/DashboardController/GetNamedEntitites/{param}")]
-        public async Task<IActionResult> GetNamedEntitites(string param)
+        public IActionResult GetNamedEntitites(string param)
         {
             dynamic response = new ExpandoObject();
 
@@ -525,14 +530,14 @@ namespace BundestagMine.Controllers
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp NE, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching named entities:");
             }
 
             return Json(response);
         }
 
         [HttpGet("/api/DashboardController/SearchNamedEntities/{searchString}")]
-        public async Task<IActionResult> SearchNamedEntities(string searchString)
+        public IActionResult SearchNamedEntities(string searchString)
         {
             dynamic response = new ExpandoObject();
 
@@ -541,25 +546,27 @@ namespace BundestagMine.Controllers
                 searchString = searchString.ToCleanRequestString();
                 response.status = "200";
                 response.result = _db.NamedEntity
-                    .Where(ne => ne.LemmaValue.ToLower().Trim().Contains(searchString.ToLower().Trim()))
+                    .Where(ne => !TopicHelper.TopicBlackList.Contains(ne.LemmaValue) && 
+                            ne.LemmaValue.ToLower().Trim().Contains(searchString.ToLower().Trim()) 
+                            && ne.ShoutId == Guid.Empty)
                     .GroupBy(ne => ne.LemmaValue)
                     .OrderByDescending(kv => kv.Count())
-                    .Take(50)
+                    .Take(125)
                     .Select(kv => new { Element = kv.Key, Count = kv.Count() })
                     .ToList();
             }
             catch (Exception ex)
             {
                 response.status = "400";
-                response.message = $"Couldn't fetch url for poll, error in logs";
-                //TODO: Log
+                response.message = $"Couldn't search named entities, error in logs";
+                _logger.LogError(ex, "Error searching named entities:");
             }
 
             return Json(response);
         }
 
         [HttpGet("/api/DashboardController/GetSpeakerSentimentsAboutNamedEntity/{param}")]
-        public async Task<IActionResult> GetSpeakerSentimentsAboutNamedEntity(string param)
+        public IActionResult GetSpeakerSentimentsAboutNamedEntity(string param)
         {
             dynamic response = new ExpandoObject();
 
@@ -578,44 +585,14 @@ namespace BundestagMine.Controllers
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp sentiments for speaker, error in logs";
-                //TODO: Log
-            }
-
-            return Json(response);
-        }
-
-        [HttpGet("/api/DashboardController/GetNamedEntititesWithSentimentView/{param}")]
-        public async Task<IActionResult> GetNamedEntititesWithSentimentView(string param)
-        {
-            dynamic response = new ExpandoObject();
-
-            try
-            {
-                var splited = param.ToCleanRequestString().Split(',');
-                var searchTerm = splited[0];
-                var limit = int.Parse(splited[1]);
-                var from = DateTime.Parse(splited[2]);
-                var to = DateTime.Parse(splited[3]);
-                var fraction = splited[4];
-                var party = splited[5];
-                var speakerId = splited[6];
-                var data = _annotationService.GetNamedEntityWithCorrespondingSentiment(
-                    searchTerm, from, to, fraction, party, speakerId);
-                response.status = "200";
-                response.result = await _viewRenderService.RenderToStringAsync("Dashboard/_Layout", data);
-            }
-            catch (Exception ex)
-            {
-                response.status = "400";
-                response.message = "Couldn't fetch nlp NE with sentiments, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching speaker sentiment about ne:");
             }
 
             return Json(response);
         }
 
         [HttpGet("/api/DashboardController/SearchSpeeches/{searchTerm}")]
-        public async Task<IActionResult> SearchSpeeches(string searchTerm)
+        public IActionResult SearchSpeeches(string searchTerm)
         {
             dynamic response = new ExpandoObject();
 
@@ -638,14 +615,14 @@ namespace BundestagMine.Controllers
             {
                 response.status = "400";
                 response.message = "Couldn't fetch nlp speeches, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error searching speeches:");
             }
 
             return Json(response);
         }
 
         [HttpGet("/api/DashboardController/GetHomescreenData")]
-        public async Task<IActionResult> GetHomescreenData()
+        public IActionResult GetHomescreenData()
         {
             dynamic response = new ExpandoObject();
 
@@ -662,7 +639,7 @@ namespace BundestagMine.Controllers
             {
                 response.status = "400";
                 response.message = "Couldn't fetch homescreen data, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching homescreen data:");
             }
 
             return Json(response);
@@ -689,7 +666,7 @@ namespace BundestagMine.Controllers
             {
                 response.status = "400";
                 response.message = "Couldn't fetch image, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error fetching deputy portrait:");
             }
 
             return Json(response);
@@ -725,7 +702,7 @@ namespace BundestagMine.Controllers
             {
                 response.status = "400";
                 response.message = "Couldn't post topic analysis report, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error posting new topic analysis:");
             }
 
             return Json(response);
@@ -811,7 +788,7 @@ namespace BundestagMine.Controllers
             {
                 response.status = "400";
                 response.message = "Couldn't build page, error in logs";
-                //TODO: Log
+                _logger.LogError(ex, "Error building report page:");
             }
 
             return Json(response);

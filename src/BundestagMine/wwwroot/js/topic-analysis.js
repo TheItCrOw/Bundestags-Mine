@@ -78,6 +78,7 @@ async function searchTopic(input) {
     $('.topic-list-container .loader').show();
 
     try {
+        if (input == '') input = '{NULL}';
         var nes = await getNamedEntitiesWithSearchString(input);
         for (var i = 0; i < nes.length; i++) {
             var ne = nes[i];
@@ -105,7 +106,7 @@ async function searchTopic(input) {
 function speakerSearch(input) {
     $('#topicAnalysisSpeakerSearchList').html('');
     input = input.toLowerCase();
-    console.log(input);
+
     // Look for parties
     allSpeaker.forEach(function (speaker) {
         var org = speaker.party;
@@ -193,7 +194,7 @@ $('body').on('click', '.speakers-list .delete', function () {
 
 // Handles the selecting of a topic in the topic configurator.
 $('body').on('click', '#analysisConfiguratorModal .topic-list .topic-list-item', function () {
-    $('#analysisConfiguratorModal .selected-topic').val($(this).find('span').first().html());
+    $('#analysisConfiguratorModal .selected-topic').val($(this).find('span').first().html().replace('&nbsp;', ' '));
 })
 
 // Handles the switching of the pages
@@ -494,9 +495,15 @@ async function buildTopicComparedToOtherTopicsChart(pageId, data) {
 }
 
 // Open more of the poll
-$('body').on('click', '.topic-analysis-content .open-poll', async function () {
+$('body').on('click', '.open-poll', async function () {
     var pre = $(this).html();
     $(this).html('Lädt...');
-    await openPoll($(this).data('id'));
+
+    try {
+        await openPoll($(this).data('id'));
+    } catch (ex) {
+        console.log('Error opening poll: ' + ex);
+    }
+
     $(this).html(pre);
 })

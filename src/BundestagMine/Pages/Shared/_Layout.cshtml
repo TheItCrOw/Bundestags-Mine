@@ -7,9 +7,13 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/css/footer.css" />
+
     <!-- Custom fonts for this template-->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://kit.fontawesome.com/b0888ca2eb.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
 </head>
 <body>
     <header>
@@ -43,26 +47,34 @@
     <footer class="site-footer">
         <div class="container">
             <div class="row">
-                <div class="col-9">
+                <div class="col-5">
                     <h6>ABOUT</h6>
                     <p class="text-justify">
                         Bundestag-Mine.de ist aus einem Uni-Projekt heraus entstanden und wurde ursprünglich von einer
-                        Gruppe bestehend aus 4 Studierenden (Kevin Bönisch, Linus Reul, Gabriele Marcantonio, Elias Wahl) gebaut. 
-                        Seit Modul-Ende wird das Projekt alleine weitergeführt. 
+                        Gruppe bestehend aus 4 Studierenden gebaut.
+                        Seit Modul-Ende wird das Projekt alleine weitergeführt.
                         Alle Daten, die hier vearbeitet wurden/werden sind frei zugänglich von
                         der <a href="https://www.bundestag.de/">Bundestag</a> Website abrufbar. Für die Textanalysen hat uns das <a href="https://www.texttechnologylab.org/">Text Technology Lab</a>
                         der Goethe-Universität Frankfurt eine NLP-Engine bereitgestellt. Alle Daten und Analysen sind nach bestem Wissen und Gewissen
                         aufbereitet und durchgeführt worden - mehr jedoch nicht. Das Projekt ist komplett <b>Open Source</b>.
                     </p>
                 </div>
-
+                <div class="col-4">
+                    <h6>Text Technology Lab</h6>
+                    <img src="~/img/ttl-logo-white.png" class="clickable" style="object-fit:cover; width:100%;" onclick="window.open('https://www.texttechnologylab.org/', '_blank')"/>
+                    <p class="text-justify">
+                        Wahed Hemati, Tolga Uslu, Alexander Mehler: TextImager: a Distributed UIMA-based System for 
+                        NLP. COLING (Demos) 2016: 59-63 <a href="https://www.aclweb.org/anthology/C/C16/C16-2013.pdf" target="_blank">[pdf]</a> 
+                        <a href="https://www.aclweb.org/anthology/C/C16/C16-2013.bib" target="_blank">[bibtex]</a>
+                    </p>
+                </div>
                 <div class="col-3">
                     <h6>Quick Links</h6>
                     <ul class="footer-links">
                         <li><a target="_blank" href="https://www.texttechnologylab.org/">Text Technology Lab</a></li>
                         <li><a target="_blank" href="https://www.bundestag.de/">Deutscher Bundestag</a></li>
-                        <li><a target="_blank" href="https://github.com/TheItCrOw/BundestagMine">GitHub</a></li>
-                        <li><a href="mailto:k.boenisch@outlook.com">Kontakt</a></li>
+                        <li><a target="_blank" href="https://github.com/TheItCrOw/Bundestags-Mine">GitHub</a></li>
+                        <li><a href="mailto:info@bundestag-mine.de">Kontakt</a></li>
                     </ul>
                 </div>
             </div>
@@ -78,16 +90,13 @@
 
                 <div class="col-md-4 col-sm-6 col-xs-12">
                     <ul class="social-icons">
-                        <li><a class="twitter" target="_blank" href="https://github.com/TheItCrOw/BundestagMine"><i class="fab fa-github"></i></a></li>
+                        <li><a class="twitter" target="_blank" href="https://github.com/TheItCrOw/Bundestags-Mine"><i class="fab fa-github"></i></a></li>
                         <li><a class="linkedin" target="_blank" href="https://www.xing.com/profile/Kevin_Boenisch2/cv"><i class="fab fa-xing"></i></a></li>
                     </ul>
                 </div>
             </div>
         </div>
     </footer>
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
     @RenderSection("Scripts", required: false)
 </body>

@@ -1,20 +1,37 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="appsettings.json" />
+    <Content Remove="wwwroot\js\global-search.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\js\global-search.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="dcsoup" Version="1.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.23" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.10">
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.0-preview1.19506.1" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.0-preview1-19509-03" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Core" Version="6.0.8" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.8" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Utils" Version="6.0.8" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGenerators.Mvc" Version="6.0.8" />
+    <PackageReference Include="NLog" Version="5.0.2" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="5.1.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,14 +40,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="appsettings.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
+    <Folder Include="wwwroot\img\" />
+    <Folder Include="wwwroot\data\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\img\" />
-    <Folder Include="wwwroot\data\" />
+    <None Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\js\global-search.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="nlog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

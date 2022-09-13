@@ -19,6 +19,29 @@ namespace BundestagMine.SqlDatabase.Migrations
                 .HasAnnotation("ProductVersion", "5.0.10")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("BundestagMine.Models.Database.ImportedEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ImportedDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModelJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ProtocolId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ImportedEntities");
+                });
+
             modelBuilder.Entity("BundestagMine.Models.Database.MongoDB.AgendaItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -196,6 +219,9 @@ namespace BundestagMine.SqlDatabase.Migrations
                     b.Property<Guid>("NLPSpeechId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("ShoutId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
 
@@ -267,6 +293,9 @@ namespace BundestagMine.SqlDatabase.Migrations
                     b.Property<double>("SentimentSingleScore")
                         .HasColumnType("float");
 
+                    b.Property<Guid>("ShoutId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NLPSpeechId");
@@ -295,7 +324,7 @@ namespace BundestagMine.SqlDatabase.Migrations
                     b.Property<string>("SpeakerId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("SpeechSegmentId")
+                    b.Property<Guid>("SpeechSegmentId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Text")
@@ -421,6 +450,9 @@ namespace BundestagMine.SqlDatabase.Migrations
 
                     b.Property<string>("Reflex")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ShoutId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Stem")
                         .HasColumnType("nvarchar(max)");
@@ -574,7 +606,9 @@ namespace BundestagMine.SqlDatabase.Migrations
                 {
                     b.HasOne("BundestagMine.Models.Database.MongoDB.SpeechSegment", null)
                         .WithMany("Shouts")
-                        .HasForeignKey("SpeechSegmentId");
+                        .HasForeignKey("SpeechSegmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BundestagMine.Models.Database.MongoDB.SpeechSegment", b =>

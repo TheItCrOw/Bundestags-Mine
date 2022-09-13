@@ -1,0 +1,122 @@
+﻿@using BundestagMine.ViewModels
+@using BundestagMine.Services
+@inject BundestagScraperService BundestagScraperService
+@model SpeakerInspectorViewModel
+
+<div class="modal-header bg-transparent rounded-0 text-dark pl-3 pr-3 pb-1 pt-1">
+    <h5 class="modal-title">@Model?.Deputy.FirstName @Model?.Deputy.LastName</h5>
+    <button type="button" class="close text-dark" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">-</span>
+    </button>
+</div>
+
+@if(Model == null)
+{
+    <p class="mt-3 text-center">Klicken Sie auf ein(e) Redner(in) in eine der Ansichten.</p>
+}
+else
+{
+    var imgSrc = BundestagScraperService.GetDeputyPortraitFromImageDatabase(Model.Deputy.SpeakerId);
+    if (string.IsNullOrEmpty(imgSrc)) imgSrc = "./img/Unbekannt.jpg";
+    <div class="modal-body">
+        <div class="row m-0 p-0">
+            @*image*@
+            <div class="col-lg-4 m-0 text-center">
+                <img class="portrait" src="@imgSrc" />
+            </div>
+            @*visitenkarte*@
+            <div class="col-lg-8 m-0 pl-2 pb-1 pt-1 pr-1 visiten-karte">
+                <div class="w-100 font-small">
+                    <div class="info-field">
+                        <label>Geschlecht:</label>
+                        <label>@Model.Deputy.Gender</label>
+                    </div>
+                    <div class="info-field">
+                        <label>Geburtstag:</label>
+                        <label>@Model.Deputy.BirthDate.ToShortDateString()</label>
+                    </div>
+                    <div class="info-field">
+                        <label>Religion:</label>
+                        <label>@Model.Deputy.Religion</label>
+                    </div>
+                    <div class="info-field">
+                        <label>Familienstand:</label>
+                        <label>@Model.Deputy.MaritalStatus</label>
+                    </div>
+                    <div class="info-field">
+                        <label>Fraktion:</label>
+                        <label>@Model.Deputy.Fraction</label>
+                    </div>
+                    <div class="info-field">
+                        <label>Partei:</label>
+                        <label>@Model.Deputy.Party</label>
+                    </div>
+                    <div class="info-field">
+                        <label>Beruf:</label>
+                        <label>@Model.Deputy.Profession</label>
+                    </div>
+                    <div class="info-field">
+                        <label>Im Bundestag seit:</label>
+                        <label>@Model.Deputy.HistorySince.ToShortDateString()</label>
+                    </div>
+                    <div class="info-field">
+                        <label>Akademischer Grad:</label>
+                        <label>@Model.Deputy.AcademicTitle</label>
+                    </div>
+                </div>
+            </div>
+            @*different tabs*@
+            <div class="tabs">
+                <button class="btn tab" data-type="speeches">Reden</button>
+                <button class="btn tab" data-type="shouts">Kommentare</button>
+                <button class="btn tab" data-type="polls">Abstimmungen</button>
+            </div>
+
+            @*different content*@
+            <div class="tab-content w-100">
+                @*speeches*@
+                <div class="content" data-type="speeches">
+                    <div class="loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                    <div class="result">
+                        <partial name="~/Pages/Shared/_SpeechViewModelListView.cshtml" model="Model.Speeches" />
+                        @if (Model.Speeches.Count == 5)
+                        {
+                            <button class="mb-0 btn btn-outline-dark rounded-0 small-font load-all" data-type="speeches"
+                            data-id="@Model.Deputy.SpeakerId">
+                                Alle Reden laden
+                            </button>
+                        }
+                    </div>
+                </div>
+                @*speeches*@
+                <div class="content" data-type="shouts">
+                    <div class="loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                    <div class="result">
+                        <partial name="~/Pages/Shared/_SpeechCommentViewModelListView.cshtml" model="Model.Comments" />
+                        @if (Model.Comments.Count == 5)
+                        {
+                            <button class="mb-0 btn btn-outline-dark rounded-0 small-font load-all" data-type="shouts"
+                            data-id="@Model.Deputy.SpeakerId">
+                                Alle Kommentare laden
+                            </button>
+                        }
+                    </div>
+                </div>
+                @*polls*@
+                <div class="content" data-type="polls">
+                    <div class="loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                    <div class="result">
+                        <partial name="~/Pages/Shared/_PollViewModelListView.cshtml" model="Model.Polls" />
+                        @if (Model.Polls.Count == 5)
+                        {
+                            <button class="mb-0 btn btn-outline-dark rounded-0 small-font load-all" data-type="polls"
+                            data-id="@Model.Deputy.SpeakerId">
+                                Alle Abstimmungen laden
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

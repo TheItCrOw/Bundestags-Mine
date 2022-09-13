@@ -1,0 +1,29 @@
+﻿.log-lines{
+    max-height:80vh;
+    overflow-y:auto;
+    border:lightgray 1px solid;
+}
+
+.line {
+    border: lightgray 1px solid;
+    width: 100%;
+    margin: 0;
+    padding: 3px;
+}
+
+.line:hover{
+    background-color:lightgray;
+    border:1px solid black;
+}
+
+.info{
+}
+
+.warning{
+    background-color:yellow;
+}
+
+.error{
+    background-color:red;
+    color:white;
+}
