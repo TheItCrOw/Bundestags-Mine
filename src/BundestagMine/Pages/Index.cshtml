@@ -27,6 +27,7 @@
     <link href="~/css/topic-map-chart.css" rel="stylesheet">
     <link href="~/css/bar-topic-race-chart.css" rel="stylesheet">
     <link href="~/css/speaker-inspector.css" rel="stylesheet">
+    <link href="~/css/download-center.css" rel="stylesheet">
 </head>
 
 <body id="page-top">
@@ -122,6 +123,14 @@
                 </div>
             </li>
 
+            <!-- Nav Item - Download Center -->
+            <li class="nav-item active nav-item-switcher" data-id="downloadCenterContent">
+                <a class="nav-link">
+                    <i class="fas fa-cloud-download-alt"></i>
+                    <span>Download Center</span>
+                </a>
+            </li>
+
             <!-- Nav Item - Info -->
             <li class="nav-item active nav-item-switcher" data-id="faqContent">
                 <a class="nav-link">
@@ -143,7 +152,7 @@
             </nav>
 
             @*HOME*@
-            <div id="homeContent" class="h-100 position-relative">
+            <div id="homeContent" class="h-100 position-relative display-none">
                 <p class="title"> <span class="text__first"><span class="text__word">Bundestags- </span><span class="text__first-bg"></span></span><br /><span class="text__second"><span class="text__word">Mine</span><span class="text__second-bg"></span></span></p>
                 <img class="centered" src="~/img/duetscher-adler-flagge.png" />
                 <div class="speeches-count display-none">
@@ -739,6 +748,11 @@
                 </div>
             </div>
 
+            @*Download Center*@
+            <div id="downloadCenterContent" class="position-relative h-100 w-100">
+                <partial name="~/Pages/Shared/DownloadCenter/_DownloadCenterView.cshtml" />
+            </div>
+
             @*faq*@
             <div id="faqContent" class="position-relative h-100 w-100">
                 <partial name="~/Pages/Shared/_FAQView.cshtml" />
@@ -899,6 +913,7 @@
         <script src="./js/speech-fulltext.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/global-search.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/speaker-inspector.js" charset="utf-8" type="text/javascript"></script>
+        <script src="./js/download-center.js" charset="utf-8" type="text/javascript"></script>
         <!--charts-->
         <script src="./js/charts/token-chart.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/charts/pos-chart.js" charset="utf-8" type="text/javascript"></script>
@@ -910,5 +925,5 @@
         <script src="./js/charts/speaker-chart.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/charts/comment-network-chart.js" charset="utf-8" type="text/javascript"></script>
     }
-</body>
-</html>
+    </body>
+    </html>

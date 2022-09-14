@@ -1,0 +1,137 @@
+﻿<div>
+    <div class="pt-1 pl-3 pr-3 header">
+        <hr class="fancy-hr bg-transparent" />
+        <h2>Download Center</h2>
+    </div>
+
+    <div class="content">
+        <div class="container card-shadow">
+            <p class="text-center mt-5">
+                Wählen Sie den Filter und die Sitzungsprotokolle, die Sie, samt NLP-Auswertungsdaten, herunterladen wollen.
+                Sie können die Daten dann zu eigenen Analysen und Auswertungen nutzen.
+            </p>
+            @*filter*@
+            <div class="filter">
+                @*time*@
+                <div class="filter-item">
+                    <div class="flexed align-items-center justify-content-between">
+                        <button class="btn hidden">
+                            <i class="fas fa-chevron-circle-up"></i>
+                        </button>
+                        <h5 class="text-center text-dark font-weight-bold">Zeitraum</h5>
+                        <button class="btn text-warning expander" data-type="time" data-expanded="false">
+                            <i class="fas fa-chevron-circle-up"></i>
+                        </button>
+                    </div>
+                    <div class="expandable display-none" data-type="time">
+                        <div class="flexed justify-content-around align-items-center">
+                            @*from*@
+                            <div class="flexed align-items-baseline">
+                                <h6 class="mb-0 mt-0 mr-2"><i class="fas fa-hourglass-start"></i></h6>
+                                <input type="date" data-id="from" class="form-control rounded-0" value="2017-01-01" />
+                            </div>
+                            <i class="fas fa-long-arrow-alt-right"></i>
+                            @*to*@
+                            <div class="flexed align-items-baseline">
+                                <h6 class="mb-0 mt-0 mr-2"><i class="fas fa-hourglass-end"></i></h6>
+                                <input type="date" data-id="to" class="form-control rounded-0" value="2023-01-01" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                @*specific fraction*@
+                <div class="filter-item">
+                    <div class="flexed align-items-center justify-content-between">
+                        <button class="btn hidden">
+                            <i class="fas fa-chevron-circle-up"></i>
+                        </button>
+                        <h5 class="text-center text-dark font-weight-bold">Fraktionen</h5>
+                        <button class="btn text-warning expander" data-type="fractions" data-expanded="false">
+                            <i class="fas fa-chevron-circle-up"></i>
+                        </button>
+                    </div>
+                    <div class="expandable display-none" data-type="fractions">
+                        <p class="text-center">
+                            Wählen Sie die Fraktionen, deren Reden Sie betrachten wollen.
+                        </p>
+                        <div class="fractions flexed justify-content-around align-items-center flex-wrap">
+                            <div class="flexed align-items-center ml-1 mr-1">
+                                <label class="mb-0">Fraktionslos</label>
+                                <input type="checkbox" class="ml-2" checked />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @*specific party*@
+                <div class="filter-item">
+                    <div class="flexed align-items-center justify-content-between">
+                        <button class="btn hidden">
+                            <i class="fas fa-chevron-circle-up"></i>
+                        </button>
+                        <h5 class="text-center text-dark font-weight-bold">Parteien</h5>
+                        <button class="btn text-warning expander" data-type="parties" data-expanded="false">
+                            <i class="fas fa-chevron-circle-up"></i>
+                        </button>
+                    </div>
+                    <div class="expandable display-none" data-type="parties">
+                        <p class="text-center">
+                            Wählen Sie die Parteien, deren Reden Sie betrachten wollen.
+                        </p>
+                        <div class="parties flexed justify-content-around align-items-center flex-wrap">
+                        </div>
+                    </div>
+                </div>
+
+                @*specific speakers*@
+                <div class="filter-item">
+                    <div class="flexed align-items-center justify-content-between">
+                        <button class="btn hidden">
+                            <i class="fas fa-chevron-circle-up"></i>
+                        </button>
+                        <h5 class="text-center text-dark font-weight-bold">Redner(innen)</h5>
+                        <button class="btn text-warning expander" data-type="speakers" data-expanded="false">
+                            <i class="fas fa-chevron-circle-up"></i>
+                        </button>
+                    </div>
+                    <div class="expandable display-none" data-type="speakers">
+                        <p class="text-center">
+                            Wählen Sie die Redner(innen), deren Reden Sie betrachten wollen.
+                        </p>
+                        <div class="row m-0 p-0">
+                            @*all*@
+                            <div class="col-lg-4">
+                                <p class="text-center mb-0 mr-2">Alle<input data-type="all" class="ml-2 choose-btn" type="radio" checked name="speaker" /></p>
+                            </div>
+                            @*choose*@
+                            <div class="col-lg-8">
+                                <p class="text-center mb-0 mr-2 choose-btn" data-type="choose">Ausgewählte<input class="ml-2" type="radio" name="speaker" /></p>
+                                <div class="flexed justify-content-center w-100">
+                                    <div class="choose-speaker-div">
+                                        <div class="flexed">
+                                            <div class="position-relative w-100">
+                                                <input disabled class="form-control exception-click rounded-0 w-100 border-top-0 border-left-0 speaker-search-input" type="text" placeholder="Suchen..." />
+                                                @*search vorschläge*@
+                                                <div class="speaker-list-div exception-click display-none">
+                                                </div>
+                                            </div>
+                                            <div class="btn pointer-events-none">
+                                                <i class="fas fa-search"></i>
+                                            </div>
+                                        </div>
+                                        @*actual list*@
+                                        <div class="speaker-list-result">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

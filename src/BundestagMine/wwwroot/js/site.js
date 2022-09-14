@@ -37,6 +37,9 @@ $(document).ready(async function () {
     // Init the topic analysis
     initTopicAnalysis();
 
+    // Init the download center
+    downloadCenterHandler.init(allFractions, allParties, allSpeaker);
+
     // some animations
     setTimeout(function () {
         $('.speeches-count').slideDown(500);
@@ -143,6 +146,14 @@ $('body').on('click', '.delete-dashboard-btn', function () {
     $('.ribbon-item').first().addClass('selected-ribbon');
     $('.new-dashboard').first().fadeIn(500);
     $('.popover').popover('hide');
+})
+
+// We only want to close the search list of speakers if we click somewhere else but the input
+// and the actual list!
+$(document).on('click', function (event) {
+    if (event.target.classList.contains('exception-click')) return;
+    $('#dashboardCreateSearchList').hide();
+    $('#downloadCenterContent .filter .speaker-list-div').hide();
 })
 
 // Handles the switching of the differen views.
