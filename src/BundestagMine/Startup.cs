@@ -83,6 +83,7 @@ namespace BundestagMine
             services.AddTransient<TopicAnalysisService>();
             services.AddTransient<ImportService>();
             services.AddTransient<GlobalSearchService>();
+            services.AddTransient<DownloadCenterService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

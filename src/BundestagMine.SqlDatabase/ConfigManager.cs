@@ -25,7 +25,7 @@ namespace BundestagMine.SqlDatabase
 
         public static string GetDataPollsDirectoryPath() => _config.GetSection("Paths").GetSection("PollsDirectory").Value;
 
-        public static int GetPollExporterMaxOffset() => 
+        public static int GetPollExporterMaxOffset() =>
             int.Parse(_config.GetSection("Configurations").GetSection("PollsExportMaxOffset").Value);
 
         public static int GetAgendaItemScrapeStartYear() =>
@@ -49,6 +49,12 @@ namespace BundestagMine.SqlDatabase
         public static string GetSmtpPassword() => _config.GetSection("Smtp").GetSection("Password").Value;
         public static bool GetSmtpEnableSSL() => bool.Parse(_config.GetSection("Smtp").GetSection("EnableSSL").Value);
         public static bool GetSmtpIsBodyHtml() => bool.Parse(_config.GetSection("Smtp").GetSection("IsBodyHtml").Value);
+
+        public static string GetDownloadCenterCalculatingDataDirectory() =>
+            _config.GetSection("Configurations").GetSection("DownloadCenter").GetSection("CalculatingDataDirectory").Value;
+        
+        public static string GetDownloadCenterFinishedZippedDataSetsDirectory() =>
+            _config.GetSection("Configurations").GetSection("DownloadCenter").GetSection("FinishedZippedDataSetsDirectory").Value;
 
         /// <summary>
         /// Returns the db options we need to pass into each new db context.

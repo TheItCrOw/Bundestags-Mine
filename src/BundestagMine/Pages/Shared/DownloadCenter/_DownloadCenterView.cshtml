@@ -7,9 +7,18 @@
     <div class="content">
         <div class="container card-shadow">
             <p class="text-center mt-5">
-                Wählen Sie den Filter und die Sitzungsprotokolle, die Sie, samt NLP-Auswertungsdaten, herunterladen wollen.
+                Stellen Sie im Folgenden erst den Filter ein, um dann die Sitzungsprotokolle samt NLP-Auswertungsdaten herunterzuladen.
                 Sie können die Daten dann zu eigenen Analysen und Auswertungen nutzen.
             </p>
+            <div class="alert alert-info mt-2 flexed align-items-center p-2 mb-3" role="alert">
+                <i class="fas fa-info-circle mr-2 h-100"></i>
+                <label class="small-font m-0">
+                    Es werden an NLP-Auswertungen nur Sentiments und NamedEntities, aber keine Tokens zum Download bereitsgestellt. Letzere generieren zu große
+                    Datenmengen, um sie on-demand abrufbar zu halten. Sollten Sie auch Tokens benötigen, fragen Sie gerne direkt über das Kontaktfeld im
+                    Footer explizit nach.
+                </label>
+            </div>
+
             @*filter*@
             <div class="filter">
                 @*time*@
@@ -19,30 +28,30 @@
                             <i class="fas fa-chevron-circle-up"></i>
                         </button>
                         <h5 class="text-center text-dark font-weight-bold">Zeitraum</h5>
-                        <button class="btn text-warning expander" data-type="time" data-expanded="false">
+                        <button class="btn text-warning expander" data-type="time" data-expanded="true">
                             <i class="fas fa-chevron-circle-up"></i>
                         </button>
                     </div>
-                    <div class="expandable display-none" data-type="time">
+                    <div class="expandable" data-type="time">
+                        <p class="text-center">Wählen Sie den Zeitraum aus, aus dem Sie die Protokolle herunterladen wollen.</p>
                         <div class="flexed justify-content-around align-items-center">
                             @*from*@
                             <div class="flexed align-items-baseline">
                                 <h6 class="mb-0 mt-0 mr-2"><i class="fas fa-hourglass-start"></i></h6>
-                                <input type="date" data-id="from" class="form-control rounded-0" value="2017-01-01" />
+                                <input type="date" data-type="from" class="form-control rounded-0" value="2017-01-01" />
                             </div>
                             <i class="fas fa-long-arrow-alt-right"></i>
                             @*to*@
                             <div class="flexed align-items-baseline">
                                 <h6 class="mb-0 mt-0 mr-2"><i class="fas fa-hourglass-end"></i></h6>
-                                <input type="date" data-id="to" class="form-control rounded-0" value="2023-01-01" />
+                                <input type="date" data-type="to" class="form-control rounded-0" value="2023-01-01" />
                             </div>
                         </div>
                     </div>
                 </div>
 
-
                 @*specific fraction*@
-                <div class="filter-item">
+                <div class="filter-item" data-type="fractions">
                     <div class="flexed align-items-center justify-content-between">
                         <button class="btn hidden">
                             <i class="fas fa-chevron-circle-up"></i>
@@ -54,19 +63,19 @@
                     </div>
                     <div class="expandable display-none" data-type="fractions">
                         <p class="text-center">
-                            Wählen Sie die Fraktionen, deren Reden Sie betrachten wollen.
+                            Deaktivieren Sie die Fraktionen, deren Reden Sie nicht herunterladen wollen.
                         </p>
                         <div class="fractions flexed justify-content-around align-items-center flex-wrap">
                             <div class="flexed align-items-center ml-1 mr-1">
                                 <label class="mb-0">Fraktionslos</label>
-                                <input type="checkbox" class="ml-2" checked />
+                                <input type="checkbox" data-type="fraction" data-value="Fraktionslos" class="ml-2" checked />
                             </div>
                         </div>
                     </div>
                 </div>
 
                 @*specific party*@
-                <div class="filter-item">
+                <div class="filter-item" data-type="parties">
                     <div class="flexed align-items-center justify-content-between">
                         <button class="btn hidden">
                             <i class="fas fa-chevron-circle-up"></i>
@@ -78,7 +87,7 @@
                     </div>
                     <div class="expandable display-none" data-type="parties">
                         <p class="text-center">
-                            Wählen Sie die Parteien, deren Reden Sie betrachten wollen.
+                            Deaktivieren Sie die Parteien, deren Reden Sie nicht herunterladen wollen.
                         </p>
                         <div class="parties flexed justify-content-around align-items-center flex-wrap">
                         </div>
@@ -86,7 +95,7 @@
                 </div>
 
                 @*specific speakers*@
-                <div class="filter-item">
+                <div class="filter-item" data-type="speakers">
                     <div class="flexed align-items-center justify-content-between">
                         <button class="btn hidden">
                             <i class="fas fa-chevron-circle-up"></i>
@@ -98,16 +107,20 @@
                     </div>
                     <div class="expandable display-none" data-type="speakers">
                         <p class="text-center">
-                            Wählen Sie die Redner(innen), deren Reden Sie betrachten wollen.
+                            Wenn Sie "Implizit" auswählen, werden nicht explizit die Reden von bestimmten Redner(innen) heruntergladen. Sollten Sie
+                            jedoch auf der rechten Seite explizit Redner(innen) auswählen, so werden diese Reden, <b>unabhängig von den Einstellungen unter "Fraktionen" oder "Parteien"</b>,
+                            betrachtet. Sollten Sie also die Partei und Fraktion "SPD" deaktiviert haben, aber "Olaf Scholz" auswählen,
+                            werden trotzdem alle Reden aller Sitzungsprotokolle im gegebenen Zeitraum von "Olaf Scholz" heruntergeladen. Haben Sie jedoch zum Beispiel die Fraktion
+                            "SPD" sowieso aktiviert, ist die explizite Aktivierung von "Olaf Scholz" unnötig.
                         </p>
                         <div class="row m-0 p-0">
                             @*all*@
                             <div class="col-lg-4">
-                                <p class="text-center mb-0 mr-2">Alle<input data-type="all" class="ml-2 choose-btn" type="radio" checked name="speaker" /></p>
+                                <p class="text-center mb-0 mr-2">Implizit<input data-type="all" class="ml-2 choose-btn" type="radio" checked name="speaker" /></p>
                             </div>
                             @*choose*@
                             <div class="col-lg-8">
-                                <p class="text-center mb-0 mr-2 choose-btn" data-type="choose">Ausgewählte<input class="ml-2" type="radio" name="speaker" /></p>
+                                <p class="text-center mb-0 mr-2 choose-btn">Explizit<input data-type="choose" class="ml-2" type="radio" name="speaker" /></p>
                                 <div class="flexed justify-content-center w-100">
                                     <div class="choose-speaker-div">
                                         <div class="flexed">
@@ -130,7 +143,57 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
+            @*apply filter*@
+            <button class="card-shadow btn btn-warning rounded-0 pb-2 pt-2 w-100 apply-filter-btn">
+                <h5 class="m-0">Filter anwenden <i class="fas fa-check"></i></h5>
+            </button>
+
+            @*results*@
+            <div class="filter-result-div position-relative mt-5 mb-3 p-3 display-none">
+                @*loading*@
+                <div class="loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                <h5 class="text-center w-100 text-dark font-weight-bold">Resultierender Datensatz</h5>
+                <p class="mb-0 text-center">
+                    Die Zeiten sind reine Schätzungen und berücksichtigen zB. keinen schwankenden Traffic oder sonstige Faktoren, welche die
+                    Ladezeit von Außen beeinflussen könnten.
+                </p>
+                <hr class="mt-1" />
+                <div class="flexed align-items-center w-100 justify-content-around mt-3">
+                    <h6 class="ml-2">
+                        <span class="protocols text-dark font-weight-bold">0</span> Protokolle <br />
+                        <span class="speeches text-dark font-weight-bold">0</span> Reden
+                    </h6>
+                    <h6 class="ml-2">
+                        Geschätzte Berechnungszeit:   <span class="estimated-time text-dark font-weight-bold">0</span> Minuten<br />
+                        Geschätzte Dateigröße: <span class="estimated-size text-dark font-weight-bold">0</span> MB
+                    </h6>
+                    <h6 class="ml-2">
+                        Geschätzte ZIP-Größe:   <span class="estimated-zip-size text-dark font-weight-bold">0</span> MB<br />
+                    </h6>
+                </div>
+                <hr class="mt-1" />
+                <p class="text-center">
+                    Sie werden per Mail informiert, wenn Ihr Datensatz fertig berechnet wurde. Der Link zum Herunterladen wird Ihnen
+                    dann ebenfalls in der Mail mitgeschickt.
+                </p>
+                <div class="flexed align-items-baseline justify-content-between mt-3">
+                    @*email input field*@
+                    <div class="w-100">
+                        <input type="email" class="form-control w-100 mail-input" placeholder="Email" />
+                        <p class="m-0 text-danger error-message display-none small-font"></p>
+                    </div>
+                    @*start calculation*@
+                    <button class="btn btn-warning card-shadow-light generate-data-btn ml-2"
+                            data-expanded="true" data-toggle="popover" data-content="Datensatz als ZIP-Datei anfordern" data-trigger="hover">
+                        <i class="xxlarge-font fas fa-file-download"></i>
+                    </button>
+                    @*calculated*@
+                    <button class="btn btn-success card-shadow-light pointer-events-none ml-2 display-none">
+                        <i class="xxlarge-font fas fa-check"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

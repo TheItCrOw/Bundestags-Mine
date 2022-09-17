@@ -27,7 +27,7 @@
         border-top: lightgray 1px solid;
         border-bottom: lightgray 1px solid;
         border-right: lightgray 1px solid;
-        border-left: lightgray 1px solid;
+        border-left: #f6c23e 6px solid;
         padding-bottom: 36px;
         transition: 0.15s;
         box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
@@ -71,4 +71,28 @@
             #downloadCenterContent .filter .speaker-list-div .item:hover {
                 background-color: lightgray;
                 color: black;
+            }
+
+    #downloadCenterContent .filter-result-div {
+        border: lightgray solid 1px;
+        border-radius: 6px;
+        border-left:gray 6px solid;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+    }
+
+        #downloadCenterContent .filter-result-div .loader {
+            position: absolute;
+            width: 100%;
+            display: none;
+            z-index: 5;
+            background-color: rgba(255,255,255,0.8);
+            top: 0;
+            height: 100%; /*This is the height of all the headers. Its hacky, yes. Wont work on mobile.*/
+            left: 0;
+        }
+
+            #downloadCenterContent .filter-result-div .loader .lds-ripple {
+                position: absolute;
+                left: calc(50% - 40px);
+                top: calc(50% - 40px);
             }
