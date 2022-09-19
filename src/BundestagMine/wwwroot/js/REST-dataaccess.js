@@ -770,13 +770,17 @@ async function downloadDataZip(filename) {
     try {
         $.ajax({
             type: "GET",
+            headers: {
+
+            },
             url: "/api/DownloadCenterController/DownloadDataset/" + filename,
             //contentType: "application/json",
+            contentType: "application/octet-stream",
             xhrFields: {
                 responseType: 'blob'
             },
             //data: JSON.stringify(obj),
-            success: function (data) {
+            success: async function (data) {
                 var a = document.createElement('a');
                 var url = window.URL.createObjectURL(data);
                 a.href = url;

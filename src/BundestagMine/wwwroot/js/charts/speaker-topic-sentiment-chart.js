@@ -36,5 +36,9 @@ function updateSentimentSpeakerTopicRadarChart(chart, dataDist) {
 
 // Takes in the sentiments data from an API fetch and prepares the dictionary for it.
 async function buildSentimentSpeakerTopicDataForChart(sentiments) {
-    return distribution = { "pos": sentiments[0]?.count, "neu": sentiments[1]?.count, "neg": sentiments[2]?.count };
+    return distribution = {
+        "pos": sentiments.find(s => s.value == 'pos')?.count,
+        "neu": sentiments.find(s => s.value == 'neu')?.count,
+        "neg": sentiments.find(s => s.value == 'neg')?.count
+    };
 }

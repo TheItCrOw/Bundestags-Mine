@@ -49,12 +49,17 @@ namespace BundestagMine.SqlDatabase
         public static string GetSmtpPassword() => _config.GetSection("Smtp").GetSection("Password").Value;
         public static bool GetSmtpEnableSSL() => bool.Parse(_config.GetSection("Smtp").GetSection("EnableSSL").Value);
         public static bool GetSmtpIsBodyHtml() => bool.Parse(_config.GetSection("Smtp").GetSection("IsBodyHtml").Value);
+        public static string GetGenericMailTemplatePath() => _config.GetSection("MailTemplates").GetSection("GenericMailTemplatePath").Value;
+        public static string GetGenericMailTemplateWithButtonPath() => _config.GetSection("MailTemplates").GetSection("GenericMailTemplateWithButtonPath").Value;
 
         public static string GetDownloadCenterCalculatingDataDirectory() =>
             _config.GetSection("Configurations").GetSection("DownloadCenter").GetSection("CalculatingDataDirectory").Value;
         
         public static string GetDownloadCenterFinishedZippedDataSetsDirectory() =>
             _config.GetSection("Configurations").GetSection("DownloadCenter").GetSection("FinishedZippedDataSetsDirectory").Value;
+
+        public static string GetPresetDatasetsLastUpdateDate() =>
+            _config.GetSection("Configurations").GetSection("DownloadCenter").GetSection("PresetDatasetsLastUpdateDate").Value;
 
         /// <summary>
         /// Returns the db options we need to pass into each new db context.

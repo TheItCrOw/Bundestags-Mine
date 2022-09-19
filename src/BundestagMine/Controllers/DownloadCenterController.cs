@@ -34,6 +34,28 @@ namespace BundestagMine.Controllers
             _logger = logger;
         }
 
+        [HttpGet("/api/DownloadCenterController/DownloadDocumentation/")]
+        public IActionResult DownloadDocumentation()
+        {
+            dynamic response = new ExpandoObject();
+
+            try
+            {
+                response.status = "200";
+                var filepath = "~/files/Download_Center_Doku.pdf";
+                Response.Headers.Add("Content-Disposition", "inline; filename=Download_Center_Doku.pdf");
+                return File(filepath, "application/pdf");
+            }
+            catch (Exception ex)
+            {
+                response.status = "400";
+                response.message = "Couldn't download the zip file, error in logs";
+                _logger.LogError(ex, "Error download the data set:");
+            }
+
+            return Json(response);
+        }
+
         [HttpGet("/api/DownloadCenterController/DownloadDataset/{fileName}")]
         public IActionResult DownloadDataset(string fileName)
         {
@@ -43,8 +65,11 @@ namespace BundestagMine.Controllers
             {
                 response.status = "200";
                 var path = ConfigManager.GetDownloadCenterFinishedZippedDataSetsDirectory() + $"{fileName}";
+                var fileInfo = new FileInfo(path);
+                this.Response.ContentLength = fileInfo.Length;
+                var zipBytes = System.IO.File.ReadAllBytes(path);
 
-                return File(System.IO.File.ReadAllBytes(path), "application/octet-stream", "export.zip");
+                return File(zipBytes, "application/octet-stream", "export.zip");
             }
             catch (Exception ex)
             {
@@ -72,7 +97,8 @@ namespace BundestagMine.Controllers
                 }
 
                 _logger.LogInformation("New dataset generating arrived with the filter: " + filterDownloadRequest.ToString());
-                var downloadUrl = Request.Scheme + "://" + Request.Host + "/DownloadCenter";
+                var exportId = Guid.NewGuid();
+                var downloadUrl = Request.Scheme + "://" + Request.Host + "/DownloadCenter" + $"?filename=Export_{exportId}.zip";
 
                 Task.Run(() =>
                 {
@@ -83,15 +109,17 @@ namespace BundestagMine.Controllers
                         var service = scope.ServiceProvider.GetService<DownloadCenterService>();
 
                         // Generate the dataset, which at the end should be a directory on the harddrive
-                        var exportFileName = service.WriteDownloadableProtocolsToDisc(
+                        var exportFileName = service.WriteDownloadableProtocolsToDisc(exportId,
                             filterDownloadRequest.From, filterDownloadRequest.To,
                             filterDownloadRequest.Fractions, filterDownloadRequest.Parties, filterDownloadRequest.ExplicitSpeakers);
 
                         if (string.IsNullOrEmpty(exportFileName))
                         {
                             MailManager.SendMail($"Fehler beim Generieren des Datensatzes",
-                                $"Leider ist ein Fehler beim Generieren des Datensatzes mit der Id: {exportFileName} unterlaufen. " +
-                                $"Probieren Sie diesen neu anzustoßen oder melden Sie den Fehler via Antwort auf diese Mail.",
+                                MailManager.CreateMailHtml("Download Center",
+                                $"Leider ist ein Fehler beim Generieren des Datensatzes mit der Id: {exportFileName} unterlaufen. <br/>" +
+                                $"Probieren Sie diesen neu zu erstellen oder melden Sie den Fehler via Antwort auf diese Mail."
+                                ),
                                 new List<string> { filterDownloadRequest.Email });
                             return;
                         }
@@ -104,18 +132,32 @@ namespace BundestagMine.Controllers
                         // And then delete the unzipped files
                         Directory.Delete(source, true);
 
-                        downloadUrl += $"?filename={exportFileName}.zip";
-
                         // Now send a notifcation mail to the user, that the data is ready to download.
                         MailManager.SendMail($"Ihr Datensatz ist fertig!",
-                            $"Ihr Datensatz ist fertig und kann hier runtergeladen werden: {downloadUrl}",
+                            MailManager.CreateMailWithButtonHtml("Download Center",
+                             "Ihr Datensatz ist fertig und kann heruntergeladen werden!",
+                             "Datensatz",
+                             downloadUrl
+                            ),
                             new List<string> { filterDownloadRequest.Email });
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         _logger.LogError(ex, "Error while trying to handle a new dataset calculation");
                     }
                 });
+
+                // Send a mail with the id of the export and information of the filter
+                MailManager.SendMail("Ihre Datensatz-Anfrage",
+                    MailManager.CreateMailWithButtonHtml("Download Center",
+                        $"Die Kalkulation Ihres Datensatzes wurde angestoßen. <br/>" +
+                        $"Ihr Datensatz hat die Id: <b>{exportId}</b>. <br/>" +
+                        $"Sie können jederzeit schauen, ob der Datensatz bereit zum Herunterladen ist - " +
+                        $"Sie werden jedoch auch per Mail informiert, sobald dies der Fall ist.",
+                        "Datensatz",
+                        downloadUrl
+                    ),
+                    new List<string> { filterDownloadRequest.Email });
 
                 response.status = "200";
                 response.message = "Die Kalkulation wurde angestoßen und es wird Ihnen per Mail die Bestätigung zugeschickt.";

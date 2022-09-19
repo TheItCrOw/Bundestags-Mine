@@ -28,6 +28,13 @@ namespace BundestagMine.Services
         }
 
         /// <summary>
+        /// Checks if the given dataset is being calculated right now.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public bool CheckIfDatasetIsBeingCalculated(string filename) => Directory.Exists(ConfigManager.GetDownloadCenterCalculatingDataDirectory() + filename);
+
+        /// <summary>
         /// Searches the dircetory for a finished zip file and creates a viewmodel out of it.
         /// Returns null if the file doesnt exist yet or anymore.
         /// </summary>
@@ -37,7 +44,19 @@ namespace BundestagMine.Services
             var fullFilename = ConfigManager.GetDownloadCenterFinishedZippedDataSetsDirectory() + filename;
 
             if (!File.Exists(fullFilename))
+            {
+                var filenameWithoutExtension = Path.ChangeExtension(filename, null);
+                // Maybe its being calculated
+                if (CheckIfDatasetIsBeingCalculated(filenameWithoutExtension))
+                {
+                    return new DownloadableZipFileViewModel()
+                    {
+                        IsBeingCalculated = true
+                    };
+                }
+                // Else, its just not there.                
                 return null;
+            }
 
             var fileInfo = new FileInfo(fullFilename);
             return new DownloadableZipFileViewModel()
@@ -55,6 +74,7 @@ namespace BundestagMine.Services
         /// </summary>
         /// <returns></returns>
         public string WriteDownloadableProtocolsToDisc(
+            Guid exportId,
             DateTime from,
             DateTime to,
             List<string> fractions,
@@ -67,7 +87,6 @@ namespace BundestagMine.Services
 
             try
             {
-                var exportId = Guid.NewGuid();
                 log.AppendLine("Export Id: " + exportId);
                 exportFileName = $"Export_{exportId}";
                 var directoryPath = ConfigManager.GetDownloadCenterCalculatingDataDirectory() + exportFileName;

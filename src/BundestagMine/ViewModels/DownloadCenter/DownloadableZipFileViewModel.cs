@@ -12,5 +12,7 @@ namespace BundestagMine.ViewModels.DownloadCenter
         /// The time when the zip file will be deleted automatically.
         /// </summary>
         public DateTime DeletionTime { get; set; }
+
+        public bool IsBeingCalculated { get; set; }
     }
 }

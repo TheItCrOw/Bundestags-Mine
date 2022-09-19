@@ -1,4 +1,7 @@
-﻿<div>
+﻿@using BundestagMine.SqlDatabase
+@using System.Globalization
+
+<div>
     <div class="pt-1 pl-3 pr-3 header">
         <hr class="fancy-hr bg-transparent" />
         <h2>Download Center</h2>
@@ -6,10 +9,22 @@
 
     <div class="content">
         <div class="container card-shadow">
-            <p class="text-center mt-5">
-                Stellen Sie im Folgenden erst den Filter ein, um dann die Sitzungsprotokolle samt NLP-Auswertungsdaten herunterzuladen.
-                Sie können die Daten dann zu eigenen Analysen und Auswertungen nutzen.
-            </p>
+            <div class="row ml-0 mr-0 mb-0 mt-4">
+                <p class="text-center w-100 h-100 col-lg-10 m-0 p-0 pr-3">
+                    Hier können Sie Sitzungsprotokolle samt Reden und deren NLP-Auswertungen herunterladen.
+                    Sie können die Daten dann zu eigenen Analysen und Auswertungen nutzen.
+                    Benutzen Sie entweder die bereits vorgefertigten Datensätze, welche Sie nur herunterladen müssen, oder nutzen Sie den Filter,
+                    um den Datensatz selbst zu bestimmen. Das Selbst-Anfertigen eines Datensatzes durch den Filter muss auf dem Server erst
+                    berechnet werden und kann bis zu mehreren Stunden dauern. Sie werden jedoch per Mail benachrichtigt, sobald der Datensatz
+                    für Sie zum Herunterladen bereit steht.
+                </p>
+                <a class="btn btn-outline-secondary rounded-0 col-lg-2 mt-2 mb-2 ml-0 mr-0 card-shadow-light h-100" target="_blank" asp-action="DownloadDocumentation" asp-controller="DownloadCenter">
+                    <div>
+                        Dokumentation<br/>
+                        <i class="mt-2 mb-2 xxlarge-font fas fa-file-pdf"></i>
+                    </div>
+                </a>
+            </div>
             <div class="alert alert-info mt-2 flexed align-items-center p-2 mb-3" role="alert">
                 <i class="fas fa-info-circle mr-2 h-100"></i>
                 <label class="small-font m-0">
@@ -18,6 +33,51 @@
                     Footer explizit nach.
                 </label>
             </div>
+            <h5 class="text-center text-dark font-weight-bold mb-0">
+                Vorgefertigte Datensätze, Stand: @DateTime.Parse(ConfigManager.GetPresetDatasetsLastUpdateDate(), new CultureInfo("de-DE")).ToShortDateString()
+            </h5>
+            @*premade datasets*@
+            <div class="mt-3 mb-3 premade-datasets-div card-shadow-light">
+                <div class="flexed justify-content-around align-items-center">
+                    @*19. legislature*@
+                    <div class="text-center dataset">
+                        <p class="text-dark">19. Legislaturperiode</p>
+                        <div>
+                            <img class="file-icon" src="~/img/file-icon.png" />
+                        </div>
+                        <a target="_blank" class="btn btn-warning text-light rounded-0 small-font mt-3 w-100"
+                           asp-page="/DownloadCenter/Index" asp-route-filename="Legislaturperiode_19.zip">
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </div>
+                    @*20. legislature*@
+                    <div class="text-center dataset">
+                        <p class="text-dark">20. Legislaturperiode</p>
+                        <div>
+                            <img class="file-icon" src="~/img/file-icon.png" />
+                        </div>
+                        <a target="_blank" class="btn btn-warning text-light rounded-0 small-font mt-3 w-100"
+                           asp-page="/DownloadCenter/Index" asp-route-filename="Legislaturperiode_20_@(ConfigManager.GetPresetDatasetsLastUpdateDate()).zip">
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </div>
+                    @*All*@
+                    <div class="text-center dataset">
+                        <p class="text-dark">19. + 20. Legislaturperiode</p>
+                        <div>
+                            <img class="file-icon" src="~/img/file-icon.png" />
+                        </div>
+                        <a target="_blank" class="btn btn-warning text-light rounded-0 small-font mt-3 w-100"
+                           asp-page="/DownloadCenter/Index" asp-route-filename="Alles_@(ConfigManager.GetPresetDatasetsLastUpdateDate()).zip">
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="text-center text-dark font-weight-bold mt-4 mb-3">
+                Eigenen Datensatz erstellen
+            </h5>
 
             @*filter*@
             <div class="filter">
@@ -167,7 +227,7 @@
                     </h6>
                     <h6 class="ml-2">
                         Geschätzte Berechnungszeit:   <span class="estimated-time text-dark font-weight-bold">0</span> Minuten<br />
-                        Geschätzte Dateigröße: <span class="estimated-size text-dark font-weight-bold">0</span> MB
+                        Geschätzte Datensatzgröße: <span class="estimated-size text-dark font-weight-bold">0</span> MB
                     </h6>
                     <h6 class="ml-2">
                         Geschätzte ZIP-Größe:   <span class="estimated-zip-size text-dark font-weight-bold">0</span> MB<br />

@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace BundestagMine
 {
@@ -32,6 +33,7 @@ namespace BundestagMine
                 option => option.UseSqlServer(ConfigManager.GetConnectionString(), o => o.CommandTimeout(600)));
             services.AddDbContext<IdentityContext>(
                 option => option.UseSqlServer(ConfigManager.GetConnectionString(), o => o.CommandTimeout(600)));
+            services.AddLogging(c => c.ClearProviders());
 
             // Identity Configurations.
             services.AddIdentity<IdentityUser, IdentityRole>()
@@ -103,6 +105,7 @@ namespace BundestagMine
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+            app.UseStaticFiles();
 
             app.UseAuthorization();
             app.UseAuthentication();

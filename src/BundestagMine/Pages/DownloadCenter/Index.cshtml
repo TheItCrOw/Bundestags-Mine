@@ -1,6 +1,7 @@
 ﻿@page
 @model BundestagMine.Pages.DownloadCenter.IndexModel
 @{
+    ViewData["Title"] = "Download Center";
 }
 
 <link href="~/css/pages/download-center.css" rel="stylesheet">
@@ -33,8 +34,17 @@
                 <i class="large-font fas fa-info-circle mr-2 h-100"></i>
                 <p class="m-2 text-center w-100">
                     Die Datei wurde nicht gefunden.<br />
-                    Sie ist entweder noch in Bearbeitung oder schon gelöscht worden.
+                    Sie ist entweder bereits gelöscht worden oder war fehlerhaft.
                     Datensätze werden nach 24h automatisch gelöscht.
+                </p>
+            </div>
+        }
+        else if (Model.ZipFileViewModel.IsBeingCalculated)
+        {
+            <div class="alert alert-warning mt-2 card-shadow-light flexed align-items-center p-2 mb-3" role="alert">
+                <i class="large-font fas fa-info-circle mr-2 h-100"></i>
+                <p class="m-2 text-center w-100">
+                    Der Datensatz wird grade noch kalkuliert. Probieren Sie es später noch einmal.
                 </p>
             </div>
         }
@@ -64,7 +74,7 @@
 
 <script>
     // Handle the start of the filedownload
-    $('.start-download-btn').on('click', function() {
+    $('.start-download-btn').on('click', async function() {
         console.log('Start the download');
         downloadDataZip('@(Model.ZipFileViewModel?.FileName)');
     })

@@ -20,6 +20,18 @@
             background-color: ghostwhite;
         }
 
+        #downloadCenterContent .content .premade-datasets-div{
+        }
+            #downloadCenterContent .content .premade-datasets-div .file-icon {
+                width: 50px;
+            }
+
+            #downloadCenterContent .content .premade-datasets-div {
+                border: lightgray 1px solid;
+                border-left: gold 6px solid;
+                padding:8px;
+            }
+
     #downloadCenterContent .filter .filter-item {
         padding-left: 24px;
         padding-right: 24px;
@@ -76,7 +88,7 @@
     #downloadCenterContent .filter-result-div {
         border: lightgray solid 1px;
         border-radius: 6px;
-        border-left:gray 6px solid;
+        border-left: gray 6px solid;
         box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
     }
 
