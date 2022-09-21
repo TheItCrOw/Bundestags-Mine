@@ -766,13 +766,10 @@ async function postGenerateDatasetByFilter(obj) {
 }
 
 // Starts the download of a dataset zip file
-async function downloadDataZip(filename) {
+async function downloadDataZip(filename, callback) {
     try {
         $.ajax({
             type: "GET",
-            headers: {
-
-            },
             url: "/api/DownloadCenterController/DownloadDataset/" + filename,
             //contentType: "application/json",
             contentType: "application/octet-stream",
@@ -789,6 +786,7 @@ async function downloadDataZip(filename) {
                 a.click();
                 a.remove();
                 window.URL.revokeObjectURL(url);
+                callback();
             }
         });
     } catch (error) {

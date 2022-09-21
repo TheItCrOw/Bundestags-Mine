@@ -28,6 +28,7 @@
     <link href="~/css/bar-topic-race-chart.css" rel="stylesheet">
     <link href="~/css/speaker-inspector.css" rel="stylesheet">
     <link href="~/css/download-center.css" rel="stylesheet">
+    <link href="~/css/home.css" rel="stylesheet">
 </head>
 
 <body id="page-top">
@@ -141,7 +142,7 @@
         <div class="d-flex flex-column w-100 main-content-shadow">
 
             @*nav burger*@
-            <nav class="navbar navbar-expand static-top bg-warning justify-content-between">
+            <nav class="navbar navbar-expand bg-warning static-top justify-content-between">
                 <!-- Sidebar Toggle (Topbar) -->
                 <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3"
                         onclick="if ($('#accordionSidebar').hasClass('toggled')){ $('#accordionSidebar').removeClass('toggled'); } else { $('#accordionSidebar').addClass('toggled'); }">
@@ -151,41 +152,7 @@
 
             @*HOME*@
             <div id="homeContent" class="h-100 position-relative">
-                <p class="title"> <span class="text__first"><span class="text__word">Bundestags- </span><span class="text__first-bg"></span></span><br /><span class="text__second"><span class="text__word">Mine</span><span class="text__second-bg"></span></span></p>
-                <img class="centered" src="~/img/duetscher-adler-flagge.png" />
-                <div class="speeches-count display-none">
-                    <div>
-                        <p class="mb-0">
-                            <span class="text-white-50">Mehr als </span>
-                            <span class="font-weight-bold protocols header">250</span>
-                            <span class="text-white-50"> Protokolle</span>
-                        </p>
-                        <hr class="mt-1" />
-                        <p class="mb-0">
-                            <span class="text-white-50">Über </span>
-                            <span class="font-weight-bold speeches header"> 26.000</span>
-                            <span class="text-white-50">Reden</span>
-                        </p>
-                        <hr class="mt-1" />
-                        <p class="mb-0">
-                            <span class="text-white-50">Fast </span>
-                            <span class="font-weight-bold deputies header">1000</span>
-                            <span class="text-white-50"> Redner(innen)</span>
-                        </p>
-                        <hr class="mt-1" />
-                        <p class="mb-0">
-                            <span class="text-white-50">Über </span>
-                            <span class="font-weight-bold tokens header">14.000.000</span>
-                            <span class="text-white-50">Tokens</span>
-                        </p>
-                        <hr class="mt-1" />
-                        <p class="mb-0">
-                            <span class="text-white-50">Über </span>
-                            <span class="font-weight-bold gb header">100</span>
-                            <span class="text-white-50">GB an Sitzungsdaten</span>
-                        </p>
-                    </div>
-                </div>
+                <partial name="~/Pages/Shared/_Home.cshtml" />                
             </div>
 
             @*GLOBAL SEARCH*@

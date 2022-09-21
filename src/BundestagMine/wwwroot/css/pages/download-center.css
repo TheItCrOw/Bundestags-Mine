@@ -8,17 +8,41 @@
 nav {
 }
 
-nav .logo{
-    width:50px;
-    height:auto;
-}
+    nav .logo {
+        width: 50px;
+        height: auto;
+    }
 
-.file-icon{
-    width:150px;
+.file-icon {
+    width: 150px;
 }
 
 .download-container {
     border: 1px gray solid;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-    background-color:ghostwhite;
+    background-color: ghostwhite;
+    position: relative;
 }
+
+    .download-container .loader {
+        position: absolute;
+        width: 100%;
+        z-index: 5;
+        background-color: rgba(255,255,255,0.9);
+        top: 0;
+        height: 100%; /*This is the height of all the headers. Its hacky, yes. Wont work on mobile.*/
+        left: 0;
+    }
+
+        .download-container .loader p {
+            position: absolute;
+            width:100%;
+            text-align:center;
+            top: calc(70% - 40px);
+        }
+
+        .download-container .loader .lds-ripple {
+            position: absolute;
+            left: calc(50% - 40px);
+            top: calc(50% - 40px);
+        }

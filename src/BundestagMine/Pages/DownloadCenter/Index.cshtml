@@ -51,6 +51,12 @@
         else
         {
             <div class="w-100 pt-5 pb-5 download-container">
+                <div class="loader display-none">
+                    <p>Der Download startet - einen Moment bitte.</p>
+                    <div class="lds-ripple">
+                        <div></div><div></div>
+                    </div>
+                </div>
                 <h4 class="mb-2 text-center font-weight-bold">@Model.ZipFileViewModel?.FileName</h4>
                 <div class="flexed justify-content-center">
                     <img class="file-icon" src="/img/file-icon.png" />
@@ -76,6 +82,9 @@
     // Handle the start of the filedownload
     $('.start-download-btn').on('click', async function() {
         console.log('Start the download');
-        downloadDataZip('@(Model.ZipFileViewModel?.FileName)');
+        $('.download-container .loader').fadeIn(150);
+        downloadDataZip('@(Model.ZipFileViewModel?.FileName)', function() {
+            $('.download-container .loader').fadeOut(150);
+        });
     })
 </script>

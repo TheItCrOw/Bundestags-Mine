@@ -105,41 +105,43 @@ namespace BundestagMine.Controllers
                     try
                     {
                         // We need to create scopes because it runs async.
-                        using var scope = _serviceScopeFactory.CreateScope();
-                        var service = scope.ServiceProvider.GetService<DownloadCenterService>();
-
-                        // Generate the dataset, which at the end should be a directory on the harddrive
-                        var exportFileName = service.WriteDownloadableProtocolsToDisc(exportId,
-                            filterDownloadRequest.From, filterDownloadRequest.To,
-                            filterDownloadRequest.Fractions, filterDownloadRequest.Parties, filterDownloadRequest.ExplicitSpeakers);
-
-                        if (string.IsNullOrEmpty(exportFileName))
+                        using (var scope = _serviceScopeFactory.CreateScope())
                         {
-                            MailManager.SendMail($"Fehler beim Generieren des Datensatzes",
-                                MailManager.CreateMailHtml("Download Center",
-                                $"Leider ist ein Fehler beim Generieren des Datensatzes mit der Id: {exportFileName} unterlaufen. <br/>" +
-                                $"Probieren Sie diesen neu zu erstellen oder melden Sie den Fehler via Antwort auf diese Mail."
+                            var service = scope.ServiceProvider.GetService<DownloadCenterService>();
+
+                            // Generate the dataset, which at the end should be a directory on the harddrive
+                            var exportFileName = service.WriteDownloadableProtocolsToDisc(exportId,
+                                filterDownloadRequest.From, filterDownloadRequest.To,
+                                filterDownloadRequest.Fractions, filterDownloadRequest.Parties, filterDownloadRequest.ExplicitSpeakers);
+
+                            if (string.IsNullOrEmpty(exportFileName))
+                            {
+                                MailManager.SendMail($"Fehler beim Generieren des Datensatzes",
+                                    MailManager.CreateMailHtml("Download Center",
+                                    $"Leider ist ein Fehler beim Generieren des Datensatzes mit der Id: {exportFileName} unterlaufen. <br/>" +
+                                    $"Probieren Sie diesen neu zu erstellen oder melden Sie den Fehler via Antwort auf diese Mail."
+                                    ),
+                                    new List<string> { filterDownloadRequest.Email });
+                                return;
+                            }
+
+                            // Now zip the file
+                            var source = ConfigManager.GetDownloadCenterCalculatingDataDirectory() + exportFileName;
+                            var target = ConfigManager.GetDownloadCenterFinishedZippedDataSetsDirectory() + exportFileName + ".zip";
+                            // Zip it
+                            ZipFile.CreateFromDirectory(source, target);
+                            // And then delete the unzipped files
+                            Directory.Delete(source, true);
+
+                            // Now send a notifcation mail to the user, that the data is ready to download.
+                            MailManager.SendMail($"Ihr Datensatz ist fertig!",
+                                MailManager.CreateMailWithButtonHtml("Download Center",
+                                 "Ihr Datensatz ist fertig und kann heruntergeladen werden!",
+                                 "Datensatz",
+                                 downloadUrl
                                 ),
                                 new List<string> { filterDownloadRequest.Email });
-                            return;
                         }
-
-                        // Now zip the file
-                        var source = ConfigManager.GetDownloadCenterCalculatingDataDirectory() + exportFileName;
-                        var target = ConfigManager.GetDownloadCenterFinishedZippedDataSetsDirectory() + exportFileName + ".zip";
-                        // Zip it
-                        ZipFile.CreateFromDirectory(source, target);
-                        // And then delete the unzipped files
-                        Directory.Delete(source, true);
-
-                        // Now send a notifcation mail to the user, that the data is ready to download.
-                        MailManager.SendMail($"Ihr Datensatz ist fertig!",
-                            MailManager.CreateMailWithButtonHtml("Download Center",
-                             "Ihr Datensatz ist fertig und kann heruntergeladen werden!",
-                             "Datensatz",
-                             downloadUrl
-                            ),
-                            new List<string> { filterDownloadRequest.Email });
                     }
                     catch (Exception ex)
                     {

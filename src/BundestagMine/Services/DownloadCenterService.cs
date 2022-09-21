@@ -93,7 +93,7 @@ namespace BundestagMine.Services
                 Directory.CreateDirectory(directoryPath);
 
                 // Fetch the protocols and speeches, store them onto disc and zip them at the end.
-                var protocols = _db.Protocols.Where(p => p.Date >= from && p.Date <= to).AsEnumerable();
+                var protocols = _db.Protocols.AsNoTracking().Where(p => p.Date >= from && p.Date <= to).AsEnumerable();
                 log.AppendLine($"Found {protocols.Count()} protocols");
 
                 foreach (var protocol in protocols)
@@ -101,8 +101,8 @@ namespace BundestagMine.Services
                     log.AppendLine($"Handling protocol LP: {protocol.LegislaturePeriod} SN: {protocol.Number}");
                     var downloadProtocol = new CompleteDownloadProtocol();
                     downloadProtocol.Protocol = protocol;
-                    downloadProtocol.AgendaItems = _db.AgendaItems.Where(ag => ag.ProtocolId == downloadProtocol.Protocol.Id).ToList();
-                    downloadProtocol.NLPSpeeches = _db.NLPSpeeches
+                    downloadProtocol.AgendaItems = _db.AgendaItems.AsNoTracking().Where(ag => ag.ProtocolId == downloadProtocol.Protocol.Id).ToList();
+                    downloadProtocol.NLPSpeeches = _db.NLPSpeeches.AsNoTracking()
                         .Where(s => s.LegislaturePeriod == protocol.LegislaturePeriod && s.ProtocolNumber == protocol.Number && _db.Deputies.Any(d => d.SpeakerId == s.SpeakerId)
                             && (
                             speakerIds.Contains(s.SpeakerId)
@@ -127,6 +127,9 @@ namespace BundestagMine.Services
                     var filename = $"LP_{protocol.LegislaturePeriod}_Sitzung_{protocol.Number}.json";
                     File.WriteAllText(Path.Combine(directoryPath, filename), asJson);
                     log.AppendLine($"Writing it to " + filename);
+                    // For some reason, the RAM gets to bloated as if the objects written into json are not being disposed here.
+                    // Calling the garbage collector by hand here does exactly that and keeps the RAM low...
+                    GC.Collect();
                 }
             }
             catch (Exception ex)

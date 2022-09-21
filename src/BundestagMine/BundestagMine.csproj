@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
   </PropertyGroup>
 
   <ItemGroup>
@@ -43,6 +45,7 @@
     <Folder Include="wwwroot\img\" />
     <Folder Include="wwwroot\data\" />
     <Folder Include="wwwroot\files\" />
+    <Folder Include="wwwroot\fonts\" />
   </ItemGroup>
 
   <ItemGroup>

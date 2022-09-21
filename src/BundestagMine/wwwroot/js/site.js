@@ -7,7 +7,7 @@ var allProtocols = [];
 
 // set the dimensions and margins of each of the d3 svg graphs
 var margin = { top: 10, right: 30, bottom: 30, left: 40 },
-    width = window.innerWidth - 120, // 120 from the sidemenu
+    width = window.innerWidth - 240, // 120 from the sidemenu
     height = window.innerHeight;
 
 $(document).ready(async function () {
