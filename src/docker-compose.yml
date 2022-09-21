@@ -1,7 +1,8 @@
 version: "3.4"
 
 services:
-    api:
+    bundestag-mine:
+        image: "theitcrow/bundestag-mine:latest"
         build:
           context: .
           dockerfile: Dockerfile
