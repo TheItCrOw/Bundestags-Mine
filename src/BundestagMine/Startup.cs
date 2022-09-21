@@ -98,6 +98,9 @@ namespace BundestagMine
         /// <param name="context"></param>
         public void ApplyDataMigrations()
         {
+            var options = new DbContextOptionsBuilder<BundestagMineDbContext>();
+            var conn = "Server=db;Database=master;User=sa;Password=Pa$$w0rdMineDb;Trusted_Connection=True";
+            options.UseSqlServer(conn, o => o.CommandTimeout(600));
             using (var context = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
             {
                 if (context.Database.GetPendingMigrations().Any())
@@ -113,7 +116,11 @@ namespace BundestagMine
         /// <param name="context"></param>
         public void ApplyIdentityMigrations()
         {
-            using (var context = new IdentityDbContext(ConfigManager.GetDbOptions()))
+            var options = new DbContextOptionsBuilder<IdentityDbContext>();
+            var conn = "Server=db;Database=master;User=sa;Password=Pa$$w0rdMineDb;Trusted_Connection=True";
+            options.UseSqlServer(conn, o => o.CommandTimeout(600));
+
+            using (var context = new IdentityDbContext(options.Options))
             {
                 if (context.Database.GetPendingMigrations().Any())
                 {
