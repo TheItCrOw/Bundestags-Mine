@@ -67,24 +67,23 @@
                     <p class="mb-0"><b>Dateigröße:</b> @Model.ZipFileViewModel.SizeInMb MB</p>
                 </div>
                 <div class="mt-4 flexed justify-content-center">
-                    <button class="btn btn-warning card-shadow-light start-download-btn">
+                    <a class="btn btn-warning card-shadow-light start-download-btn"
+                   asp-controller="DownloadCenter" asp-action="DownloadDataset" asp-route-fileName="@Model.ZipFileViewModel.FileName">
                         <i class="fas fa-download xxlarge-font text-light"></i>
-                    </button>
+                    </a>
                 </div>
             </div>
         }
     </div>
 </div>
 
-<script src="./js/REST-dataaccess.js" charset="utf-8" type="text/javascript"></script>
-
 <script>
     // Handle the start of the filedownload
     $('.start-download-btn').on('click', async function() {
         console.log('Start the download');
         $('.download-container .loader').fadeIn(150);
-        downloadDataZip('@(Model.ZipFileViewModel?.FileName)', function() {
+        setTimeout(function() {
             $('.download-container .loader').fadeOut(150);
-        });
+        }, 5000);
     })
 </script>
