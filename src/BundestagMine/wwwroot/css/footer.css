@@ -163,3 +163,10 @@
         font-weight: 600
     }
 }
+
+.ttl-logo {
+    object-fit: cover;
+    width: 100%;
+    max-width: 200px;
+    text-align:center;
+}

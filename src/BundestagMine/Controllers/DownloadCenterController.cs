@@ -57,7 +57,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DownloadCenterController/DownloadDataset/{fileName}")]
-        public IActionResult DownloadDataset(string fileName)
+        public FileResult DownloadDataset(string fileName)
         {
             dynamic response = new ExpandoObject();
 
