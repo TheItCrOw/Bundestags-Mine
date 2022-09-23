@@ -12,11 +12,11 @@ services:
           - db
 
     db:
-        image: "mcr.microsoft.com/mssql/server:2022-latest"
+        image: "theitcrow/bundestag-mine-db:2022-latest"
         container_name: db        
         ports:
           - "1433:1433"
 
         environment:
-            - SA_PASSWORD=Pa$$w0rdMineDb
+            - SA_PASSWORD=Passw0rdMineDb!
             - ACCEPT_EULA=Y

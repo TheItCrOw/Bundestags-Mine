@@ -88,45 +88,6 @@ namespace BundestagMine
             services.AddTransient<GlobalSearchService>();
             services.AddTransient<DownloadCenterService>();
 
-            ApplyDataMigrations();
-            ApplyIdentityMigrations();
-        }
-
-        /// <summary>
-        /// Apply left data migrations for docker
-        /// </summary>
-        /// <param name="context"></param>
-        public void ApplyDataMigrations()
-        {
-            var options = new DbContextOptionsBuilder<BundestagMineDbContext>();
-            var conn = "Server=db;Database=master;User=sa;Password=Pa$$w0rdMineDb;Trusted_Connection=True";
-            options.UseSqlServer(conn, o => o.CommandTimeout(600));
-            using (var context = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
-            {
-                if (context.Database.GetPendingMigrations().Any())
-                {
-                    context.Database.Migrate();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Apply left identity migrations for docker
-        /// </summary>
-        /// <param name="context"></param>
-        public void ApplyIdentityMigrations()
-        {
-            var options = new DbContextOptionsBuilder<IdentityDbContext>();
-            var conn = "Server=db;Database=master;User=sa;Password=Pa$$w0rdMineDb;Trusted_Connection=True";
-            options.UseSqlServer(conn, o => o.CommandTimeout(600));
-
-            using (var context = new IdentityDbContext(options.Options))
-            {
-                if (context.Database.GetPendingMigrations().Any())
-                {
-                    context.Database.Migrate();
-                }
-            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
