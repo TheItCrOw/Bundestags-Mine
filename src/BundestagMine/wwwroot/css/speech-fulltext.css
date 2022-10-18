@@ -468,6 +468,7 @@
     font-style: normal;
     transition: 0.25s;
     border-radius: 5px;
+    border:1px solid transparent;
 }
 
 .hovered-sentence {

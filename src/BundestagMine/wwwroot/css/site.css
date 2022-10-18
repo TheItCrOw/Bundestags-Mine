@@ -81,7 +81,6 @@ body {
     }
 }
 
-
 .menu-icon {
     object-fit: contain;
     width: auto;
@@ -274,9 +273,13 @@ body {
 
     .start-loader .copyright {
         position: absolute;
-        top: 90%;
+        top: 75%;
         width: 100%;
         text-align: center;
+    }
+
+    .start-loader img{
+        width:150px;
     }
 
 .dashboard-ribbon {
