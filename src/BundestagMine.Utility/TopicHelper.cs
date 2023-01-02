@@ -16,7 +16,7 @@ namespace BundestagMine.Utility
         {
             "deutsch", "Präsident !", "europäisch", "europäische", "lieben Kollegin", "...", "…", "Kollegin lieben",
             "Erstens", "Zweitens", "Liebe Kolleginnen", "sich", "lieben Kollege", "umso", "Na ja", "Herzliche", "ehrlich",
-            "viel", "’s", "sein", " Kollegin lieben"
+            "viel", "’s", "sein", " Kollegin lieben", "deutschen", "deutsche"
         };
     }
 }

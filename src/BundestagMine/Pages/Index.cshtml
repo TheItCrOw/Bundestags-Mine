@@ -27,6 +27,8 @@
     <link href="~/css/topic-map-chart.css" rel="stylesheet">
     <link href="~/css/bar-topic-race-chart.css" rel="stylesheet">
     <link href="~/css/speaker-inspector.css" rel="stylesheet">
+    <link href="~/css/download-center.css" rel="stylesheet">
+    <link href="~/css/home.css" rel="stylesheet">
 </head>
 
 <body id="page-top">
@@ -38,23 +40,23 @@
         <div class="progress rounded-0" style="height: 20px;">
             <div class="progress-bar bg-gradient-dark" id="startProgress" role="progressbar" style="width: 0%;"></div>
         </div>
-        @*<p class="copyright">Copyright &copy; Kevin Bönisch 2022</p>*@
+        <div class="copyright">
+            <img src="~/img/logo/Logo mit Schriftzug_schwarz_transparent_RGB_1024x473.png"/><br/>
+            Copyright &copy; Kevin Bönisch 2022
+        </div>
     </div>
 
     <!-- Page Wrapper -->
     <div id="wrapper">
         <!-- Sidebar -->
-        <ul class="navbar-nav sidebar side-bar-shadow bg-darkprime accordion toggled" id="accordionSidebar">
+        <ul class="navbar-nav sidebar side-bar-shadow bg-darkprime accordion" id="accordionSidebar">
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand p-2 d-flex mt-2 align-items-center selected-nav-item justify-content-center nav-item nav-item-switcher" data-id="homeContent">
-                <img src="~/img/deutscher-bundestag-adler-weiß.png" class="menu-icon " />
+                <img src="~/img/logo/Logo_weiß_transparent_RGB_534x512.png" class="menu-icon" />
             </a>
 
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
             <!-- Heading -->
-            <div class="sidebar-heading">
+            <div class="text-center mb-2 sidebar-heading mt-3">
                 Funktionen
             </div>
 
@@ -122,6 +124,14 @@
                 </div>
             </li>
 
+            <!-- Nav Item - Download Center -->
+            <li class="nav-item active nav-item-switcher" data-id="downloadCenterContent">
+                <a class="nav-link">
+                    <i class="fas fa-cloud-download-alt"></i>
+                    <span>Download Center</span>
+                </a>
+            </li>
+
             <!-- Nav Item - Info -->
             <li class="nav-item active nav-item-switcher" data-id="faqContent">
                 <a class="nav-link">
@@ -135,50 +145,17 @@
         <div class="d-flex flex-column w-100 main-content-shadow">
 
             @*nav burger*@
-            <nav class="navbar navbar-expand static-top bg-warning justify-content-between">
+            <nav class="navbar navbar-expand bg-warning static-top justify-content-between">
                 <!-- Sidebar Toggle (Topbar) -->
-                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3"
+                        onclick="if ($('#accordionSidebar').hasClass('toggled')){ $('#accordionSidebar').removeClass('toggled'); } else { $('#accordionSidebar').addClass('toggled'); }">
                     <i class="fa fa-bars"></i>
                 </button>
             </nav>
 
             @*HOME*@
             <div id="homeContent" class="h-100 position-relative">
-                <p class="title"> <span class="text__first"><span class="text__word">Bundestags- </span><span class="text__first-bg"></span></span><br /><span class="text__second"><span class="text__word">Mine</span><span class="text__second-bg"></span></span></p>
-                <img class="centered" src="~/img/duetscher-adler-flagge.png" />
-                <div class="speeches-count display-none">
-                    <div>
-                        <p class="mb-0">
-                            <span class="text-white-50">Mehr als </span>
-                            <span class="font-weight-bold protocols header">250</span>
-                            <span class="text-white-50"> Protokolle</span>
-                        </p>
-                        <hr class="mt-1" />
-                        <p class="mb-0">
-                            <span class="text-white-50">Über </span>
-                            <span class="font-weight-bold speeches header"> 26.000</span>
-                            <span class="text-white-50">Reden</span>
-                        </p>
-                        <hr class="mt-1" />
-                        <p class="mb-0">
-                            <span class="text-white-50">Fast </span>
-                            <span class="font-weight-bold deputies header">1000</span>
-                            <span class="text-white-50"> Redner(innen)</span>
-                        </p>
-                        <hr class="mt-1" />
-                        <p class="mb-0">
-                            <span class="text-white-50">Über </span>
-                            <span class="font-weight-bold tokens header">14.000.000</span>
-                            <span class="text-white-50">Tokens</span>
-                        </p>
-                        <hr class="mt-1" />
-                        <p class="mb-0">
-                            <span class="text-white-50">Über </span>
-                            <span class="font-weight-bold gb header">100</span>
-                            <span class="text-white-50">GB an Sitzungsdaten</span>
-                        </p>
-                    </div>
-                </div>
+                <partial name="~/Pages/Shared/_Home.cshtml" />
             </div>
 
             @*GLOBAL SEARCH*@
@@ -739,6 +716,11 @@
                 </div>
             </div>
 
+            @*Download Center*@
+            <div id="downloadCenterContent" class="position-relative display-none h-100 w-100">
+                <partial name="~/Pages/Shared/DownloadCenter/_DownloadCenterView.cshtml" />
+            </div>
+
             @*faq*@
             <div id="faqContent" class="position-relative h-100 w-100">
                 <partial name="~/Pages/Shared/_FAQView.cshtml" />
@@ -779,7 +761,6 @@
                 </button>
             </div>
             <div class="toast-body">
-                Text
             </div>
         </div>
     </div>
@@ -899,6 +880,7 @@
         <script src="./js/speech-fulltext.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/global-search.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/speaker-inspector.js" charset="utf-8" type="text/javascript"></script>
+        <script src="./js/download-center.js" charset="utf-8" type="text/javascript"></script>
         <!--charts-->
         <script src="./js/charts/token-chart.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/charts/pos-chart.js" charset="utf-8" type="text/javascript"></script>
@@ -910,5 +892,5 @@
         <script src="./js/charts/speaker-chart.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/charts/comment-network-chart.js" charset="utf-8" type="text/javascript"></script>
     }
-</body>
-</html>
+    </body>
+    </html>

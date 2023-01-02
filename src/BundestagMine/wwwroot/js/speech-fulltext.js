@@ -390,7 +390,7 @@ async function insertSpeechIntoFulltextAnalysis(speechId) {
     $('.fulltext-analysis-div').find('.family').html(speaker ? speaker.maritalStatus : '');
     $('.fulltext-analysis-div').find('.fraction').html(speaker ? speaker.fraction : '');
     $('.fulltext-analysis-div').find('.party').html(speaker ? speaker.party : '');
-    $('.fulltext-analysis-div').find('.since').html(speaker ? parseToGermanDate(speaker.historySince): '');
+    $('.fulltext-analysis-div').find('.since').html(speaker ? parseToGermanDate(speaker.historySince) : '');
     $('.fulltext-analysis-div').find('.job').html(speaker ? speaker.profession : '');
     $('.fulltext-analysis-div').find('.title').html(speaker ? speaker.academicTitle : '');
 
@@ -461,6 +461,7 @@ async function buildHtmlOfFulltextAnalysis(speech) {
             lastSegmentEnd = end;
         }
         var alreadyPlacedQuestion = true;
+        var lastSentimentScore = 0;
         // Create a span around each token so we can control it.
         for (var i = 0; i < speech.tokens.length; i++) {
             var token = speech.tokens[i];
@@ -473,7 +474,7 @@ async function buildHtmlOfFulltextAnalysis(speech) {
 
             // Is this token a namedentity? Then add the entity class.
             var tokenAndEnitySame = speech.namedEntities.find(s => s.begin == token.begin && (s.end == token.end || s.end == token.end + 1));
-            // Does the named entity maybe start her
+            // Does the named entity maybe start here
             var tokenAndEntityStart = speech.namedEntities.find(s => s.begin == token.begin);
             // Or does a entity end here?
             var tokenAndEntityEnd = speech.namedEntities.find(s => s.end == token.end || s.end == token.end + 1);
@@ -490,9 +491,8 @@ async function buildHtmlOfFulltextAnalysis(speech) {
             // Is this token the start of a sentence of maybe the end?
             var sentenceAndTokenStart = speech.sentiments.find(s => s.begin == token.begin || s.begin == token.begin - 1);
             var sentenceAndTokenEnd = speech.sentiments.find(s => s.end == token.end || s.end == token.end + 1);
-
             if (sentenceAndTokenEnd != undefined) {
-                sentenceAndTokenEnd = sentenceAndTokenEnd;
+                lastSentimentScore = sentenceAndTokenEnd.sentimentSingleScore; 
                 var mode = '<b class=\'text-primary\'>Neutral</b>';
                 if (sentenceAndTokenEnd.sentimentSingleScore > 0) {
                     mode = '<b class=\'text-success\'>Positiv</b>';
@@ -504,18 +504,21 @@ async function buildHtmlOfFulltextAnalysis(speech) {
                 // info buttons... We we hack them: EVery second info button, we ingore hehe
                 if (!alreadyPlacedQuestion) {
                     var tooltip = `Sentiment Wert: ${sentenceAndTokenEnd.sentimentSingleScore}<br/>Satz ist ${mode} gestimmt.`;
-                    spanEnd += `</i><i class="far fa-question-circle sentiment-question" data-expanded="true" data-content="${tooltip}" data-toggle="popover" data-trigger="hover" data-placement="top" data-html="true"></i>`;
+                    spanEnd += `</i><i class="far fa-question-circle sentiment-question" data-expanded="true" data-content="${tooltip}" data-toggle="popover" data-trigger="hover" data-placement="bottom" data-html="true"></i>`;
                 } else {
                     spanEnd += '</i>'
                 }
                 alreadyPlacedQuestion = !alreadyPlacedQuestion;
             }
             else if (sentenceAndTokenStart != undefined) {
-                sentenceAndTokenStart = sentenceAndTokenStart;
+                var score = sentenceAndTokenStart.sentimentSingleScore;
+                // If we got a . or ! or ? or whatever, we cannot take the sss of that. We need to get the sss of the next sentence.
+                // Hacky as fuck, I know, but there are so many special cases...
+                if (sentenceAndTokenStart.end - sentenceAndTokenStart.begin < 2) score = speech.sentiments.find(s => s.begin == sentenceAndTokenStart.begin + 1)?.sentimentSingleScore;
                 var mode = 'neu-sentence';
-                if (sentenceAndTokenStart.sentimentSingleScore > 0) {
+                if (score > 0) {
                     mode = 'pos-sentence';
-                } else if (sentenceAndTokenStart.sentimentSingleScore < 0) {
+                } else if (score < 0) {
                     mode = 'neg-sentence';
                 }
                 spanBegin = spanBegin.insert_at(0, `<i class="sentence ${mode}">`);
@@ -572,7 +575,8 @@ async function buildHtmlOfFulltextAnalysis(speech) {
 
         return html;
     } catch (ex) {
-        console.log("Error in fulltext analysis: " + ex);
+        console.log("Error in fulltext analysis: ");
+        console.log(ex);
         return "";
     }
 }

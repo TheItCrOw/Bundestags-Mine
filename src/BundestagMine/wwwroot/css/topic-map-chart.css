@@ -24,7 +24,8 @@
     }
 
 .node--leaf {
-    fill: white;
+    fill: gray;
+    border:black 1px solid;
 }
 
 .node--root {
@@ -40,11 +41,9 @@
 .topic-label {
     text-anchor: middle;
     padding: 10px;
-    font-size: 1.5rem;
-    stroke: black !important;
-    color: white !important;
-    fill: white !important;
-    stroke-width: 1px;
+    font-size: 1rem;
+    fill: black !important;
+    stroke-width: 0.2px;
 }
 
 .label {

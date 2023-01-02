@@ -1,0 +1,145 @@
+﻿#homeContent {
+    background-color: rgba(0,0,0,0.9);
+    background-image: url('../img/deutscher-bundestag.jpg');
+}
+
+    #homeContent hr {
+        border-top: 1px dashed rgba(255,255,255,0.2);
+    }
+
+    #homeContent::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.7);
+    }
+
+    #homeContent .centered {
+        position: absolute;
+        transform: translateZ(200px);
+        height: 70vh;
+        width: 70vw;
+        background-color: rgba(0,0,0,0.7);
+        left: calc(50% - 35vw);
+        object-fit: cover;
+        top: calc(50% - 35vh);
+        border-radius: 2rem;
+        opacity: 0.5;
+        box-shadow: rgba(0, 0, 0, 0.8) 0px 3px 8px;
+    }
+
+    #homeContent .title {
+        font-size: 10vw;
+        z-index: 2;
+        line-height: 1 !important;
+        position: absolute;
+        left: 3%;
+        text-shadow: 4px 4px black;
+        color: white;
+        top: 3%;
+        font-weight: bold;
+        display: inline-block;
+    }
+
+.text__first, .text__second {
+    position: relative;
+}
+
+.text__word {
+    opacity: 0;
+}
+
+.text__first-bg, .text__second-bg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    transform-origin: left;
+    transform: scaleX(0);
+}
+
+.text__first-bg {
+    background: rgb(38,38,38);
+    background: linear-gradient(90deg, rgba(38,38,38,1) 50%, rgba(9,9,121,1) 50%, rgba(166,13,13,1) 50%);
+}
+
+.text__second-bg {
+    background-color: gold;
+}
+
+.text__second {
+}
+
+#homeContent .speeches-count {
+    text-align: left;
+    letter-spacing: 2px;
+    z-index: 3;
+    position: absolute;
+    color: rgba(255,255,255, 1);
+    padding-top: 20px;
+    padding-bottom: 20px;
+    margin-right: 7vw;
+    text-shadow: 3px 3px black;
+    width: auto;
+}
+
+    #homeContent .speeches-count div:first-child {
+        margin-left: 2.5vw;
+        margin-right: 2.5vw;
+    }
+
+    #homeContent .speeches-count .header {
+        font-size: 30px !important;
+        color: white;
+    }
+
+#homeContent .explanation-video {
+    position: absolute;
+    left: 45%;
+    top: calc(50% - 105px);
+    background-color: transparent;
+}
+
+    #homeContent .explanation-video iframe {
+        height: 330px;
+        border: black 1px solid;
+        width: 600px;
+    }
+
+@media only screen and (max-width: 1350px) {
+    #homeContent .explanation-video {
+        position: absolute;
+        left: 25%;
+        top: calc(50% - 135px);
+    }
+}
+
+@media only screen and (max-width: 1050px) {
+    #homeContent .explanation-video {
+        position: absolute;
+        left: calc(50% - 200px);
+        top: calc(50% - 135px);
+    }
+
+        #homeContent .explanation-video iframe {
+            height: 245px;
+            width: 450px;
+        }
+}
+
+@media only screen and (max-width: 650px) {
+    #homeContent .explanation-video {
+        position: absolute;
+        left: calc(50% - 175px);
+        top: calc(50% - 135px);
+    }
+
+        #homeContent .explanation-video iframe {
+            height: 205px;
+            width: 350px;
+        }
+}

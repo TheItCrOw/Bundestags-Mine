@@ -1,0 +1,22 @@
+version: "3.4"
+
+services:
+    bundestag-mine:
+        image: "theitcrow/bundestag-mine:latest"
+        build:
+          context: .
+          dockerfile: Dockerfile
+        ports:
+          - "8080:80"
+        depends_on:
+          - db
+
+    db:
+        image: "theitcrow/bundestag-mine-db:2022-latest"
+        container_name: db        
+        ports:
+          - "1433:1433"
+
+        environment:
+            - SA_PASSWORD=Passw0rdMineDb!
+            - ACCEPT_EULA=Y

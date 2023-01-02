@@ -19,6 +19,8 @@ namespace BundestagMine.Synchronisation
         /// </summary>
         public void ImportXLSPolls()
         {
+            var deletablePaths = new List<string>();
+
             using (var sqlDb = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
             {
                 // For future imporst: The path may olny take 255 characters. Some excel files are long af
@@ -30,6 +32,7 @@ namespace BundestagMine.Synchronisation
                 foreach (var file in xlsFiles)
                 {
                     Log.Information($"Importing {counter}/{xlsFiles.Count()}");
+                    deletablePaths.Add(file);
 
                     try
                     {
@@ -93,7 +96,6 @@ namespace BundestagMine.Synchronisation
                                 sqlDb.Polls.Add(poll);
                                 sqlDb.PollEntries.AddRange(poll.Entries);
                                 sqlDb.SaveChanges();
-                                if (ConfigManager.GetDeleteImportedEntity()) File.Delete(file);
                                 Log.Information($"Imported and saved {poll.Title} with {poll.Entries.Count} entries.");
                             }
                         }
@@ -105,6 +107,22 @@ namespace BundestagMine.Synchronisation
                     counter++;
                 }
             }
+
+            // We cannot do it inside the loop since we use the excel engine in it. Process occipued etc.
+            try
+            {
+                if (ConfigManager.GetDeleteImportedEntity())
+                {
+                    foreach (var path in deletablePaths)
+                    {
+                        File.Delete(path);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "Cant delete the xml polls: ");
+            }
         }
 
         /// <summary>
@@ -112,6 +130,8 @@ namespace BundestagMine.Synchronisation
         /// </summary>
         public void ImportXLSXPolls()
         {
+            var deletablePaths = new List<string>();
+
             using (var sqlDb = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
             {
                 using (var excelEngine = new ExcelEngine())
@@ -123,6 +143,7 @@ namespace BundestagMine.Synchronisation
 
                     foreach (var file in xlsxFiles)
                     {
+                        deletablePaths.Add(file);
                         var splited = file.Split("\\");
                         var fileName = splited[splited.Length - 1];
                         var title = fileName.Substring(22, fileName.Length - 26).Trim();
@@ -131,7 +152,6 @@ namespace BundestagMine.Synchronisation
                         if (sqlDb.Polls.Any(p => p.Title == title))
                         {
                             Log.Information("Skipping importing Poll because its already in the database: " + title);
-                            if (ConfigManager.GetDeleteImportedEntity()) File.Delete(file);
                             continue;
                         }
 
@@ -177,7 +197,6 @@ namespace BundestagMine.Synchronisation
                             sqlDb.Polls.Add(poll);
                             sqlDb.PollEntries.AddRange(poll.Entries);
                             sqlDb.SaveChanges();
-                            if (ConfigManager.GetDeleteImportedEntity()) File.Delete(file);
                             Log.Information($"Imported and saved {poll.Title} with {poll.Entries.Count} entries.");
                         }
                         catch (Exception ex)
@@ -186,6 +205,22 @@ namespace BundestagMine.Synchronisation
                         }
                     }
                 }
+            }
+
+            // We cannot do it inside the loop since we use the excel engine in it. Process occipued etc.
+            try
+            {
+                if (ConfigManager.GetDeleteImportedEntity())
+                {
+                    foreach (var path in deletablePaths)
+                    {
+                        File.Delete(path);
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                Log.Warning(ex, "Cant delete the xml polls: ");
             }
         }
     }

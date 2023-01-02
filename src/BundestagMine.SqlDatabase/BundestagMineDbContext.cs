@@ -1,6 +1,8 @@
 ﻿using BundestagMine.Models.Database;
 using BundestagMine.Models.Database.MongoDB;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;

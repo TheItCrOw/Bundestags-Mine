@@ -1,8 +1,46 @@
 ﻿@page
 @model PrivacyModel
 @{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Impressum";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<link href="~/css/pages/download-center.css" rel="stylesheet">
+
+<div class="min-vh-100">
+    <nav class="bg-dark card-shadow">
+        <div class="container flexed justify-content-between align-items-center">
+            <a class="btn rounded-0" asp-page="/Index">
+                <div>
+                    <img class="logo" src="/img/logo/Logo_weiß_transparent_RGB_534x512.png" />
+                    <h5 class="ml-2 mb-0 text-light small-font">Bundestags-Mine</h5>
+                </div>
+            </a>
+            <h5 class="m-0 font-weight-bold text-light">
+                Impressum
+            </h5>
+            <a class="btn rounded-0 hidden">
+                <div>
+                    <img class="logo" src="/img/Logo_weiß_transparent_RGB_534x512.png" />
+                    <h5 class="ml-2 mb-0 text-light small-font">Bundestags-Mine</h5>
+                </div>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container mt-5 mb-5">
+        <h2>Angaben gem&auml;&szlig; &sect; 5 TMG</h2>
+        <p>
+            Kevin B&ouml;nisch<br />
+            Frankfurter Stra&szlig;e 19<br />
+            63571 Gelnhausen
+        </p>
+
+        <h2>Kontakt</h2>
+        <p>
+            E-Mail: info@bundestag-mine.de
+        </p>
+
+        <p>Quelle: <a href="https://www.e-recht24.de">e-recht24.de</a></p>
+    </div>
+</div>
+

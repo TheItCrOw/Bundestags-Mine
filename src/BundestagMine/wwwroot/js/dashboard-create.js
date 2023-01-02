@@ -120,13 +120,6 @@ $('body').on('click', '#dashboardCreateSearch', function () {
     $('#dashboardCreateSearchList').show();
 })
 
-// We only want to close the search list if we click somewhere else but the input
-// and the actual list!
-$(document).on('click', function (event) {
-    if (event.target.classList.contains('exception-click')) return;
-    $('#dashboardCreateSearchList').hide();
-})
-
 // Handle the clicking onto a search item
 $('body').on('click', '.search-item', function () {
     var displayName = $(this).html();

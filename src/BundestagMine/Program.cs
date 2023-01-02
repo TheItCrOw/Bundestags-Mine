@@ -18,7 +18,9 @@ namespace BundestagMine
             try
             {
                 logger.Debug("init main");
-                var webhost = CreateWebHostBuilder(args).Build();
+                var webhost = CreateWebHostBuilder(args)
+                    .Build();
+
                 await webhost.RunAsync();
             }
             catch (Exception exception)

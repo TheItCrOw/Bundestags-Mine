@@ -723,3 +723,74 @@ async function getPollViewModelListViewOfSpeaker(speakerId) {
         return undefined;
     }
 }
+
+// ============================================== Download Center ======================================
+// Calculates the data of a download center filter
+async function postCalculateData(obj) {
+    try {
+        const result = await $.ajax({
+            url: "/api/DownloadCenterController/CalculateData/",
+            type: "POST",
+            data: JSON.stringify(obj),
+            dataType: "json",
+            contentType: "application/json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result.result;
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+}
+
+// Starts the generating of a dataset by a filter
+async function postGenerateDatasetByFilter(obj) {
+    try {
+        const result = await $.ajax({
+            url: "/api/DownloadCenterController/GenerateDatasetByFilter/",
+            type: "POST",
+            data: JSON.stringify(obj),
+            dataType: "json",
+            contentType: "application/json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result;
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+}
+
+// Starts the download of a dataset zip file
+async function downloadDataZip(filename, callback) {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/api/DownloadCenterController/DownloadDataset/" + filename,
+            //contentType: "application/json",
+            contentType: "application/octet-stream",
+            xhrFields: {
+                responseType: 'blob'
+            },
+            //data: JSON.stringify(obj),
+            success: async function (data) {
+                var a = document.createElement('a');
+                var url = window.URL.createObjectURL(data);
+                a.href = url;
+                a.download = 'bundestag-mine-export.zip';
+                document.body.append(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+                callback();
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+}

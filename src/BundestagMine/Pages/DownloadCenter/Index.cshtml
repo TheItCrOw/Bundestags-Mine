@@ -1,0 +1,89 @@
+﻿@page
+@model BundestagMine.Pages.DownloadCenter.IndexModel
+@{
+    ViewData["Title"] = "Download Center";
+}
+
+<link href="~/css/pages/download-center.css" rel="stylesheet">
+
+<nav class="bg-dark card-shadow">
+    <div class="container flexed justify-content-between align-items-center">
+        <a class="btn rounded-0" asp-page="/Index">
+            <div>
+                <img class="logo" src="/img/logo/Logo_weiß_transparent_RGB_534x512.png" />
+                <h5 class="ml-2 mb-0 text-light small-font">Bundestags-Mine</h5>
+            </div>
+        </a>
+        <h5 class="m-0 font-weight-bold text-light">
+            Download-Center
+        </h5>
+        <a class="btn rounded-0 hidden">
+            <div>
+                <img class="logo" src="/img/Logo_weiß_transparent_RGB_534x512.png" />
+                <h5 class="ml-2 mb-0 text-light small-font">Bundestags-Mine</h5>
+            </div>
+        </a>
+    </div>
+</nav>
+
+<div class="container hero">
+    <div class="w-100">
+        @if (Model.ZipFileViewModel == null)
+        {
+            <div class="alert alert-danger mt-2 card-shadow-light flexed align-items-center p-2 mb-3" role="alert">
+                <i class="large-font fas fa-info-circle mr-2 h-100"></i>
+                <p class="m-2 text-center w-100">
+                    Die Datei wurde nicht gefunden.<br />
+                    Sie ist entweder bereits gelöscht worden oder war fehlerhaft.
+                    Datensätze werden nach 24h automatisch gelöscht.
+                </p>
+            </div>
+        }
+        else if (Model.ZipFileViewModel.IsBeingCalculated)
+        {
+            <div class="alert alert-warning mt-2 card-shadow-light flexed align-items-center p-2 mb-3" role="alert">
+                <i class="large-font fas fa-info-circle mr-2 h-100"></i>
+                <p class="m-2 text-center w-100">
+                    Der Datensatz wird grade noch kalkuliert. Probieren Sie es später noch einmal.
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="w-100 pt-5 pb-5 download-container">
+                <div class="loader display-none">
+                    <p>Der Download startet - einen Moment bitte.</p>
+                    <div class="lds-ripple">
+                        <div></div><div></div>
+                    </div>
+                </div>
+                <h4 class="mb-2 text-center font-weight-bold">@Model.ZipFileViewModel?.FileName</h4>
+                <div class="flexed justify-content-center">
+                    <img class="file-icon" src="/img/file-icon.png" />
+                </div>
+                <div class="text-center mt-2">
+                    <p class="mb-0"><b>Erstellt:</b> @Model.ZipFileViewModel.Created</p>
+                    <p class="mb-0"><b>Löschung:</b> @Model.ZipFileViewModel.DeletionTime</p>
+                    <p class="mb-0"><b>Dateigröße:</b> @Model.ZipFileViewModel.SizeInMb MB</p>
+                </div>
+                <div class="mt-4 flexed justify-content-center">
+                    <a class="btn btn-warning card-shadow-light start-download-btn"
+                   asp-controller="DownloadCenter" asp-action="DownloadDataset" asp-route-fileName="@Model.ZipFileViewModel.FileName">
+                        <i class="fas fa-download xxlarge-font text-light"></i>
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    // Handle the start of the filedownload
+    $('.start-download-btn').on('click', async function() {
+        console.log('Start the download');
+        $('.download-container .loader').fadeIn(150);
+        setTimeout(function() {
+            $('.download-container .loader').fadeOut(150);
+        }, 5000);
+    })
+</script>

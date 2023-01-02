@@ -9,10 +9,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace BundestagMine
 {
@@ -32,7 +34,8 @@ namespace BundestagMine
                 option => option.UseSqlServer(ConfigManager.GetConnectionString(), o => o.CommandTimeout(600)));
             services.AddDbContext<IdentityContext>(
                 option => option.UseSqlServer(ConfigManager.GetConnectionString(), o => o.CommandTimeout(600)));
-
+            services.AddLogging(c => c.ClearProviders());
+            
             // Identity Configurations.
             services.AddIdentity<IdentityUser, IdentityRole>()
                     .AddEntityFrameworkStores<IdentityContext>()
@@ -83,6 +86,8 @@ namespace BundestagMine
             services.AddTransient<TopicAnalysisService>();
             services.AddTransient<ImportService>();
             services.AddTransient<GlobalSearchService>();
+            services.AddTransient<DownloadCenterService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -102,6 +107,7 @@ namespace BundestagMine
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+            app.UseStaticFiles();
 
             app.UseAuthorization();
             app.UseAuthentication();

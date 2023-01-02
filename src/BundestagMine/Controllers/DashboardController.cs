@@ -273,7 +273,7 @@ namespace BundestagMine.Controllers
                 }
                 else
                 {
-                    response.result = _db.Deputies.ToList();
+                    response.result = _db.Deputies.ToList().DistinctBy(s => s.SpeakerId);
                 }
 
                 response.status = "200";
