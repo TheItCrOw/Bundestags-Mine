@@ -44,29 +44,38 @@ namespace BundestagMine.Utility
             List<string> recipients,
             List<Attachment> attachments = null)
         {
-            using (var smtpClient = GetSmtpClient())
+            try
             {
-                using (var mailMessage = new MailMessage
+                using (var smtpClient = GetSmtpClient())
                 {
-                    From = new MailAddress(ConfigManager.GetSmtpUsername()),
-                    Subject = subject,
-                    Body = body,
-                    IsBodyHtml = ConfigManager.GetSmtpIsBodyHtml(),
-                })
-                {
-                    foreach (var recipient in recipients)
-                    {
-                        mailMessage.To.Add(recipient);
-                    }
+                    ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
 
-                    if (attachments != null)
-                        foreach (var attachment in attachments)
+                    using (var mailMessage = new MailMessage
+                    {
+                        From = new MailAddress(ConfigManager.GetSmtpUsername()),
+                        Subject = subject,
+                        Body = body,
+                        IsBodyHtml = ConfigManager.GetSmtpIsBodyHtml(),
+                    })
+                    {
+                        foreach (var recipient in recipients)
                         {
-                            mailMessage.Attachments.Add(attachment);
+                            mailMessage.To.Add(recipient);
                         }
 
-                    smtpClient.Send(mailMessage);
+                        if (attachments != null)
+                            foreach (var attachment in attachments)
+                            {
+                                mailMessage.Attachments.Add(attachment);
+                            }
+
+                        smtpClient.Send(mailMessage);
+                    }
                 }
+            }
+            catch(Exception ex)
+            {
+                // TODO: Log this here some day :-)
             }
         }
     }
