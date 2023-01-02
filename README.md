@@ -15,8 +15,24 @@ Dive into several features of the Bundestags-Mine to create your own analysis an
 ![image](https://user-images.githubusercontent.com/49918134/182587979-5e6bca81-644f-49eb-9be2-98ff5bf2a8cb.png)
 ![image](https://user-images.githubusercontent.com/49918134/182588047-67f7f540-837b-444e-94b8-c4215abbca9d.png)
 
-## Text Technology Lab
+## Natural Language Processing
 
-![ttl-logo-white](https://user-images.githubusercontent.com/49918134/189888836-f87adb1b-76a8-47ad-9e8a-f884df0bb51a.png)
+![ttl-logo-blue](https://user-images.githubusercontent.com/32450159/149387119-6d300f31-f743-436b-b1e1-baf2181ff961.png)
 
-Wahed Hemati, Tolga Uslu, Alexander Mehler: TextImager: a Distributed UIMA-based System for NLP. COLING (Demos) 2016: 59-63 [pdf](https://aclanthology.org/C16-2013.pdf) [bibtex](https://aclanthology.org/C16-2013.bib)
+### Cite
+
+Die NLP-Vorverarbeitung erfolgt mittels dem TextImager. Wenn Sie diesen Nutzen möchten, zitieren Sie bitte folgende Veröffentlichung: Wahed Hemati, Tolga Uslu, Alexander Mehler: TextImager: a Distributed UIMA-based System for NLP. COLING (Demos) 2016: 59-63 [pdf](https://aclanthology.org/C16-2013.pdf) [bibtex](https://aclanthology.org/C16-2013.bib) [github](https://github.com/texttechnologylab/textimager-uima)
+
+### BibTex
+
+```
+@inproceedings{Hemati:Uslu:Mehler:2016,
+  author={Hemati, Wahed and Uslu, Tolga and Mehler, Alexander},
+  title={TextImager: a Distributed UIMA-based System for NLP},
+  booktitle={Proceedings of the COLING 2016 System Demonstrations},
+  year={2016},
+  location={Osaka, Japan},
+  organization={Federated Conference on Computer Science and Information Systems}
+}
+```
+
