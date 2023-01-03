@@ -4,6 +4,7 @@ var allSpeaker = [];
 var allParties = [];
 var allFractions = [];
 var allProtocols = [];
+var currentView = "homeContent";
 
 // set the dimensions and margins of each of the d3 svg graphs
 var margin = { top: 10, right: 30, bottom: 30, left: 40 },
@@ -182,9 +183,37 @@ $('body').on('click', '.nav-item-switcher', async function () {
         $(this).addClass('selected-nav-item');
     }
     $(`#${$(this).data("id")}`).fadeIn(500);
+    // soter the current view.
+    currentView = $(this).data('id');
 })
 
-// Close the navbart items menus when clicking anywhere
+// Open the helper video box
+$('body').on('click', '.view-helper-tooltip', function () {
+    if (currentView == 'globalSearchContent') {
+        $('.view-helper-video-box iframe').attr('src', 'https://www.youtube.com/embed/5g5UIJLaBzE');
+        $('.view-helper-video-box').fadeIn(250);
+    } else if (currentView == 'speechContent') {
+        $('.view-helper-video-box iframe').attr('src', 'https://www.youtube.com/embed/g0jCdSWTPjQ');
+        $('.view-helper-video-box').fadeIn(250);
+    } else if (currentView == 'topicAnalysis') {
+        $('.view-helper-video-box iframe').attr('src', 'https://www.youtube.com/embed/W78jl_P9rD0');
+        $('.view-helper-video-box').fadeIn(250);
+    } else if (currentView == 'topicMapContent') {
+        $('.view-helper-video-box iframe').attr('src', 'https://www.youtube.com/embed/cNJ_xi8TiLU');
+        $('.view-helper-video-box').fadeIn(250);
+    } else if (currentView == 'topicRaceContent') {
+        $('.view-helper-video-box iframe').attr('src', 'https://www.youtube.com/embed/tfj--n-KZN4');
+        $('.view-helper-video-box').fadeIn(250);
+    } else if (currentView == 'networkContent') {
+        $('.view-helper-video-box iframe').attr('src', 'https://www.youtube.com/embed/p6ebl-WwxzA');
+        $('.view-helper-video-box').fadeIn(250);
+    } else if (currentView == 'downloadCenterContent') {
+        $('.view-helper-video-box iframe').attr('src', 'https://www.youtube.com/embed/UKvZRnxYwmk');
+        $('.view-helper-video-box').fadeIn(250);
+    }
+})
+
+// Close the navbar items menus when clicking anywhere
 $(function () {
     $(document).click(function (event) {
         $('#collapseUtilities').collapse('hide');

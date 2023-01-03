@@ -588,11 +588,13 @@ $('body').on('click', '.close-open-btn', function () {
     if (expanded) {
         $('.protocol-tree-content').find('.header').hide();
         $('.protocol-tree-content').find('.protocol-tree').hide();
+        $('.protocol-tree-content').find('.protocol-tree-info').hide();
         $('.close-open-btn').find('i').removeClass('fa-chevron-left');
         $('.close-open-btn').find('i').addClass('fa-chevron-right');
     } else {
         $('.protocol-tree-content').find('.header').show();
         $('.protocol-tree-content').find('.protocol-tree').show();
+        $('.protocol-tree-content').find('.protocol-tree-info').show();
         $('.close-open-btn').find('i').removeClass('fa-chevron-right');
         $('.close-open-btn').find('i').addClass('fa-chevron-left');
     }

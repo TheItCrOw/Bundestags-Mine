@@ -371,8 +371,18 @@ namespace BundestagMine.Controllers
             {
                 response.status = "200";
                 var data = _db.NetworkDatas.First();
-                data.Links = _db.CommentNetworkLink.ToList();
-                data.Nodes = _db.CommentNetworkNode.ToList();
+                var nodes = _db.CommentNetworkNode.Where(nl => nl.Party != String.Empty).ToList();
+                // We only want those links, where the source and target exist in the nodes list. Otherwise
+                // they are useless.
+                var links = _db.CommentNetworkLink
+                    .AsEnumerable()
+                    .Where(nl => nodes.Any(n => n.Id == nl.Target)
+                    && nodes.Any(n => n.Id == nl.Source)
+                    && nl.Value >= 10)
+                    .ToList();
+
+                data.Links = links;
+                data.Nodes = nodes;
                 response.result = data;
             }
             catch (Exception ex)

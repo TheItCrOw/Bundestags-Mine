@@ -41,7 +41,7 @@
             <div class="progress-bar bg-gradient-dark" id="startProgress" role="progressbar" style="width: 0%;"></div>
         </div>
         <div class="copyright">
-            <img src="~/img/logo/Logo mit Schriftzug_schwarz_transparent_RGB_1024x473.png"/><br/>
+            <img src="~/img/logo/Logo mit Schriftzug_schwarz_transparent_RGB_1024x473.png" /><br />
             Copyright &copy; Kevin Bönisch 2022
         </div>
     </div>
@@ -117,9 +117,10 @@
                 </a>
                 <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" style="z-index:99 !important"
                      data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Netzwerke</h6>
-                        <a class="collapse-item nav-item-switcher" data-id="networkContent">Kommentare Netzwerk</a>
+                    <div class="bg-transparent py-2 collapse-inner rounded">
+                        <a class="collapse-item nav-item-switcher bg-transparent text-white-50" data-id="networkContent">
+                            <i class="fas fa-comments mr-1"></i> Kommentare
+                        </a>
                     </div>
                 </div>
             </li>
@@ -139,7 +140,25 @@
                     <span>FAQ</span>
                 </a>
             </li>
+
+            <!-- Nav Item - Support -->
+            <li class="nav-item active nav-item-switcher" data-id="supportContent">
+                <a class="nav-link">
+                    <i class="fab fa-paypal"></i>
+                    <span>Support</span>
+                </a>
+            </li>
         </ul>
+
+        @*helper for the current view*@
+        <a class="view-helper-tooltip" data-expanded="true" data-toggle="popover" data-content="Erklärung zur jetzigen Ansicht" data-trigger="hover">
+            <i class="mt-1 ml-1 text-dark large-font fas fa-question"></i>
+        </a>
+
+        @*the video explaing each view when clicked*@
+        <div class="view-helper-video-box" onclick="$(this).fadeOut(250)">
+            <iframe  width="560" height="315" src="https://www.youtube.com/embed/8MT0CRn-WE8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
 
         <!--main content-->
         <div class="d-flex flex-column w-100 main-content-shadow">
@@ -177,6 +196,15 @@
                             <h2>Protokolle</h2>
                         </div>
 
+                        @*info that newest protocols are missing*@
+                        <div class="protocol-tree-info alert alert-warning mt-2 card-shadow-light rounded-0 align-items-center p-1 mb-0" role="alert" style="display:flex">
+                            <i class="large-font fas fa-info-circle mr-2 h-100 small-font"></i>
+                            <p class="m-1 text-center w-100 small-font">
+                                61. Sitzung und aktueller grade nicht verfügbar. Mehr im FAQ.
+                            </p>
+                        </div>
+
+                        @*actual protocols*@
                         <div class="protocol-tree mt-2">
                         </div>
                     </div>
@@ -365,7 +393,7 @@
                             <div class="flexed justify-content-between">
                                 <h4 class="d-title font-weight-bold mb-0">
                                     <i class="fas fa-fw fa-tachometer-alt text-dark"></i>
-                                    <span class="ml-2 header-name">None</span>
+                                    <a class="ml-2 header-name open-speaker-inspector clickable">None</a>
                                 </h4>
                                 <h4>
                                     <i class="fas fa-database text-dark"></i>
@@ -471,7 +499,7 @@
                                                 <!-- Card Header - Dropdown -->
                                                 <div class="card-header rounded-0 bg-transparent border-0 py-2 d-flex flex-row align-items-center justify-content-between">
                                                     <p class="m-0 font-weight-bold text-black-50 small-font">
-                                                        Top 20 Named Entity nach Häufigkeit.
+                                                        Top 10 Named Entity nach Häufigkeit.
                                                     </p>
                                                 </div>
                                                 <!-- Card Body -->
@@ -647,7 +675,7 @@
                             <!--comment threshhold-->
                             <div class="flexed justify-content-between align-items-center">
                                 <label class="m-0 text-weight-bold">MW </label>
-                                <input type="range" min="0" max="100" class="w-100 comment-threshold-input ml-1 mr-1" value="30"
+                                <input type="range" min="10" max="100" class="w-100 comment-threshold-input ml-1 mr-1" value="30"
                                        data-toggle="popover" data-trigger="hover" data-content="15" />
                                 <i class="far fa-question-circle" data-toggle="popover" data-trigger="hover"
                                    data-content="Stellen Sie einen Mindestwert für die Anzahl der Kommentare ein.

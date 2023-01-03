@@ -127,3 +127,8 @@ function replaceUmlaute(str) {
         .replace(/\u00dc/g, 'Ue');
 }
 
+// Capitalies the first character in the string
+function capitalizeFirstLetter(s) {
+    if (s.length < 1) return s;
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
