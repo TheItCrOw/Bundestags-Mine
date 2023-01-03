@@ -29,6 +29,7 @@
     <link href="~/css/speaker-inspector.css" rel="stylesheet">
     <link href="~/css/download-center.css" rel="stylesheet">
     <link href="~/css/home.css" rel="stylesheet">
+    <link href="~/css/pages/support.css" rel="stylesheet">
 </head>
 
 <body id="page-top">
@@ -157,7 +158,7 @@
 
         @*the video explaing each view when clicked*@
         <div class="view-helper-video-box" onclick="$(this).fadeOut(250)">
-            <iframe  width="560" height="315" src="https://www.youtube.com/embed/8MT0CRn-WE8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/8MT0CRn-WE8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
 
         <!--main content-->
@@ -752,6 +753,11 @@
             @*faq*@
             <div id="faqContent" class="position-relative h-100 w-100">
                 <partial name="~/Pages/Shared/_FAQView.cshtml" />
+            </div>
+
+            @*support*@
+            <div id="supportContent" class="h-100 position-relative display-none">
+                <partial name="~/Pages/Shared/_Support.cshtml" />
             </div>
 
             @*a modal that shows the details of an agenda item when clicked*@
