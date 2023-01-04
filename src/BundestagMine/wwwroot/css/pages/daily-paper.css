@@ -1,0 +1,120 @@
+﻿.paper-layout {
+    min-height: 100vh !important;
+    background-color: ghostwhite;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    padding-left: 1vw;
+    padding-right: 1vw;
+    padding-top: 3vw;
+    padding-bottom: 3vw;
+}
+
+    .paper-layout * {
+        font-family: 'Times New Roman', Times, serif !important;
+    }
+
+    .paper-layout .paper-header {
+    }
+
+        .paper-layout .paper-header h1 {
+            text-align: center;
+            color: black;
+            font-weight: bolder;
+            text-transform: uppercase;
+            font-size: clamp(2.5rem, 5vw, 75px);
+            /*If 2.5rem is less than 4vw, the font-size will be 2.5rem.
+If 4vw is greater than 70px, the font-size will be 70px.
+Otherwise, it will be 4vw.*/
+        }
+
+        .paper-layout .paper-header h4 {
+            text-align: center;
+            color: black;
+        }
+
+        .paper-layout .paper-header .meta {
+            display: flex;
+            margin-top: 24px;
+            width: 100%;
+            justify-content: space-between;
+            overflow-wrap: break-word;
+            border-top: 1px solid gray;
+        }
+
+            .paper-layout .paper-header .meta p {
+                margin-bottom: 0;
+                margin-top: 0;
+                margin-left: 3px;
+                margin-right: 3px;
+            }
+
+            .paper-layout .paper-header .meta .date {
+                font-size: x-large;
+                color: rgba(0,0,0,0.75);
+            }
+
+    .paper-layout .paper-content {
+        text-align: justify;
+        margin-top: 16px;
+        line-height: 18px;
+    }
+
+        .paper-layout .paper-content p {
+            font-size: 14px;
+            word-break: break-word;
+        }
+
+        .paper-layout .paper-content .mid {
+            border-right: lightgray solid 1px;
+            border-left: lightgray solid 1px;
+            padding: 12px;
+        }
+
+            .paper-layout .paper-content .mid .source {
+                text-align: end;
+                width: 100%;
+                font-style: italic;
+                font-size: small;
+            }
+
+            .paper-layout .paper-content .mid .thumbnail {
+                width: 100%;
+                box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+            }
+
+            .paper-layout .paper-content .mid .subtitle {
+                text-align: center;
+                color: black;
+                font-weight: bold;
+            }
+
+        .paper-layout .paper-content .right {
+            padding-left: 6px;
+            padding-right: 0px !important;
+        }
+
+            .paper-layout .paper-content .right .agenda h4 {
+                text-align: center;
+                color: black;
+            }
+
+            .paper-layout .paper-content .right .agenda .list {
+                text-align: left;
+                line-height: 20px;
+                font-size: 16px;
+            }
+
+        .paper-layout .paper-content .left {
+            padding-right: 6px;
+            padding-left: 0px !important;
+        }
+
+            .paper-layout .paper-content .left .most-commented-speech h4 {
+                color: black;
+                text-align: center;
+            }
+
+            .paper-layout .paper-content .left .most-commented-speech img {
+                width: 100%;
+                max-height: 200px;
+                object-fit: contain;
+            }

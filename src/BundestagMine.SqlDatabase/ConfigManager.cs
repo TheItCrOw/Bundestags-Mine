@@ -20,6 +20,7 @@ namespace BundestagMine.SqlDatabase
         /// </summary>
         /// <returns></returns>
         public static string GetConnectionString() => _config.GetSection("ConnectionStrings").GetSection("DefaultConnection").Value;
+        public static string GetTokenDbConnectionString() => _config.GetSection("ConnectionStrings").GetSection("TokenConnection").Value;
 
         public static string GetDataDirectoryPath() => _config.GetSection("Paths").GetSection("DataDirectory").Value;
 
@@ -69,6 +70,18 @@ namespace BundestagMine.SqlDatabase
         {
             var options = new DbContextOptionsBuilder<BundestagMineDbContext>();
             var conn = GetConnectionString();
+            options.UseSqlServer(conn, o => o.CommandTimeout(600));
+            return options.Options;
+        }
+
+        /// <summary>
+        /// Returns the db options we need to pass into each new token db context.
+        /// </summary>
+        /// <returns></returns>
+        public static DbContextOptions<BundestagMineTokenDbContext> GetTokenDbOptions()
+        {
+            var options = new DbContextOptionsBuilder<BundestagMineTokenDbContext>();
+            var conn = GetTokenDbConnectionString();
             options.UseSqlServer(conn, o => o.CommandTimeout(600));
             return options.Options;
         }
