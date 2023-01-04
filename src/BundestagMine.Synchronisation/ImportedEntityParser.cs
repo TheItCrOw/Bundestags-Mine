@@ -27,6 +27,27 @@ namespace BundestagMine.Synchronisation
             {
                 using (var db = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
                 {
+                    // TESTING FOR REMOVING A PROTOCOL
+                    //var dp = db.Protocols.FirstOrDefault(p => p.LegislaturePeriod == 20 & p.Number == 64);
+                    //var sp = db.Speeches.Where(s => s.ProtocolNumber == 64 && s.LegislaturePeriod == 20);
+                    //foreach(var s in sp)
+                    //{
+                    //    db.Token.RemoveRange(db.Token.Where(t => t.NLPSpeechId == s.Id).ToList());
+                    //    db.Sentiment.RemoveRange(db.Sentiment.Where(t => t.NLPSpeechId == s.Id).ToList());
+                    //    db.NamedEntity.RemoveRange(db.NamedEntity.Where(t => t.NLPSpeechId == s.Id).ToList());
+
+                    //    var seggis = db.SpeechSegment.Where(ss => ss.SpeechId == s.Id).ToList();
+                    //    foreach(var ss in seggis)
+                    //    {
+                    //        db.Shouts.RemoveRange(db.Shouts.Where(sh => sh.SpeechSegmentId == ss.Id).ToList());
+                    //    }
+                    //    db.SpeechSegment.RemoveRange(seggis);
+                    //}
+                    //db.Speeches.RemoveRange(sp);
+                    //db.Protocols.Remove(dp);
+                    //db.SaveChanges();
+                    // TESTING
+
                     // Check if there are any new entities
                     if (!db.ImportedEntities.Any())
                     {
