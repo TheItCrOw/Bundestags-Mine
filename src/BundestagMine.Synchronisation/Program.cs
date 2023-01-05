@@ -56,9 +56,6 @@ namespace BundestagMine.Synchronisation
 
         private static async Task MainAsync()
         {
-            MigrateTokenFromDefaultDbToTokenDb();
-            return;
-
             var curDate = DateTime.Now;
             MailManager.SendMail($"Import-Start um {curDate}",
                 $"Der Entity-Import startet jetzt.",
@@ -152,36 +149,6 @@ namespace BundestagMine.Synchronisation
                 $"Stati:<br/>Entity-Import: {entityResult}<br/>Agenda-Scrape: {agendaItemResult}<br/>Polls-Scrape: {exportPollsResult}<br/><br/>Log im Anhang.",
                 ConfigManager.GetImportReportRecipients(),
                 new List<Attachment> { new Attachment(_fullLogFileName) });
-        }
-
-        /// <summary>
-        /// 2022-01-04: Created a new Database context and db since the default is full. This puts all the tokens
-        /// of the default db into the new database.
-        /// </summary>
-        private static void MigrateTokenFromDefaultDbToTokenDb()
-        {
-            Log.Information("Starting the token migration:");
-            var counter = 0;
-            using (var db = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
-            {
-                var total = db.Token.Count();
-                Log.Information($"Found {total} token in the default database");
-                using (var tokenDb = new BundestagMineTokenDbContext(ConfigManager.GetTokenDbOptions()))
-                {
-                    foreach(var tokens in db.Token.OrderBy(t => t.NLPSpeechId).Skip(12000000).QueryChunksOfSize(10000))
-                    {
-                        foreach(var token in tokens)
-                        {
-                            if (tokenDb.Token.Contains(token)) continue;
-                            tokenDb.Token.Add(token);
-                        }
-                        tokenDb.SaveChanges();
-                        Log.Information("Stored 10000 token in the token db!");
-                        counter += 10000;
-                        Log.Information($"Token {12000000 + counter}/{total} => {counter/total*100}%");
-                    }
-                }
-            }
         }
     }
 }

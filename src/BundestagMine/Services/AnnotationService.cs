@@ -16,19 +16,22 @@ namespace BundestagMine.Services
         private readonly BundestagScraperService _bundestagScraperService;
         private readonly MetadataService _metadataService;
         private readonly BundestagMineDbContext _db;
+        private readonly BundestagMineTokenDbContext _tdb;
 
         public AnnotationService(BundestagMineDbContext db,
+            BundestagMineTokenDbContext tdb,
             MetadataService metadataService,
             BundestagScraperService bundestagScraperService)
         {
             _bundestagScraperService = bundestagScraperService;
             _metadataService = metadataService;
             _db = db;
+            _tdb = tdb;
         }
 
         /// <summary>
         /// Builds reduced Element, Count models for the tokens and returns them.
-        /// Pass in the parameters as required.
+        /// Pass in the parameters as required. THIS ISNT WORKING CURRENTLY SINCE WE HAD TO SOURCE OUT THE TOKENS
         /// </summary>
         /// <param name="limit"></param>
         /// <param name="from"></param>
@@ -50,7 +53,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Fraction == fraction))
-                .SelectMany(s => _db.Token.Where(t => t.LemmaValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
+                .SelectMany(s => _tdb.Token.Where(t => t.LemmaValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .GroupBy(t => t.LemmaValue)
                 .Select(t => new { Element = t.Key, Count = t.Count() })
                 .OrderByDescending(kv => kv.Count)
@@ -61,7 +64,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Party == party))
-                .SelectMany(s => _db.Token.Where(t => t.LemmaValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
+                .SelectMany(s => _tdb.Token.Where(t => t.LemmaValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .GroupBy(t => t.LemmaValue)
                 .Select(t => new { Element = t.Key, Count = t.Count() })
                 .OrderByDescending(kv => kv.Count)
@@ -72,7 +75,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && s.SpeakerId == speakerId))
-                .SelectMany(s => _db.Token.Where(t => t.LemmaValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
+                .SelectMany(s => _tdb.Token.Where(t => t.LemmaValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .GroupBy(t => t.LemmaValue)
                 .Select(t => new { Element = t.Key, Count = t.Count() })
                 .OrderByDescending(kv => kv.Count)
@@ -81,7 +84,7 @@ namespace BundestagMine.Services
             else
                 return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
                 .SelectMany(p => _db.Speeches.Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
-                .SelectMany(s => _db.Token.Where(t => t.LemmaValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
+                .SelectMany(s => _tdb.Token.Where(t => t.LemmaValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .GroupBy(t => t.LemmaValue)
                 .Select(t => new { Element = t.Key, Count = t.Count() })
                 .OrderByDescending(kv => kv.Count)
@@ -91,7 +94,7 @@ namespace BundestagMine.Services
 
         /// <summary>
         /// Builds reduced Element, Count models for the pos and returns them.
-        /// Pass in the parameters as required.
+        /// Pass in the parameters as required. THIS ISNT WORKING CURRENTLY SINCE WE HAD TO SOURCE OUT THE TOKENS
         /// </summary>
         /// <param name="limit"></param>
         /// <param name="from"></param>
@@ -113,7 +116,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Fraction == fraction))
-                .SelectMany(s => _db.Token.Where(t => t.posValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
+                .SelectMany(s => _tdb.Token.Where(t => t.posValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .GroupBy(t => t.posValue)
                 .Select(t => new { Element = t.Key, Count = t.Count() })
                 .OrderByDescending(kv => kv.Count)
@@ -124,7 +127,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && _db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Party == party))
-                .SelectMany(s => _db.Token.Where(t => t.posValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
+                .SelectMany(s => _tdb.Token.Where(t => t.posValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .GroupBy(t => t.posValue)
                 .Select(t => new { Element = t.Key, Count = t.Count() })
                 .OrderByDescending(kv => kv.Count)
@@ -135,7 +138,7 @@ namespace BundestagMine.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && s.SpeakerId == speakerId))
-                .SelectMany(s => _db.Token.Where(t => t.posValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
+                .SelectMany(s => _tdb.Token.Where(t => t.posValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .GroupBy(t => t.posValue)
                 .Select(t => new { Element = t.Key, Count = t.Count() })
                 .OrderByDescending(kv => kv.Count)
@@ -144,7 +147,7 @@ namespace BundestagMine.Services
             else
                 return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
                 .SelectMany(p => _db.Speeches.Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod))
-                .SelectMany(s => _db.Token.Where(t => t.posValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
+                .SelectMany(s => _tdb.Token.Where(t => t.posValue != null && s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .GroupBy(t => t.posValue)
                 .Select(t => new { Element = t.Key, Count = t.Count() })
                 .OrderByDescending(kv => kv.Count)

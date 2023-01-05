@@ -14,10 +14,10 @@ async function buildNewDashboard(dashboardId, name, fetchId, type, from, to) {
         $template.find('.header-name').html(name);
         $template.find('.header-name').attr('data-id', fetchId);
         $template.find('.header-time').html(parseToGermanDate(from) + ' - ' + parseToGermanDate(to));
-        // Add the token chart
-        addTokenChartToDashboard($template, fetchId, type, from, to);
-        // Add the POS chart
-        addPOSChartToDashboard($template, fetchId, type, from, to);
+        // Add the token chart - currenlty not available
+        //addTokenChartToDashboard($template, fetchId, type, from, to);
+        // Add the POS chart - currenly not available
+        //addPOSChartToDashboard($template, fetchId, type, from, to);
         // Add the sentiment radar char
         addSentimentRadarChartToDashboard($template, fetchId, type, from, to);
         // Add the named entity chart

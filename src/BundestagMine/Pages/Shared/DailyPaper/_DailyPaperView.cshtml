@@ -2,6 +2,7 @@
     <div class="container-fluid h-100 paper-layout">
         @*header*@
         <div class="paper-header">
+            <img class="logo" src="/img/logo/Logo_schwarz_transparent_RGB_534x512.png" />
             <h1>Neues vom Schürfer</h1>
             <h4>Die aktuellen Ergebnisse der <span class="meeting">64</span>. Sitzung direkt aus der Bundestags-Mine</h4>
             <div class="meta">
@@ -34,17 +35,67 @@
                         <button class="btn btn-dark rounded-0 w-100">Ganze Rede lesen</button>
                     </div>
                     <hr class="bg-lightgray" />
+                    @*most negative speech*@
+                    <div class="most-commented-speech">
+                        <h4>Negativste Rede</h4>
+                        <img src="/img/portrait-beispiel.jpg" />
+                        <p class="mt-2">
+                            Die negativste Rede mit einem Sentiment von <b>-0,86</b> wurde dieses mal von
+                            <b>Christian Lindner</b> gehalten. In der Rede zum Tagesordungspunkt <b>Digitale Verwaltung</b>
+                            lag der Fokus vorallem auf <b>Deutschland</b> und <b>Russland</b>.
+                        </p>
+                        <p>
+                            <i>"</i><i class="segment">Heute befassen wir uns alle noch einmal mit dem Geschehen in Rastatt. Wir haben schon von einigen Rednern gehört, was vorgefallen ist. Vor acht Monaten haben uns die Vorstände der DB Netz AG, Dr. Rompf und Dr. Schaffer, im Ausschuss erklärt, wie es am 12. August zu der Gleisabsenkung im Zuge der Tunnelarbeiten kam. Damals hat die Besatzung der Tunnelvortriebsmaschine eine Veränderung der Tunnellage erkannt – was gut ist – und umgehend den Fahrdienstleiter informiert. Die Strecke wurde sofort gesperrt. Das dauerte ganze drei Minuten...</i><i>"</i>
+                        </p>
+                        <button class="btn btn-dark rounded-0 w-100">Ganze Rede lesen</button>
+                    </div>
+                    <hr class="bg-lightgray" />
+                    @*most positive speech*@
+                    <div class="most-commented-speech">
+                        <h4>Positivste Rede</h4>
+                        <img src="/img/Unbekannt.jpg" />
+                        <p class="mt-2">
+                            Die positivste Rede hingegen mit einem Sentiment von <b>0,56</b> wurde von
+                            <b>Unbekannt</b> gehalten. In der Rede zum Tagesordungspunkt <b>Digitale Verwaltung</b>
+                            lag der Fokus vorallem auf <b>Deutschland</b> und <b>Russland</b>.
+                        </p>
+                        <p>
+                            <i>"</i><i class="segment">Heute befassen wir uns alle noch einmal mit dem Geschehen in Rastatt. Wir haben schon von einigen Rednern gehört, was vorgefallen ist. Vor acht Monaten haben uns die Vorstände der DB Netz AG, Dr. Rompf und Dr. Schaffer, im Ausschuss erklärt, wie es am 12. August zu der Gleisabsenkung im Zuge der Tunnelarbeiten kam. Damals hat die Besatzung der Tunnelvortriebsmaschine eine Veränderung der Tunnellage erkannt – was gut ist – und umgehend den Fahrdienstleiter informiert. Die Strecke wurde sofort gesperrt. Das dauerte ganze drei Minuten...</i><i>"</i>
+                        </p>
+                        <button class="btn btn-dark rounded-0 w-100">Ganze Rede lesen</button>
+                    </div>
+                    <hr class="bg-lightgray" />
                 </div>
                 @*mid*@
                 <div class="col-lg-8 m-0 mid">
                     <img src="/img/bundestag-sitze.jpg" class="thumbnail" />
                     <label class="source mb-0">Quelle</label>
                     <hr class="mt-0 mb-3 bg-lightgray" />
-                    <h3 class="subtitle">Die häufigsten Themen</h3>
-                    <p>
-                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-                        Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet,
-                    </p>
+                    @*named entityt*@
+                    <div>
+                        <h3 class="subtitle">Thema des Tages: <b>Russland</b></h3>
+                        <p>
+                            Die Named-Entity-Analyse hat ergeben, dass vorallem <b>Deutschland</b>, <b>Russland</b> und
+                            <b>Ukraine</b> in den Reden der Abgeordneten präsent war. Wenig frequentiert waren hingegen
+                            <b>EU</b> und <b>Sozial</b>.
+                        </p>
+                        @*chart for ne distribution*@
+                        <img class="w-100" src="~/img/chart-beispiel.png" />
+                        <label class="source mb-0">NE-Verteilung, sortiert nach Häufigkeit</label>
+                    </div>
+                    <hr class="bg-lightgray" />
+                    @*sentiment*@
+                    <div>
+                        <h3 class="subtitle">Die Stimmung war <b>negativ</b></h3>
+                        <p>
+                            Die Named-Entity-Analyse hat ergeben, dass vorallem <b>Deutschland</b>, <b>Russland</b> und
+                            <b>Ukraine</b> in den Reden der Abgeordneten präsent war. Wenig frequentiert waren hingegen
+                            <b>EU</b> und <b>Sozial</b>.
+                        </p>
+                        @*chart for ne distribution*@
+                        <img class="w-100" src="~/img/chart-beispiel.png" />
+                        <label class="source mb-0">NE-Verteilung, sortiert nach Häufigkeit</label>
+                    </div>
                 </div>
                 @*right*@
                 <div class="col-lg-2 m-0 right">
@@ -62,16 +113,38 @@
                             7. Digitale Verwaltung<br />
                             8. Mittelstandspolitik<br />
                         </p>
+                        <p>
+                            Der beliebteste Tagesordnungspunkt mit den meisten Reden war dabei
+                            <b>Digitale Verwaltung</b> mit <b>20</b> Reden, gefolgt von
+                            <b>Mittelstandspolitik</b> mit <b>16</b> Reden. Das Schlusslicht war
+                            <b>Fragestunde</b> mit nur <b>5</b> Reden.
+                        </p>
+                        <img class="w-100" src="/img/chart-beispiel-2.png" />
                     </div>
-                    <hr class="bg-lightgray"/>
-                    @*most speeches top*@
-                    <div>
-                        <h5></h5>
+                    <hr class="bg-lightgray" />
+                    @*polls listed*@
+                    <div class="polls">
+                        <h4>Abstimmungen</h4>
+                        <p>In der Sitzung wurden <b>3</b> namentliche Abstimmungen getätigt.</p>
+                        <div class="poll">
+                            <h6>Änderung des Atomgesetzes</h6>
+                            <img class="w-100" src="/img/chart-beispiel-3.png" />
+                        </div>
+                        <div class="poll">
+                            <h6>Änderung von Verbrauchersteuergesetzen</h6>
+                            <img class="w-100" src="/img/chart-beispiel-3.png" />
+                        </div>
+                        <div class="poll">
+                            <h6>Krisengewinne von Energiekonzernen</h6>
+                            <img class="w-100" src="/img/chart-beispiel-3.png" />
+                        </div>
                     </div>
-                    <p>
-                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-                        Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet,
-                    </p>
+                    <hr class="bg-lightgray" />
+                    @*Numbers and facts*@
+                    <div class="numbers">
+                        <h4>Zahlen und Fakten</h4>
+                        <p>Die Sitzung war mit 120 Reden eine vergleichsweise kurze.</p>
+                    </div>
                 </div>
             </div>
         </div>

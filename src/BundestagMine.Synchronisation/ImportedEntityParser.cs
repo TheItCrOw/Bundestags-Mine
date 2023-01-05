@@ -27,123 +27,130 @@ namespace BundestagMine.Synchronisation
             {
                 using (var db = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
                 {
-                    // TESTING FOR REMOVING A PROTOCOL
-                    //var dp = db.Protocols.FirstOrDefault(p => p.LegislaturePeriod == 20 & p.Number == 64);
-                    //var sp = db.Speeches.Where(s => s.ProtocolNumber == 64 && s.LegislaturePeriod == 20);
-                    //foreach(var s in sp)
-                    //{
-                    //    db.Token.RemoveRange(db.Token.Where(t => t.NLPSpeechId == s.Id).ToList());
-                    //    db.Sentiment.RemoveRange(db.Sentiment.Where(t => t.NLPSpeechId == s.Id).ToList());
-                    //    db.NamedEntity.RemoveRange(db.NamedEntity.Where(t => t.NLPSpeechId == s.Id).ToList());
-
-                    //    var seggis = db.SpeechSegment.Where(ss => ss.SpeechId == s.Id).ToList();
-                    //    foreach(var ss in seggis)
-                    //    {
-                    //        db.Shouts.RemoveRange(db.Shouts.Where(sh => sh.SpeechSegmentId == ss.Id).ToList());
-                    //    }
-                    //    db.SpeechSegment.RemoveRange(seggis);
-                    //}
-                    //db.Speeches.RemoveRange(sp);
-                    //db.Protocols.Remove(dp);
-                    //db.SaveChanges();
-                    // TESTING
-
-                    // Check if there are any new entities
-                    if (!db.ImportedEntities.Any())
+                    using (var tokenDb = new BundestagMineTokenDbContext(ConfigManager.GetTokenDbOptions()))
                     {
-                        Log.Information("No new entities found to import. Aborting.");
-                        return 0;
-                    }
 
-                    var totalNewProtocols = db.ImportedEntities.Where(e => e.Type == ModelType.Protocol).Count();
-                    Log.Information($"Found {totalNewProtocols} new protocols.");
-                    Log.Information($"Found {db.ImportedEntities.Where(e => e.Type == ModelType.NLPSpeech).Count()} new speeches.");
-                    Log.Information($"Found {db.ImportedEntities.Where(e => e.Type == ModelType.Deputy).Count()} new Deputies.");
+                        // TESTING FOR REMOVING A PROTOCOL
+                        //var dp = db.Protocols.FirstOrDefault(p => p.LegislaturePeriod == 20 & p.Number == 64);
+                        //var sp = db.Speeches.Where(s => s.ProtocolNumber == 64 && s.LegislaturePeriod == 20);
+                        //foreach (var s in sp)
+                        //{
+                        //    tokenDb.Token.RemoveRange(tokenDb.Token.Where(t => t.NLPSpeechId == s.Id).ToList());
+                        //    db.Sentiment.RemoveRange(db.Sentiment.Where(t => t.NLPSpeechId == s.Id).ToList());
+                        //    db.NamedEntity.RemoveRange(db.NamedEntity.Where(t => t.NLPSpeechId == s.Id).ToList());
 
-                    // Else import each new protocol at a time.
-                    // We order by descending, because the JAVA service puts the NEWEST protocols in first, but we want to
-                    // parse the old ones first for right order.
-                    var counter = 1;
-                    foreach (var importedProtocol in db.ImportedEntities.Where(e => e.Type == ModelType.Protocol)
-                        .OrderByDescending(p => p.ImportedDate)
-                        .ToList())
-                    {
-                        Log.Information($"Parsing protocol {counter}/{totalNewProtocols}");
+                        //    var seggis = db.SpeechSegment.Where(ss => ss.SpeechId == s.Id).ToList();
+                        //    foreach (var ss in seggis)
+                        //    {
+                        //        db.Shouts.RemoveRange(db.Shouts.Where(sh => sh.SpeechSegmentId == ss.Id).ToList());
+                        //    }
+                        //    db.SpeechSegment.RemoveRange(seggis);
+                        //}
+                        //db.Speeches.RemoveRange(sp);
+                        //db.Protocols.Remove(dp);
+                        //db.SaveChanges();
+                        //tokenDb.SaveChanges();
+                        // TESTING
 
-                        // we need to check whether this protocol is already in the database by some accident.
-                        var protocol = ParseImportedEntityToProtocol(importedProtocol);
-                        // The Speeches of this protocol
-                        var importedSpeeches = db.ImportedEntities
-                            .Where(e => e.Type == ModelType.NLPSpeech && e.ProtocolId == importedProtocol.Id)
-                            .ToList();
-
-                        if (db.Protocols.Any(p => p.LegislaturePeriod == protocol.LegislaturePeriod && p.Number == protocol.Number))
+                        // Check if there are any new entities
+                        if (!db.ImportedEntities.Any())
                         {
-                            Log.Information($"Protocol {protocol.Title} is in the database already. Skipping it.");
-                            counter++;
-                            if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.Remove(importedProtocol);
-                            if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.RemoveRange(importedSpeeches);
-                            continue;
+                            Log.Information("No new entities found to import. Aborting.");
+                            return 0;
                         }
 
-                        db.Protocols.Add(protocol);
-                        if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.Remove(importedProtocol);
+                        var totalNewProtocols = db.ImportedEntities.Where(e => e.Type == ModelType.Protocol).Count();
+                        Log.Information($"Found {totalNewProtocols} new protocols.");
+                        Log.Information($"Found {db.ImportedEntities.Where(e => e.Type == ModelType.NLPSpeech).Count()} new speeches.");
+                        Log.Information($"Found {db.ImportedEntities.Where(e => e.Type == ModelType.Deputy).Count()} new Deputies.");
 
-                        // Now parse each nlp speech
-                        var speeches = new List<NLPSpeech>();
-                        var counter2 = 1;
-                        foreach (var importedSpeech in importedSpeeches)
+                        // Else import each new protocol at a time.
+                        // We order by descending, because the JAVA service puts the NEWEST protocols in first, but we want to
+                        // parse the old ones first for right order.
+                        var counter = 1;
+                        foreach (var importedProtocol in db.ImportedEntities.Where(e => e.Type == ModelType.Protocol)
+                            .OrderByDescending(p => p.ImportedDate)
+                            .ToList())
                         {
-                            Log.Information($"Parsing speech {counter2}/{importedSpeeches.Count}");
-                            var speech = ParseImportedEntityToNLPSpeech(importedSpeech);
+                            Log.Information($"Parsing protocol {counter}/{totalNewProtocols}");
 
-                            // This shouldn't happen, since we only import as whole protocols, but check if we imported this exact speech once before.
-                            var alreadyStoredSpeech = db.NLPSpeeches.FirstOrDefault(s => s.ProtocolNumber == speech.ProtocolNumber
-                                && s.AgendaItemNumber == speech.AgendaItemNumber && s.Text == speech.Text && s.SpeakerId == speech.SpeakerId);
-                            if (alreadyStoredSpeech != null)
+                            // we need to check whether this protocol is already in the database by some accident.
+                            var protocol = ParseImportedEntityToProtocol(importedProtocol);
+                            // The Speeches of this protocol
+                            var importedSpeeches = db.ImportedEntities
+                                .Where(e => e.Type == ModelType.NLPSpeech && e.ProtocolId == importedProtocol.Id)
+                                .ToList();
+
+                            if (db.Protocols.Any(p => p.LegislaturePeriod == protocol.LegislaturePeriod && p.Number == protocol.Number))
                             {
-                                Log.Warning("Found a speech to a protocol which is already in the database - this should not happen!\n" +
-                                    $"Speech Id: {alreadyStoredSpeech.Id}");
-                                counter2++;
-                                if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.Remove(importedSpeech);
+                                Log.Information($"Protocol {protocol.Title} is in the database already. Skipping it.");
+                                counter++;
+                                if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.Remove(importedProtocol);
+                                if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.RemoveRange(importedSpeeches);
                                 continue;
                             }
 
-                            db.NLPSpeeches.Add(speech);
-                            if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.Remove(importedSpeech);
-                            counter2++;
-                        }
+                            db.Protocols.Add(protocol);
+                            if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.Remove(importedProtocol);
 
-                        Log.Information($"Saving the protocol and its speeches...");
-                        await db.SaveChangesAsync();
-                        CacheService.NewProtocolsStored++;
-                        Log.Information($"Saved!");
-                        counter++;
-                    }
+                            // Now parse each nlp speech
+                            var speeches = new List<NLPSpeech>();
+                            var counter2 = 1;
+                            foreach (var importedSpeech in importedSpeeches)
+                            {
+                                Log.Information($"Parsing speech {counter2}/{importedSpeeches.Count}");
+                                var speech = ParseImportedEntityToNLPSpeech(importedSpeech, out var tokens);
 
-                    // After the protocols, import potential new deputies
-                    counter = 1;
-                    var importedDeputies = db.ImportedEntities.Where(e => e.Type == ModelType.Deputy).ToList();
-                    foreach (var importedDeputy in importedDeputies)
-                    {
-                        Log.Information($"Parsing deputy {counter}/{importedDeputies.Count}");
-                        var deputy = ParseImportedEntityToDeputy(importedDeputy);
+                                // This shouldn't happen, since we only import as whole protocols, but check if we imported this exact speech once before.
+                                var alreadyStoredSpeech = db.NLPSpeeches.FirstOrDefault(s => s.ProtocolNumber == speech.ProtocolNumber
+                                    && s.AgendaItemNumber == speech.AgendaItemNumber && s.Text == speech.Text && s.SpeakerId == speech.SpeakerId);
+                                if (alreadyStoredSpeech != null)
+                                {
+                                    Log.Warning("Found a speech to a protocol which is already in the database - this should not happen!\n" +
+                                        $"Speech Id: {alreadyStoredSpeech.Id}");
+                                    counter2++;
+                                    if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.Remove(importedSpeech);
+                                    continue;
+                                }
 
-                        if (db.Deputies.Any(d => d.SpeakerId == deputy.SpeakerId))
-                        {
-                            Log.Information($"Deputy {deputy.FirstName + " " + deputy.LastName} is in the database already. Skipping it.");
-                            if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.Remove(importedDeputy);
+                                db.NLPSpeeches.Add(speech);
+                                tokenDb.Token.AddRange(tokens);
+                                if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.Remove(importedSpeech);
+                                counter2++;
+                            }
+
+                            Log.Information($"Saving the protocol and its speeches...");
+                            await db.SaveChangesAsync();
+                            await tokenDb.SaveChangesAsync();
+                            CacheService.NewProtocolsStored++;
+                            Log.Information($"Saved!");
                             counter++;
-                            continue;
                         }
 
-                        db.Deputies.Add(deputy);
-                        if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.Remove(importedDeputy);
+                        // After the protocols, import potential new deputies
+                        counter = 1;
+                        var importedDeputies = db.ImportedEntities.Where(e => e.Type == ModelType.Deputy).ToList();
+                        foreach (var importedDeputy in importedDeputies)
+                        {
+                            Log.Information($"Parsing deputy {counter}/{importedDeputies.Count}");
+                            var deputy = ParseImportedEntityToDeputy(importedDeputy);
 
-                        counter++;
+                            if (db.Deputies.Any(d => d.SpeakerId == deputy.SpeakerId))
+                            {
+                                Log.Information($"Deputy {deputy.FirstName + " " + deputy.LastName} is in the database already. Skipping it.");
+                                if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.Remove(importedDeputy);
+                                counter++;
+                                continue;
+                            }
+
+                            db.Deputies.Add(deputy);
+                            if (ConfigManager.GetDeleteImportedEntity()) db.ImportedEntities.Remove(importedDeputy);
+
+                            counter++;
+                        }
+
+                        await db.SaveChangesAsync();
                     }
-
-                    await db.SaveChangesAsync();
                 }
 
                 return 1;
@@ -193,8 +200,10 @@ namespace BundestagMine.Synchronisation
         /// </summary>
         /// <param name="importedEntity"></param>
         /// <returns></returns>
-        private NLPSpeech ParseImportedEntityToNLPSpeech(ImportedEntity importedEntity)
+        private NLPSpeech ParseImportedEntityToNLPSpeech(ImportedEntity importedEntity, out List<Token> tokens)
         {
+            // Since we setup the new tokendb, we cannot store the token with the speech!
+            tokens = new List<Token>();
             if (importedEntity.Type != ModelType.NLPSpeech) return null;
 
             var mongoSpeech = BsonDocument.Parse(importedEntity.ModelJson);
@@ -202,6 +211,7 @@ namespace BundestagMine.Synchronisation
             speech.MongoId = Guid.Empty.ToString();
             speech.NamedEntities = new List<NamedEntity>();
             speech.Tokens = new List<Token>();
+            speech.Id = Guid.NewGuid();
             speech.Sentiments = new List<Sentiment>();
 
             // Let the parsing begin
@@ -289,7 +299,8 @@ namespace BundestagMine.Synchronisation
 
                                         // Store the shout id to the named entity
                                         token.ShoutId = curShout.Id;
-                                        speech.Tokens.Add(token);
+                                        token.NLPSpeechId = speech.Id;
+                                        tokens.Add(token);
                                     }
                                 }
                                 // Sentiments
@@ -298,7 +309,7 @@ namespace BundestagMine.Synchronisation
                                     // Sentiments are different for shouts and a bit bugged. There should only be once sentiment
                                     // for the whole shout - so its not based on sentences. Just take the first object of the array
                                     // in the array (Dumb) and that should be it...
-                                    if(shoutSentiments.AsBsonArray.Count > 0)
+                                    if (shoutSentiments.AsBsonArray.Count > 0)
                                     {
                                         var shoutSentiment = shoutSentiments[0]?.AsBsonArray[0]?.AsBsonDocument;
                                         var sentiment = MongoDocumentsParserService.MongoSentimentToSentiment(shoutSentiment);
@@ -337,7 +348,9 @@ namespace BundestagMine.Synchronisation
             #region Tokens
             foreach (var mongoToken in mongoResult.GetValue("tokens").AsBsonArray)
             {
-                speech.Tokens.Add(MongoDocumentsParserService.MongoTokenToToken(mongoToken.AsBsonDocument));
+                var newToken = MongoDocumentsParserService.MongoTokenToToken(mongoToken.AsBsonDocument);
+                newToken.NLPSpeechId = speech.Id;
+                tokens.Add(newToken);
             }
             #endregion
 

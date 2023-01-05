@@ -35,6 +35,7 @@ namespace BundestagMine.Controllers
         private readonly ViewRenderService _viewRenderService;
         private readonly AnnotationService _annotationService;
         private readonly BundestagMineDbContext _db;
+        private readonly BundestagMineTokenDbContext _tdb;
 
         public DashboardController(BundestagMineDbContext db, AnnotationService tokenService,
             ViewRenderService viewRenderService,
@@ -43,7 +44,8 @@ namespace BundestagMine.Controllers
             BundestagScraperService bundestagScraperService,
             TopicAnalysisService topicAnalysisService,
             ILogger<DashboardController> logger,
-            GlobalSearchService globalSearchService)
+            GlobalSearchService globalSearchService,
+            BundestagMineTokenDbContext tdb)
         {
             _globalSearchService = globalSearchService;
             _logger = logger;
@@ -54,6 +56,7 @@ namespace BundestagMine.Controllers
             _viewRenderService = viewRenderService;
             _annotationService = tokenService;
             _db = db;
+            _tdb = tdb;
         }
 
         [HttpGet("/api/DashboardController/GetProtocols")]
@@ -326,7 +329,7 @@ namespace BundestagMine.Controllers
                 response.status = "200";
 
                 var speech = await _db.NLPSpeeches.FindAsync(id);
-                speech.Tokens = _db.Token.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
+                speech.Tokens = _tdb.Token.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
                 speech.NamedEntities = _db.NamedEntity.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
                 speech.Sentiments = _db.Sentiment.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
                 speech.Segments = _db.SpeechSegment.Include(s => s.Shouts).Where(s => s.SpeechId == speech.Id).ToList();
@@ -450,6 +453,8 @@ namespace BundestagMine.Controllers
                 var party = splited[4];
                 var speakerId = splited[5];
 
+                // This is currently not working since we had to source out all the tokens into a different
+                // database!
                 response.result = _annotationService.GetTokensForGraphs(limit, from, to, fraction, party, speakerId);
                 response.status = "200";
             }
@@ -478,6 +483,8 @@ namespace BundestagMine.Controllers
                 var party = splited[4];
                 var speakerId = splited[5];
 
+                // This is currently not working since we had to source out all the tokens into a different
+                // database!
                 response.result = _annotationService.GetPOSForGraphs(limit, from, to, fraction, party, speakerId);
                 response.status = "200";
             }
@@ -642,7 +649,7 @@ namespace BundestagMine.Controllers
                 response.result.protocols = _db.Protocols.Count();
                 response.result.speeches = _db.Speeches.Count();
                 response.result.deputies = _db.Deputies.Count();
-                response.result.tokens = _db.Token.Count();
+                response.result.tokens = _tdb.Token.Count();
                 response.status = "200";
             }
             catch (Exception ex)

@@ -12,7 +12,13 @@
         font-family: 'Times New Roman', Times, serif !important;
     }
 
+    .paper-layout h4 {
+        text-align: center;
+        color: black;
+    }
+
     .paper-layout .paper-header {
+        position: relative;
     }
 
         .paper-layout .paper-header h1 {
@@ -26,9 +32,15 @@ If 4vw is greater than 70px, the font-size will be 70px.
 Otherwise, it will be 4vw.*/
         }
 
-        .paper-layout .paper-header h4 {
-            text-align: center;
-            color: black;
+
+        .paper-layout .paper-header .logo {
+            width: 10vw;
+            min-width: 100px;
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%, 0%);
+            z-index: 0;
+            opacity: 0.05;
         }
 
         .paper-layout .paper-header .meta {
@@ -78,7 +90,7 @@ Otherwise, it will be 4vw.*/
 
             .paper-layout .paper-content .mid .thumbnail {
                 width: 100%;
-                box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+                /*box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;*/
             }
 
             .paper-layout .paper-content .mid .subtitle {
@@ -92,26 +104,31 @@ Otherwise, it will be 4vw.*/
             padding-right: 0px !important;
         }
 
-            .paper-layout .paper-content .right .agenda h4 {
-                text-align: center;
-                color: black;
-            }
-
             .paper-layout .paper-content .right .agenda .list {
                 text-align: left;
                 line-height: 20px;
                 font-size: 16px;
             }
 
+            .paper-layout .paper-content .right .polls .poll {
+                width:100%;
+                margin-top:20px;
+            }
+
+                .paper-layout .paper-content .right .polls .poll h6 {
+                    text-align:center;
+                    text-decoration:underline;
+                }
+
+                .paper-layout .paper-content .right .polls .poll h6:hover{
+                    cursor:pointer;
+                    color:black;
+                }
+
         .paper-layout .paper-content .left {
             padding-right: 6px;
             padding-left: 0px !important;
         }
-
-            .paper-layout .paper-content .left .most-commented-speech h4 {
-                color: black;
-                text-align: center;
-            }
 
             .paper-layout .paper-content .left .most-commented-speech img {
                 width: 100%;
