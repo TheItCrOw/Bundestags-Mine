@@ -32,7 +32,6 @@ If 4vw is greater than 70px, the font-size will be 70px.
 Otherwise, it will be 4vw.*/
         }
 
-
         .paper-layout .paper-header .logo {
             width: 10vw;
             min-width: 100px;
@@ -65,13 +64,13 @@ Otherwise, it will be 4vw.*/
             }
 
     .paper-layout .paper-content {
-        text-align: justify;
         margin-top: 16px;
-        line-height: 18px;
     }
 
         .paper-layout .paper-content p {
             font-size: 14px;
+            line-height: 16px;
+            text-align: justify;
             word-break: break-word;
         }
 
@@ -100,7 +99,7 @@ Otherwise, it will be 4vw.*/
             }
 
         .paper-layout .paper-content .right {
-            padding-left: 6px;
+            padding-left: 12px;
             padding-right: 0px !important;
         }
 
@@ -126,7 +125,7 @@ Otherwise, it will be 4vw.*/
                 }
 
         .paper-layout .paper-content .left {
-            padding-right: 6px;
+            padding-right: 12px;
             padding-left: 0px !important;
         }
 

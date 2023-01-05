@@ -15,7 +15,7 @@
 
 .protocol-tree {
     overflow-y: auto;
-    max-height: calc(92vh - 50px);
+    max-height: 92vh;
     width: 30vw;
     min-width: 200px;
 }

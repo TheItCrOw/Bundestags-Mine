@@ -130,6 +130,11 @@ body {
     position: fixed;
 }
 
+.img-shadow {
+    -webkit-filter: drop-shadow(1px 1px 0 gray) drop-shadow(-1px -1px 0 gray);
+    filter: drop-shadow(1px 1px 0 gray) drop-shadow(-1px -1px 0 gray);
+}
+
 .margin-top-navbar {
     height: 20px !important;
 }

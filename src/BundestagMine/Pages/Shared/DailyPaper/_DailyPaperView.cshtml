@@ -26,7 +26,7 @@
                             <b class="top">Fluggastrechte</b> gehalten und dafür die meisten Kommentare erhalten. Insgesamt
                             <b class="count">8</b> mal wurde reingerufen mit einem Sentiment von
                             <b class="sentiment">-0,58</b>.
-                            <b class="name">Olaf Scholz</b> hat dabei häufig <b class="sentiment-type">negativ</b> im Kontext mit
+                            <b class="name">Olaf Scholz</b> hat dabei häufig <b class="sentiment-type">negativ</b> im Kontext von
                             <b class="ne">Deutschland</b> gesprochen:<br />
                         </p>
                         <p>
@@ -50,6 +50,21 @@
                         <button class="btn btn-dark rounded-0 w-100">Ganze Rede lesen</button>
                     </div>
                     <hr class="bg-lightgray" />
+                    @*commercial bundestags mine*@
+                    <div class="donate">
+                        <h4>[Werbung]</h4>
+                        <p class="mb-0">
+                            Die Bundestags-Mine wird aus eigener Tasche finanziert und ehrenamtlich entwickelt. Es ist ein
+                            Projekt eines Studenten. Über Support
+                            jeglicher Art freuen wir uns sehr - sei es via Spenden oder Feedback. Mehr dazu im Support-Tab
+                            oder direkt hier über den Paypal-Button.
+                        </p>
+                        <img class="w-100 mt-1 mb-1" src="/img/logo/Logo mit Schriftzug_schwarz_transparent_RGB_1024x473.png"/>
+                        <a class="btn btn-warning rounded-0 w-100 mt-1 text-black" target="_blank" href="https://www.paypal.com/donate/?hosted_button_id=3HC4L477XZRXU">
+                            Spenden
+                        </a>
+                    </div>
+                    <hr class="bg-lightgray" />
                     @*most positive speech*@
                     <div class="most-commented-speech">
                         <h4>Positivste Rede</h4>
@@ -66,6 +81,8 @@
                     </div>
                     <hr class="bg-lightgray" />
                 </div>
+
+
                 @*mid*@
                 <div class="col-lg-8 m-0 mid">
                     <img src="/img/bundestag-sitze.jpg" class="thumbnail" />
@@ -88,15 +105,38 @@
                     <div>
                         <h3 class="subtitle">Die Stimmung war <b>negativ</b></h3>
                         <p>
-                            Die Named-Entity-Analyse hat ergeben, dass vorallem <b>Deutschland</b>, <b>Russland</b> und
-                            <b>Ukraine</b> in den Reden der Abgeordneten präsent war. Wenig frequentiert waren hingegen
-                            <b>EU</b> und <b>Sozial</b>.
+                            Der durchschnittliche Sentiment lag bei <b>-0,34</b>, wobei vorallem im Kontext von <b>Russland</b>
+                            und <b>Deutschland</b> negativ gesprochen wurde. Vorallem <b>Lena Mann</b> hat mit einem durchschnittlichen
+                            Sentiment von <b>-0,84</b> dazu beigetragen.
                         </p>
-                        @*chart for ne distribution*@
-                        <img class="w-100" src="~/img/chart-beispiel.png" />
+                        @*chart for sentiment distribution*@
+                        <div class="row m-0 p-0">
+                            <div class="col-md-4 m-0 p-1">
+                                <img class="w-100" src="~/img/chart-beispiel-4.png" />
+                            </div>
+                            <div class="col-md-4 m-0 p-1">
+                                <img class="w-100" src="~/img/chart-beispiel-4.png" />
+                            </div>
+                            <div class="col-md-4 m-0 p-1">
+                                <img class="w-100" src="~/img/chart-beispiel-4.png" />
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="bg-lightgray" />
+                    @*Comments network*@
+                    <div>
+                        <h3 class="subtitle">Es wurde kommentiert</h3>
+                        <p>
+                            Auch dieses mal gab es wieder Feedback von den Zuhörenden in Form von Kommentaren und Rufen. Das
+                            Kommentar-Netzwerk visualisiert diese.
+                        </p>
+                        @*chart for comment distribution*@
+                        <img class="w-100" src="~/img/chart-beispiel-5.png" />
                         <label class="source mb-0">NE-Verteilung, sortiert nach Häufigkeit</label>
                     </div>
                 </div>
+
+
                 @*right*@
                 <div class="col-lg-2 m-0 right">
                     @*agenda items listed*@
@@ -122,6 +162,15 @@
                         <img class="w-100" src="/img/chart-beispiel-2.png" />
                     </div>
                     <hr class="bg-lightgray" />
+                    @*commercial artlas*@
+                    <div>
+                        <h4>[Werbung]</h4>
+                        <p class="mb-0">Logo und Erklärvideo der Bundestags-Mine angefertigt von <b>ARTLAS DESIGNS</b></p>
+                        <a href="https://www.artlas.design" target="_blank">
+                            <img class="w-100 clickable" src="/img/ARTLAS/artlas-logo.png" />
+                        </a>
+                    </div>
+                    <hr class="bg-lightgray" />
                     @*polls listed*@
                     <div class="polls">
                         <h4>Abstimmungen</h4>
@@ -143,8 +192,51 @@
                     @*Numbers and facts*@
                     <div class="numbers">
                         <h4>Zahlen und Fakten</h4>
-                        <p>Die Sitzung war mit 120 Reden eine vergleichsweise kurze.</p>
+                        <p>
+                            Die Sitzung war mit <b>120</b> Reden eine vergleichsweise kurze.<br />
+                            Die längste Rede hielt <b>Annalena Bearbock</b> von der "Bündnis Grünen" mit <b>160</b> Satzzeichen zum Tagesordungspunkt <b>Digitale Macht</b>.<br />
+                            Am Meisten kommentiert wurde von Stephan Brandner von der AfD mit insgesamt <b>8</b> Kommentaren.<br />
+                            Den meisten Beifall bekam die Rede von <b>Olaf Scholz</b> zum Thema <b>Gendern</b>.<br />
+                            Die meisten Reden hielt <b>Max Mustermann</b> mit insgesamt <b>3</b> Reden in <b>2</b> verschiedenen Tagesordnungspunkten.<br />
+                        </p>
                     </div>
+                    <hr class="bg-lightgray" />
+                    @*commercial ttl*@
+                    <div>
+                        <h4>[Werbung]</h4>
+                        <p>Alle NLP-Analysen stammen vom Text Technology Lab</p>
+                        <a href="https://www.texttechnologylab.org/" target="_blank">
+                            <img class="w-100 img-shadow clickable" src="/img/ttl-logo-white.png" />
+                        </a>
+                    </div>
+                    <hr class="bg-lightgray" />
+                    @*all speakers*@
+                    <div>
+                        <h4>Alle Redner(innen)</h4>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                    </div>
+                    <hr class="bg-lightgray" />
                 </div>
             </div>
         </div>
