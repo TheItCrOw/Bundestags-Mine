@@ -9,7 +9,6 @@ namespace BundestagMine.Utility
 {
     public class DateHelper
     {
-
         /// <summary>
         /// Convert '6. April 2022' to regular date
         /// </summary>
@@ -18,6 +17,16 @@ namespace BundestagMine.Utility
         {
             var correctDate = DateTime.Parse(date).ToString("yyyy/MM/dd").Replace(".", "-");
             return correctDate;
+        }
+
+        /// <summary>
+        /// Parses the given date into the german full day date
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static string DateToGermanDate(DateTime date)
+        {
+            return String.Format("{0:d/M/yyyy}", date);
         }
 
         public static string RemoveWhitespaces(string str)

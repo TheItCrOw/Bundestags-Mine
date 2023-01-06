@@ -13,5 +13,10 @@ namespace BundestagMine.ViewModels
         public int TopicMentionCount { get; set; }
         public AgendaItem Agenda { get; set; }
         public List<string> Topics { get; set; }
+
+        /// <summary>
+        /// The amount of comments this speech received without the [BEIFALL] comments.
+        /// </summary>
+        public int ActualCommentsAmount { get; set; }
     }
 }

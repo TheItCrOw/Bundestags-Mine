@@ -1,18 +1,23 @@
-﻿<div class="min-vh-100 p-5">
+﻿@using BundestagMine.ViewModels.DailyPaper
+@using BundestagMine.Utility
+@model DailyPaperViewModel
+
+<div class="min-vh-100 p-5">
     <div class="container-fluid h-100 paper-layout">
         @*header*@
         <div class="paper-header">
             <img class="logo" src="/img/logo/Logo_schwarz_transparent_RGB_534x512.png" />
             <h1>Neues vom Schürfer</h1>
-            <h4>Die aktuellen Ergebnisse der <span class="meeting">64</span>. Sitzung direkt aus der Bundestags-Mine</h4>
+            <h4>Die aktuellen Ergebnisse der <span class="meeting">@Model.Protocol.Number</span>. Sitzung direkt aus der Bundestags-Mine</h4>
             <div class="meta">
                 <p>www.bundestag-mine.de</p>
-                <p class="date">04.01.2023</p>
-                <p>info@bundestag-mine.de</p>
+                <p class="date">@DateHelper.DateToGermanDate(Model.Protocol.Date)</p>
+                <p>@(Model.Protocol.LegislaturePeriod). Legislaturperiode</p>
             </div>
         </div>
         @*content*@
         <div class="paper-content">
+
             @*the paper is divided into 3 main columns*@
             <div class="row m-0 p-0">
                 @*left*@
@@ -21,12 +26,14 @@
                     <div class="most-commented-speech">
                         <h4>Kontroverse Rede</h4>
                         <img src="/img/portrait-beispiel-2.jpg" />
+                        @*TODO: DO THIS BETTER*@
                         <p class="mt-2">
-                            <b class="name">Olaf Scholz</b> von der <b class="fraction">SPD</b> hat eine Rede zum Tagesordnungspunkt
-                            <b class="top">Fluggastrechte</b> gehalten und dafür die meisten Kommentare erhalten. Insgesamt
-                            <b class="count">8</b> mal wurde reingerufen mit einem Sentiment von
+                            <b>@(Model.MostCommentedSpeechViewModel.Speaker.FirstName) @(Model.MostCommentedSpeechViewModel.Speaker.LastName)</b> 
+                            von der <b>@(Model.MostCommentedSpeechViewModel.Speaker.Fraction)</b> hat eine Rede zum Tagesordnungspunkt
+                            <b>@Model.MostCommentedSpeechViewModel.Agenda.Title</b> gehalten und dafür die meisten Kommentare erhalten. Insgesamt
+                            <b>@Model.MostCommentedSpeechViewModel.ActualCommentsAmount</b> mal wurde reingerufen mit einem Sentiment von
                             <b class="sentiment">-0,58</b>.
-                            <b class="name">Olaf Scholz</b> hat dabei häufig <b class="sentiment-type">negativ</b> im Kontext von
+                            <b>@(Model.MostCommentedSpeechViewModel.Speaker.FirstName) @(Model.MostCommentedSpeechViewModel.Speaker.LastName)</b> hat dabei häufig <b class="sentiment-type">negativ</b> im Kontext von
                             <b class="ne">Deutschland</b> gesprochen:<br />
                         </p>
                         <p>
@@ -59,7 +66,7 @@
                             jeglicher Art freuen wir uns sehr - sei es via Spenden oder Feedback. Mehr dazu im Support-Tab
                             oder direkt hier über den Paypal-Button.
                         </p>
-                        <img class="w-100 mt-1 mb-1" src="/img/logo/Logo mit Schriftzug_schwarz_transparent_RGB_1024x473.png"/>
+                        <img class="w-100 mt-1 mb-1" src="/img/logo/Logo mit Schriftzug_schwarz_transparent_RGB_1024x473.png" />
                         <a class="btn btn-warning rounded-0 w-100 mt-1 text-black" target="_blank" href="https://www.paypal.com/donate/?hosted_button_id=3HC4L477XZRXU">
                             Spenden
                         </a>
@@ -90,7 +97,7 @@
                     <hr class="mt-0 mb-3 bg-lightgray" />
                     @*named entityt*@
                     <div>
-                        <h3 class="subtitle">Thema des Tages: <b>Russland</b></h3>
+                        <h3 class="subtitle">Thema des Tages: <b>@Model.NamedEntityOfTheDay</b></h3>
                         <p>
                             Die Named-Entity-Analyse hat ergeben, dass vorallem <b>Deutschland</b>, <b>Russland</b> und
                             <b>Ukraine</b> in den Reden der Abgeordneten präsent war. Wenig frequentiert waren hingegen
@@ -144,14 +151,13 @@
                         <h4>Die Agenda</h4>
                         <p>Folgende Tagesordnungspunkte standen an:</p>
                         <p class="list">
-                            1. Wohngeld-Plus-Gesetz<br />
-                            2. Änderung des Atomgesetzes<br />
-                            3. Befragung der Bundesregierung<br />
-                            4. Fragestunde<br />
-                            5. Ünterstützung der Protestbewegung im Iran<br />
-                            6. Einspruch gegen eine Ordnungsmaßnahme<br />
-                            7. Digitale Verwaltung<br />
-                            8. Mittelstandspolitik<br />
+                            @for (var i = 0; i < Model.AgendaItems.Count; i++)
+                            {
+                                <span class="read-more-agenda" data-text="@Model.AgendaItems[i].Description">
+                                    @(i + 1). @(Model.AgendaItems[i].Title)
+                                </span>
+                                <br />
+                            }
                         </p>
                         <p>
                             Der beliebteste Tagesordnungspunkt mit den meisten Reden war dabei
