@@ -1,4 +1,5 @@
-﻿using BundestagMine.SqlDatabase;
+﻿using BundestagMine.Models.Database.MongoDB;
+using BundestagMine.SqlDatabase;
 using BundestagMine.ViewModels;
 using BundestagMine.ViewModels.DailyPaper;
 using Microsoft.EntityFrameworkCore;
@@ -54,17 +55,12 @@ namespace BundestagMine.Services
                     .First()
                     .Key;
 
-                // Determine the speech with the most actual comments in it
                 var speech =
                     _db.Speeches
                     .Where(s => s.ProtocolNumber == dailyPaperViewModel.Protocol.Number
                         && s.LegislaturePeriod == dailyPaperViewModel.Protocol.LegislaturePeriod)
                     .AsEnumerable()
-                    .OrderByDescending(s => 
-                        _db.SpeechSegment.Where(ss => ss.SpeechId == s.Id)
-                        .Include(sh => sh.Shouts)
-                        .AsEnumerable()
-                        .Sum(ss => ss.Shouts.Where(sh => !sh.Text.ToLower().Contains("beifall")).Count()))
+                    .OrderByDescending(s => _metadataService.GetActualCommentsAmountOfSpeech(s))
                     .First();
                 // Now build the viewmodel from it. This could be done in above statment and just wastes time
                 // but since we precalculate the paper anyways, it doesnt matter.
@@ -73,14 +69,8 @@ namespace BundestagMine.Services
                     Speech = speech,
                     Speaker = _db.Deputies.FirstOrDefault(d => d.SpeakerId == speech.SpeakerId),
                     Agenda = _metadataService.GetAgendaItemOfSpeech(speech),
-                    ActualCommentsAmount = _db.SpeechSegment
-                        .Where(ss => ss.SpeechId == speech.Id)
-                        .Include(ss => ss.Shouts)
-                        .AsEnumerable()
-                        .Sum(ss => ss.Shouts.Where(sh => !sh.Text.ToLower().Contains("beifall")).Count())
+                    ActualCommentsAmount = _metadataService.GetActualCommentsAmountOfSpeech(speech)
                 };
-
-
 
                 return dailyPaperViewModel;
             }

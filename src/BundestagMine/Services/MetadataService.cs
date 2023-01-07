@@ -2,6 +2,7 @@
 using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.SqlDatabase;
 using BundestagMine.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -33,6 +34,28 @@ namespace BundestagMine.Services
             }
             return fractions;
         }
+
+        /// <summary>
+        /// Determines the amount of actual comments a speech received
+        /// </summary>
+        /// <param name="speech"></param>
+        /// <returns></returns>
+        public int GetActualCommentsAmountOfSpeech(Speech speech) => _db.SpeechSegment
+                .Where(ss => ss.SpeechId == speech.Id)
+                .Include(ss => ss.Shouts)
+                .AsEnumerable()
+                .Sum(ss => ss.Shouts.Where(sh => !sh.Text.ToLower().Contains("beifall")).Count());
+
+        /// <summary>
+        /// Gets all actual comments of a speech
+        /// </summary>
+        /// <param name="speech"></param>
+        /// <returns></returns>
+        public List<Shout> GetActualCommentsOfSpeech(Speech speech) => _db.SpeechSegment
+                .Where(ss => ss.SpeechId == speech.Id)
+                .Include(ss => ss.Shouts)
+                .SelectMany(ss => ss.Shouts.Where(sh => !sh.Text.ToLower().Contains("beifall")))
+                .ToList();
 
         public AgendaItem GetAgendaItemOfSpeech(Speech speech) => _db.AgendaItems.FirstOrDefault(a =>
                         a.ProtocolId == _db.Protocols.SingleOrDefault(p =>
