@@ -1,13 +1,13 @@
 ﻿using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.SqlDatabase;
-using BundestagMine.ViewModels;
-using BundestagMine.ViewModels.DailyPaper;
+using BundestagMine.Logic.ViewModels;
+using BundestagMine.Logic.ViewModels.DailyPaper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 
-namespace BundestagMine.Services
+namespace BundestagMine.Logic.Services
 {
     public class DailyPaperService
     {
@@ -37,6 +37,8 @@ namespace BundestagMine.Services
                 // Get the protocol
                 dailyPaperViewModel.Protocol = _db.Protocols
                     .FirstOrDefault(p => p.LegislaturePeriod == legislaturePeriod && p.Number == meetingNumber);
+
+                if (dailyPaperViewModel.Protocol == default) return null;
 
                 // Get the agenda items
                 dailyPaperViewModel.AgendaItems = _db.AgendaItems

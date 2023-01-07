@@ -2,13 +2,13 @@
 using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.SqlDatabase;
 using BundestagMine.Utility;
-using BundestagMine.ViewModels;
+using BundestagMine.Logic.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BundestagMine.Services
+namespace BundestagMine.Logic.Services
 {
     public class TopicAnalysisService
     {

@@ -1,15 +1,14 @@
 ﻿using BundestagMine.Models.Database;
 using BundestagMine.Models.Database.MongoDB;
-using BundestagMine.RequestModels;
 using BundestagMine.SqlDatabase;
-using BundestagMine.ViewModels;
-using BundestagMine.ViewModels.GlobalSearch;
+using BundestagMine.Logic.ViewModels;
+using BundestagMine.Logic.ViewModels.GlobalSearch;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BundestagMine.Services
+namespace BundestagMine.Logic.Services
 {
     public class GlobalSearchService
     {

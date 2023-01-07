@@ -1,7 +1,7 @@
 ﻿using BundestagMine.Models.Database.MongoDB;
 using System.Collections.Generic;
 
-namespace BundestagMine.ViewModels.DailyPaper
+namespace BundestagMine.Logic.ViewModels.DailyPaper
 {
     public class DailyPaperViewModel
     {

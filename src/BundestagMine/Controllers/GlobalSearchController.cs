@@ -1,7 +1,7 @@
-﻿using BundestagMine.RequestModels;
+﻿using BundestagMine.Logic.Services;
+using BundestagMine.RequestModels;
 using BundestagMine.Services;
 using BundestagMine.SqlDatabase;
-using BundestagMine.ViewModels.GlobalSearch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;

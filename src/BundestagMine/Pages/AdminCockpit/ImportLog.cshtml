@@ -15,15 +15,15 @@
             <h1 class="m-0">@Model.ImportLog.Name</h1>
             <label class="m-0 text-black-50">@Model.ImportLog.FullFilePath</label>
         </div>
-        @if (Model.ImportLog.Status == ViewModels.Import.Status.Success)
+        @if (Model.ImportLog.Status == Logic.ViewModels.Import.Status.Success)
         {
             <i class="large-font text-success fas fa-check align-self-center"></i>
         }
-        else if (Model.ImportLog.Status == ViewModels.Import.Status.Warning)
+        else if (Model.ImportLog.Status == Logic.ViewModels.Import.Status.Warning)
         {
             <i class="large-font text-warning fas fa-exclamation-triangle align-self-center"></i>
         }
-        else if (Model.ImportLog.Status == ViewModels.Import.Status.Error)
+        else if (Model.ImportLog.Status == Logic.ViewModels.Import.Status.Error)
         {
             <i class="large-font text-danger fas fa-bug align-self-center"></i>
         }

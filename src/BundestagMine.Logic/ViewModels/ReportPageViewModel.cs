@@ -1,11 +1,10 @@
 ﻿using BundestagMine.Models.Database.MongoDB;
-using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BundestagMine.ViewModels
+namespace BundestagMine.Logic.ViewModels
 {
     /// <summary>
     /// The '..Graph' properties hold a string which can be passed into a chart.js chart. We render the charts that way

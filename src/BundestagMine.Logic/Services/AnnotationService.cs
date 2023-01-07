@@ -1,7 +1,7 @@
 ﻿using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.SqlDatabase;
 using BundestagMine.Utility;
-using BundestagMine.ViewModels;
+using BundestagMine.Logic.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BundestagMine.Services
+namespace BundestagMine.Logic.Services
 {
     public class AnnotationService
     {

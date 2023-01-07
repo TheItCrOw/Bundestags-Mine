@@ -1,13 +1,13 @@
 ﻿using BundestagMine.Models.Database;
 using BundestagMine.SqlDatabase;
-using BundestagMine.ViewModels.Import;
+using BundestagMine.Logic.ViewModels.Import;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace BundestagMine.Services
+namespace BundestagMine.Logic.Services
 {
     /// <summary>
     /// Important: We have to use Streams here and not File.ReadAll() stuff, becuase the serilog logger could

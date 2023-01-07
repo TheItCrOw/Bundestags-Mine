@@ -49,15 +49,15 @@ else
                             <label class="m-0 font-weight-bold text-dark">@importLog.Name</label>
                         </div>
                         <label class="ml-1 mb-0 mt-0 mr-3">@importLog.FullFilePath</label>
-                        @if (importLog.Status == ViewModels.Import.Status.Success)
+                        @if (importLog.Status == Logic.ViewModels.Import.Status.Success)
                         {
                             <i class="large-font text-success fas fa-check"></i>
                         }
-                        else if (importLog.Status == ViewModels.Import.Status.Warning)
+                        else if (importLog.Status == Logic.ViewModels.Import.Status.Warning)
                         {
                             <i class="large-font text-warning fas fa-exclamation-triangle"></i>
                         }
-                        else if (importLog.Status == ViewModels.Import.Status.Error)
+                        else if (importLog.Status == Logic.ViewModels.Import.Status.Error)
                         {
                             <i class="large-font text-danger fas fa-bug"></i>
                         }

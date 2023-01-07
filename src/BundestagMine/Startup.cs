@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BundestagMine.Data;
+using BundestagMine.Logic.Services;
 using BundestagMine.Services;
 using BundestagMine.SqlDatabase;
 using Microsoft.AspNetCore.Builder;

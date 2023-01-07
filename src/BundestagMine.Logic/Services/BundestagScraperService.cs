@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace BundestagMine.Services
+namespace BundestagMine.Logic.Services
 {
     public class BundestagScraperService
     {

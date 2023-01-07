@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BundestagMine.ViewModels.Import
+namespace BundestagMine.Logic.ViewModels.Import
 {
     public class ImportLogViewModel
     {

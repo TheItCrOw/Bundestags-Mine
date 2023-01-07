@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BundestagMine.SqlDatabase",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BundestagMine.Utility", "BundestagMine.Utility\BundestagMine.Utility.csproj", "{A6DCB9D8-A6C5-4770-BDA5-4F2F6C5FCB83}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BundestagMine.Logic", "BundestagMine.Logic\BundestagMine.Logic.csproj", "{9933B736-537A-4AFB-8F6F-F56B198EE51F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{A6DCB9D8-A6C5-4770-BDA5-4F2F6C5FCB83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6DCB9D8-A6C5-4770-BDA5-4F2F6C5FCB83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6DCB9D8-A6C5-4770-BDA5-4F2F6C5FCB83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9933B736-537A-4AFB-8F6F-F56B198EE51F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9933B736-537A-4AFB-8F6F-F56B198EE51F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9933B736-537A-4AFB-8F6F-F56B198EE51F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9933B736-537A-4AFB-8F6F-F56B198EE51F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

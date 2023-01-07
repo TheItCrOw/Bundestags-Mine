@@ -1,7 +1,7 @@
 ﻿using BundestagMine.Models.Database.MongoDB;
 using System.Collections.Generic;
 
-namespace BundestagMine.ViewModels
+namespace BundestagMine.Logic.ViewModels
 {
     public class SpeakerInspectorViewModel
     {

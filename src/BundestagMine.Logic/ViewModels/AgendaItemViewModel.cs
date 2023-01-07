@@ -1,6 +1,6 @@
 ﻿using BundestagMine.Models.Database.MongoDB;
 
-namespace BundestagMine.ViewModels
+namespace BundestagMine.Logic.ViewModels
 {
     public class AgendaItemViewModel
     {

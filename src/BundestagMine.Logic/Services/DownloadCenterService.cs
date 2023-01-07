@@ -1,7 +1,7 @@
 ﻿using BundestagMine.Models;
 using BundestagMine.SqlDatabase;
 using BundestagMine.Utility;
-using BundestagMine.ViewModels.DownloadCenter;
+using BundestagMine.Logic.ViewModels.DownloadCenter;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -12,7 +12,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 
-namespace BundestagMine.Services
+namespace BundestagMine.Logic.Services
 {
     public class DownloadCenterService
     {

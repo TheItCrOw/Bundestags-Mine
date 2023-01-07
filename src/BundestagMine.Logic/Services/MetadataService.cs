@@ -1,7 +1,7 @@
 ﻿using BundestagMine.Models.Database;
 using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.SqlDatabase;
-using BundestagMine.ViewModels;
+using BundestagMine.Logic.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BundestagMine.Services
+namespace BundestagMine.Logic.Services
 {
     public class MetadataService
     {
@@ -57,6 +57,11 @@ namespace BundestagMine.Services
                 .SelectMany(ss => ss.Shouts.Where(sh => !sh.Text.ToLower().Contains("beifall")))
                 .ToList();
 
+        /// <summary>
+        /// Gets the agendaitem of a speech
+        /// </summary>
+        /// <param name="speech"></param>
+        /// <returns></returns>
         public AgendaItem GetAgendaItemOfSpeech(Speech speech) => _db.AgendaItems.FirstOrDefault(a =>
                         a.ProtocolId == _db.Protocols.SingleOrDefault(p =>
                             p.Number == speech.ProtocolNumber && p.LegislaturePeriod == speech.LegislaturePeriod).Id

@@ -1,4 +1,4 @@
-﻿using BundestagMine.Services;
+﻿using BundestagMine.Logic.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;

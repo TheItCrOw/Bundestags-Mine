@@ -8,7 +8,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BundestagMine.Services
+namespace BundestagMine.Logic.Services
 {
     public class TopicMapGraphObject
     {

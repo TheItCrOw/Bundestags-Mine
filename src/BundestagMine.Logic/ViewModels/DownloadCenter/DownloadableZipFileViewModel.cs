@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BundestagMine.ViewModels.DownloadCenter
+namespace BundestagMine.Logic.ViewModels.DownloadCenter
 {
     public class DownloadableZipFileViewModel
     {

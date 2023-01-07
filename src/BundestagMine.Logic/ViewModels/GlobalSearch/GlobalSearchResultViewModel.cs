@@ -1,4 +1,4 @@
-﻿namespace BundestagMine.ViewModels.GlobalSearch
+﻿namespace BundestagMine.Logic.ViewModels.GlobalSearch
 {
     public class GlobalSearchResultViewModel
     {

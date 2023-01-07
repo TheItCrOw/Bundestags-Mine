@@ -1,4 +1,5 @@
-﻿using BundestagMine.RequestModels;
+﻿using BundestagMine.Logic.Services;
+using BundestagMine.RequestModels;
 using BundestagMine.Services;
 using BundestagMine.SqlDatabase;
 using BundestagMine.Utility;

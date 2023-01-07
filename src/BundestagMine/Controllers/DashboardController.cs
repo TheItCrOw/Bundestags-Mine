@@ -6,7 +6,6 @@ using System.IO;
 using System.Threading.Tasks;
 using BundestagMine.Extensions;
 using BundestagMine.Models.Database.MongoDB;
-using BundestagMine.Services;
 using BundestagMine.SqlDatabase;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +14,12 @@ using Supremes;
 using Newtonsoft.Json;
 using BundestagMine.Utility;
 using BundestagMine.RequestModels;
-using BundestagMine.ViewModels;
 using System.Text.RegularExpressions;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using BundestagMine.Logic.Services;
+using BundestagMine.Services;
+using BundestagMine.Logic.ViewModels;
 
 namespace BundestagMine.Controllers
 {
