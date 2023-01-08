@@ -16,6 +16,15 @@ namespace BundestagMine.SqlDatabase
 
         }
 
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseSqlServer(ConfigManager.GetConnectionString(), builder =>
+        //    {
+        //        builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+        //    });
+        //    base.OnConfiguring(optionsBuilder);
+        //}
+
         public DbSet<Protocol> Protocols { get; set; }
         public DbSet<Deputy> Deputies { get; set; }
         public DbSet<NetworkData> NetworkDatas { get; set; }

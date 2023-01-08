@@ -20,6 +20,61 @@ namespace BundestagMine.Logic.Services
             _db = db;
         }
 
+        /// <summary>
+        /// Gets the count of speeches in an agendaitem
+        /// </summary>
+        /// <param name="period"></param>
+        /// <param name="protocolNumber"></param>
+        /// <param name="agendaNumber"></param>
+        /// <returns></returns>
+        public int GetSpeechesCountOfAgendaItem(int period, int protocolNumber, int agendaNumber) => _db.Speeches
+                    .Where(s => s.LegislaturePeriod == period && s.ProtocolNumber == protocolNumber && s.AgendaItemNumber == agendaNumber)
+                    .Count();
+
+        /// <summary>
+        /// Gets all speeches of an agenda items
+        /// </summary>
+        /// <param name="period"></param>
+        /// <param name="protocolNumber"></param>
+        /// <param name="agendaNumber"></param>
+        /// <returns></returns>
+        public List<Speech> GetSpeechesOfAgendaItem(int period, int protocolNumber, int agendaNumber) => _db.Speeches
+                    .Where(s => s.LegislaturePeriod == period && s.ProtocolNumber == protocolNumber && s.AgendaItemNumber == agendaNumber)
+                    .ToList();
+
+        /// <summary>
+        /// Gets all parties
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetPartiesAsStrings() => _db.Deputies.Select(d => d.Party).Distinct().ToList();
+
+        /// <summary>
+        /// Gets all fractions as strings
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetFractionsAsStrings() => _db.Deputies.Select(d => d.Fraction).Distinct().ToList();
+
+        /// <summary>
+        /// Gets all fractions of a meeting. 
+        /// </summary>
+        /// <param name="period"></param>
+        /// <param name="number"></param>
+        /// <returns></returns>
+        public List<string> GetFractionsOfProtocol(int period, int number) => _db.Speeches
+            .Where(p => p.LegislaturePeriod == period && p.ProtocolNumber == number)
+            .Select(s => _db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId))
+            .Select(s => s == null ? "" : s.Fraction)
+            .Where(f => !string.IsNullOrEmpty(f))
+            .Distinct()
+            .ToList();
+
+
+        // Old method, it sucks, I know.
+        // =============================================================
+        /// <summary>
+        /// Gets all fractions
+        /// </summary>
+        /// <returns></returns>
         public List<dynamic> GetFractions()
         {
             var fractions = new List<dynamic>();
@@ -34,6 +89,7 @@ namespace BundestagMine.Logic.Services
             }
             return fractions;
         }
+        // =============================================================
 
         /// <summary>
         /// Determines the amount of actual comments a speech received
@@ -58,11 +114,22 @@ namespace BundestagMine.Logic.Services
                 .ToList();
 
         /// <summary>
+        /// Gets all speakers of a protocol meeting
+        /// </summary>
+        /// <param name="meeting"></param>
+        /// <param name="period"></param>
+        /// <returns></returns>
+        public List<Deputy?> GetAllSpeakersOfProtocol(int meeting, int period) => _db.Speeches
+            .Where(s => s.LegislaturePeriod == period && s.ProtocolNumber == meeting)
+            .Select(s => _db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId))
+            .ToList();
+
+        /// <summary>
         /// Gets the agendaitem of a speech
         /// </summary>
         /// <param name="speech"></param>
         /// <returns></returns>
-        public AgendaItem GetAgendaItemOfSpeech(Speech speech) => _db.AgendaItems.FirstOrDefault(a =>
+        public AgendaItem? GetAgendaItemOfSpeech(Speech speech) => _db.AgendaItems.FirstOrDefault(a =>
                         a.ProtocolId == _db.Protocols.SingleOrDefault(p =>
                             p.Number == speech.ProtocolNumber && p.LegislaturePeriod == speech.LegislaturePeriod).Id
                         && a.Order == speech.AgendaItemNumber);        

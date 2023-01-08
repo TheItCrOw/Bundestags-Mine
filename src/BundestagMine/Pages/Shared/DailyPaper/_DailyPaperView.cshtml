@@ -1,5 +1,6 @@
 ﻿@using BundestagMine.Logic.ViewModels.DailyPaper
 @using BundestagMine.Utility
+@using BundestagMine.Logic.Services
 @model DailyPaperViewModel
 
 <div class="min-vh-100 p-5">
@@ -24,36 +25,15 @@
                 <div class="col-lg-2 m-0 left">
                     @*most commented speech*@
                     <div class="most-commented-speech">
-                        <h4>Kontroverse Rede</h4>
-                        <img src="/img/portrait-beispiel-2.jpg" />
-                        @*TODO: DO THIS BETTER*@
-                        <p class="mt-2">
-                            <b>@(Model.MostCommentedSpeechViewModel.Speaker.FirstName) @(Model.MostCommentedSpeechViewModel.Speaker.LastName)</b> 
-                            von der <b>@(Model.MostCommentedSpeechViewModel.Speaker.Fraction)</b> hat eine Rede zum Tagesordnungspunkt
-                            <b>@Model.MostCommentedSpeechViewModel.Agenda.Title</b> gehalten und dafür die meisten Kommentare erhalten. Insgesamt
-                            <b>@Model.MostCommentedSpeechViewModel.ActualCommentsAmount</b> mal wurde reingerufen mit einem Sentiment von
-                            <b class="sentiment">-0,58</b>.
-                            <b>@(Model.MostCommentedSpeechViewModel.Speaker.FirstName) @(Model.MostCommentedSpeechViewModel.Speaker.LastName)</b> hat dabei häufig <b class="sentiment-type">negativ</b> im Kontext von
-                            <b class="ne">Deutschland</b> gesprochen:<br />
-                        </p>
-                        <p>
-                            <i>"</i><i class="segment">Heute befassen wir uns alle noch einmal mit dem Geschehen in Rastatt. Wir haben schon von einigen Rednern gehört, was vorgefallen ist. Vor acht Monaten haben uns die Vorstände der DB Netz AG, Dr. Rompf und Dr. Schaffer, im Ausschuss erklärt, wie es am 12. August zu der Gleisabsenkung im Zuge der Tunnelarbeiten kam. Damals hat die Besatzung der Tunnelvortriebsmaschine eine Veränderung der Tunnellage erkannt – was gut ist – und umgehend den Fahrdienstleiter informiert. Die Strecke wurde sofort gesperrt. Das dauerte ganze drei Minuten...</i><i>"</i>
-                        </p>
+                        <h4>Hitzige Rede</h4>
+                        <partial name="~/Pages/Shared/DailyPaper/PaperParts/_SpeechPartView.cshtml" model="@Model.MostCommentedSpeech" />
                         <button class="btn btn-dark rounded-0 w-100">Ganze Rede lesen</button>
                     </div>
                     <hr class="bg-lightgray" />
                     @*most negative speech*@
                     <div class="most-commented-speech">
                         <h4>Negativste Rede</h4>
-                        <img src="/img/portrait-beispiel.jpg" />
-                        <p class="mt-2">
-                            Die negativste Rede mit einem Sentiment von <b>-0,86</b> wurde dieses mal von
-                            <b>Christian Lindner</b> gehalten. In der Rede zum Tagesordungspunkt <b>Digitale Verwaltung</b>
-                            lag der Fokus vorallem auf <b>Deutschland</b> und <b>Russland</b>.
-                        </p>
-                        <p>
-                            <i>"</i><i class="segment">Heute befassen wir uns alle noch einmal mit dem Geschehen in Rastatt. Wir haben schon von einigen Rednern gehört, was vorgefallen ist. Vor acht Monaten haben uns die Vorstände der DB Netz AG, Dr. Rompf und Dr. Schaffer, im Ausschuss erklärt, wie es am 12. August zu der Gleisabsenkung im Zuge der Tunnelarbeiten kam. Damals hat die Besatzung der Tunnelvortriebsmaschine eine Veränderung der Tunnellage erkannt – was gut ist – und umgehend den Fahrdienstleiter informiert. Die Strecke wurde sofort gesperrt. Das dauerte ganze drei Minuten...</i><i>"</i>
-                        </p>
+                        <partial name="~/Pages/Shared/DailyPaper/PaperParts/_SpeechPartView.cshtml" model="@Model.MostNegativeSpeech" />
                         <button class="btn btn-dark rounded-0 w-100">Ganze Rede lesen</button>
                     </div>
                     <hr class="bg-lightgray" />
@@ -75,15 +55,7 @@
                     @*most positive speech*@
                     <div class="most-commented-speech">
                         <h4>Positivste Rede</h4>
-                        <img src="/img/Unbekannt.jpg" />
-                        <p class="mt-2">
-                            Die positivste Rede hingegen mit einem Sentiment von <b>0,56</b> wurde von
-                            <b>Unbekannt</b> gehalten. In der Rede zum Tagesordungspunkt <b>Digitale Verwaltung</b>
-                            lag der Fokus vorallem auf <b>Deutschland</b> und <b>Russland</b>.
-                        </p>
-                        <p>
-                            <i>"</i><i class="segment">Heute befassen wir uns alle noch einmal mit dem Geschehen in Rastatt. Wir haben schon von einigen Rednern gehört, was vorgefallen ist. Vor acht Monaten haben uns die Vorstände der DB Netz AG, Dr. Rompf und Dr. Schaffer, im Ausschuss erklärt, wie es am 12. August zu der Gleisabsenkung im Zuge der Tunnelarbeiten kam. Damals hat die Besatzung der Tunnelvortriebsmaschine eine Veränderung der Tunnellage erkannt – was gut ist – und umgehend den Fahrdienstleiter informiert. Die Strecke wurde sofort gesperrt. Das dauerte ganze drei Minuten...</i><i>"</i>
-                        </p>
+                        <partial name="~/Pages/Shared/DailyPaper/PaperParts/_SpeechPartView.cshtml" model="@Model.MostPositiveSpeech" />
                         <button class="btn btn-dark rounded-0 w-100">Ganze Rede lesen</button>
                     </div>
                     <hr class="bg-lightgray" />
@@ -92,41 +64,62 @@
 
                 @*mid*@
                 <div class="col-lg-8 m-0 mid">
-                    <img src="/img/bundestag-sitze.jpg" class="thumbnail" />
-                    <label class="source mb-0">Quelle</label>
+                    <img src="@Model.Thumbnail?.LargeImageUrl" class="thumbnail" />
+                    <label class="source mb-0">Quelle: Pixabay @Model.Thumbnail?.PageUrl</label>
                     <hr class="mt-0 mb-3 bg-lightgray" />
                     @*named entityt*@
                     <div>
-                        <h3 class="subtitle">Thema des Tages: <b>@Model.NamedEntityOfTheDay</b></h3>
+                        <h3 class="subtitle">Sonderthema des Tages: <b>@(Model.FirstSpecialTopicOfTheDay)</b></h3>
                         <p>
-                            Die Named-Entity-Analyse hat ergeben, dass vorallem <b>Deutschland</b>, <b>Russland</b> und
-                            <b>Ukraine</b> in den Reden der Abgeordneten präsent war. Wenig frequentiert waren hingegen
-                            <b>EU</b> und <b>Sozial</b>.
+                            Die Named-Entity-Analyse hat ergeben, dass vorallem <b>@Model.FirstSpecialTopicOfTheDay</b>,
+                            <b>@Model.SecondSpecialTopicOfTheDay</b> und
+                            <b>@Model.ThirdSpecialTopicOfTheDay</b> in den Reden der Abgeordneten präsent war. Wenig frequentiert waren hingegen
+                            <b>@Model.LastSpecialTopicOfTheDay</b> und <b>@Model.SecondLastSpecialTopicOfTheDay</b>.
+                            Bei diesen Ergebnissen handelt es sich um gefilterte Auswertungen. Named-Entities wie "SPD"
+                            (Inklusive anderer Parteien) oder "Deutschland" sind immer präsent in den Reden und dominieren
+                            die Ergebnisse. Es ist spannender zu sehen, über was neben dieser "Standard-Phrasen" geredet wird.
+                            Daher werden diese hier raus gefiltert.
                         </p>
                         @*chart for ne distribution*@
-                        <img class="w-100" src="~/img/chart-beispiel.png" />
-                        <label class="source mb-0">NE-Verteilung, sortiert nach Häufigkeit</label>
+                        <canvas id="@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-topicBarChart"></canvas>
+                        <label class="source mb-0">Gefilterte NE-Verteilung, sortiert nach Häufigkeit und deren Sentiment-Anteilen</label>
                     </div>
                     <hr class="bg-lightgray" />
                     @*sentiment*@
-                    <div>
-                        <h3 class="subtitle">Die Stimmung war <b>negativ</b></h3>
+                    <div class="sentiments">
+                        <h3 class="subtitle">Die Stimmung war <b>@Model.MeetingMood</b></h3>
                         <p>
-                            Der durchschnittliche Sentiment lag bei <b>-0,34</b>, wobei vorallem im Kontext von <b>Russland</b>
-                            und <b>Deutschland</b> negativ gesprochen wurde. Vorallem <b>Lena Mann</b> hat mit einem durchschnittlichen
-                            Sentiment von <b>-0,84</b> dazu beigetragen.
+                            Der durchschnittliche Sentiment lag bei <b>@Model.AverageSentiment.ToString("0.##")</b>,
+                            wobei im Kontext von <b>@Model.MostNegativNamedEntity.Item1</b> zu
+                            <b>@(Model.MostNegativNamedEntity.Item2.ToString("0.##"))%</b> negativ gesprochen wurde.
+                            Positiv dagegen war der Umgang mit <b>@Model.MostPositiveNamedEntity.Item1</b> - hier wurde
+                            zu <b>@(Model.MostPositiveNamedEntity.Item2.ToString("0.##"))%</b> positiv gesprochen.
+                            Mit <b>@(Model.MostNeutralNamedEntity.Item2.ToString("0.##"))%</b> neutralem Sentiment
+                            ging es um <b>@Model.MostNeutralNamedEntity.Item1</b>.
                         </p>
+                        <h6>Sentiment-Verteilungen nach Fraktion:</h6>
                         @*chart for sentiment distribution*@
                         <div class="row m-0 p-0">
-                            <div class="col-md-4 m-0 p-1">
-                                <img class="w-100" src="~/img/chart-beispiel-4.png" />
+                            <div class="col-lg-3 m-0 p-1">
+                                <h6>Insgesamt</h6>
+                                <canvas class="sentiment-chart" id="@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-totalSentimentAreaChart"></canvas>
                             </div>
-                            <div class="col-md-4 m-0 p-1">
-                                <img class="w-100" src="~/img/chart-beispiel-4.png" />
-                            </div>
-                            <div class="col-md-4 m-0 p-1">
-                                <img class="w-100" src="~/img/chart-beispiel-4.png" />
-                            </div>
+                            @*foreach fraction*@
+                            @foreach (var fraction in Model.FractionSentimentCharts)
+                            {
+                                var cleanFraction = DateHelper.ConvertGermanUmlaute(fraction.Item1.Replace(" ", "").Replace("/", ""));
+                                <div class="col-lg-3 m-0 p-1">
+                                    <h6>@fraction.Item1</h6>
+                                    <canvas class="sentiment-chart" id="@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-@(cleanFraction)SentimentChart"></canvas>
+                                    <script>
+                                        // Build each sentiment chart
+                                        $(document).ready(function() {
+                                            dailyPaperHandler.buildTotalSentimentChartData('@(Html.Raw(Json.Serialize(fraction.Item2)))',
+                                                '@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-@(cleanFraction)SentimentChart');
+                                        })
+                                    </script>
+                                </div>
+                            }
                         </div>
                     </div>
                     <hr class="bg-lightgray" />
@@ -153,19 +146,20 @@
                         <p class="list">
                             @for (var i = 0; i < Model.AgendaItems.Count; i++)
                             {
-                                <span class="read-more-agenda" data-text="@Model.AgendaItems[i].Description">
-                                    @(i + 1). @(Model.AgendaItems[i].Title)
+                                <span class="read-more-agenda" data-text="@Model.AgendaItems[i].Item1.Description">
+                                    @(i + 1). @(Model.AgendaItems[i].Item1.Title)
                                 </span>
                                 <br />
                             }
                         </p>
                         <p>
                             Der beliebteste Tagesordnungspunkt mit den meisten Reden war dabei
-                            <b>Digitale Verwaltung</b> mit <b>20</b> Reden, gefolgt von
-                            <b>Mittelstandspolitik</b> mit <b>16</b> Reden. Das Schlusslicht war
-                            <b>Fragestunde</b> mit nur <b>5</b> Reden.
+                            <b>@Model.MostSpeechesAgendaItem.Item1</b> mit <b>@Model.MostSpeechesAgendaItem.Item2</b> Reden, gefolgt von
+                            <b>@Model.SecondMostSpeechesAgendaItem.Item1</b> mit <b>@Model.SecondMostSpeechesAgendaItem.Item2</b> Reden.
+                            Das Schlusslicht war <b>@Model.LastMostSpeechesAgendaItem.Item1</b> mit nur <b>@Model.LastMostSpeechesAgendaItem.Item2</b> Reden.
                         </p>
-                        <img class="w-100" src="/img/chart-beispiel-2.png" />
+                        <canvas class="agenda-chart" id="@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-agendaBarChart"></canvas>
+                        <label class="source mb-0">Anzahl der Reden pro Tagesordnungspunkte</label>
                     </div>
                     <hr class="bg-lightgray" />
                     @*commercial artlas*@
@@ -219,28 +213,17 @@
                     @*all speakers*@
                     <div>
                         <h4>Alle Redner(innen)</h4>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
-                        <p class="mb-0">Angela Merkel (CDU/CSU) - 3 Reden</p>
+                        <div class="all-speakers">
+                            @foreach (var tuple in Model.AllSpeakers)
+                            {
+                                var speaker = tuple.Item1;
+                                if (speaker == null) continue;
+                                var name = speaker.FirstName + " " + speaker.LastName;
+                                var orga = string.IsNullOrEmpty(speaker.Fraction) ? speaker.Party : speaker.Fraction;
+                                if (string.IsNullOrEmpty(orga)) orga = "Plos";
+                                <p class="open-speaker-inspector" data-id="@speaker.SpeakerId">@name (@orga) - @tuple.Item2 Reden</p>
+                            }
+                        </div>
                     </div>
                     <hr class="bg-lightgray" />
                 </div>
@@ -248,3 +231,24 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Build the charts.
+    $(document).ready(function() {
+
+        // Builds the topic chart. We pass in the data and the id of the chart canvas
+        var topicChartData = '@(Html.Raw(Json.Serialize(Model.NamedEntitiesOfTheDayChartData)))';
+        dailyPaperHandler.buildTopicSentimentStackedBarChart(topicChartData, '@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-topicBarChart');
+
+        // Builds the agenda chart. We pass in the data and the id of the chart canvas
+        var agendaChartData = '@(Html.Raw(Json.Serialize(Model.GetChartFormattedAgendaItems)))';
+        dailyPaperHandler.buildAgendaBarChart(agendaChartData, '@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-agendaBarChart');
+
+        // Builds the total sentiment chart chart. We pass in the data and the id of the chart canvas
+        var totalSentimentChartData = '@(Html.Raw(Json.Serialize(Model.TotalSentimentChartDistribution)))';
+        dailyPaperHandler.buildTotalSentimentChartData(totalSentimentChartData, '@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-totalSentimentAreaChart');
+
+        //activate popovers
+        $('[data-toggle="popover"]').popover();
+    })
+</script>

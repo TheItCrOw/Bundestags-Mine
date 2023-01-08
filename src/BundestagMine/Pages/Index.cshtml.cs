@@ -38,7 +38,7 @@ namespace BundestagMine.Pages
         public void OnGet()
         {
             // Just for development
-            DailyPaper = _dailyPaperService.BuildDailyPaperViewModel(76, 20);
+            DailyPaper = _dailyPaperService.BuildDailyPaperViewModelAsync(75, 20);
         }
     }
 }

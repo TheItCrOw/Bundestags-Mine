@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Dynamic;
+using System.Threading.Tasks;
 
 namespace BundestagMine.Controllers
 {
@@ -32,7 +33,7 @@ namespace BundestagMine.Controllers
                 var meetingNumber = int.Parse(splited[0]);
                 var legislaturePeriod = int.Parse(splited[1]);
 
-                var dailyPaperViewModel = _dailyPaperService.BuildDailyPaperViewModel(meetingNumber, legislaturePeriod);
+                var dailyPaperViewModel = _dailyPaperService.BuildDailyPaperViewModelAsync(meetingNumber, legislaturePeriod);
 
 
                 response.status = "200";

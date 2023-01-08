@@ -203,7 +203,6 @@ async function loadAgendaItemsToProtocol($protocol) {
         aItem.setAttribute('data-id', agendaItem.id);
         aItem.setAttribute('data-description', agendaItem.description);
 
-        var name = 'Tagesordnungspunkt ' + agendaItem.agendaItemNumber;
         aItem.innerHTML += `<div class='flexed wrapper position-relative'>
                             <i class="fas fa-exclamation mr-2"></i>
                             <p class='w-100 mb-0'>${agendaItem.title}</p>

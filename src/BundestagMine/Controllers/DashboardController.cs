@@ -305,9 +305,7 @@ namespace BundestagMine.Controllers
                 var protocol = int.Parse(splited[1]);
                 var number = int.Parse(splited[2]);
                 response.status = "200";
-                response.result = _db.Speeches
-                    .Where(s => s.LegislaturePeriod == period && s.ProtocolNumber == protocol && s.AgendaItemNumber == number)
-                    .ToList();
+                response.result = _metadataService.GetSpeechesOfAgendaItem(period, protocol, number);
             }
             catch (Exception ex)
             {

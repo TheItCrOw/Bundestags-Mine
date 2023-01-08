@@ -8,7 +8,7 @@
     padding-bottom: 3vw;
 }
 
-    .paper-layout * {
+    .paper-layout * :not(.fas) {
         font-family: 'Times New Roman', Times, serif !important;
     }
 
@@ -68,10 +68,18 @@ Otherwise, it will be 4vw.*/
     }
 
         .paper-layout .paper-content p {
-            font-size: 14px;
+            font-size: 15px;
             line-height: 16px;
             text-align: justify;
             word-break: break-word;
+        }
+
+
+        .paper-layout .paper-content .source {
+            text-align: end;
+            width: 100%;
+            font-style: italic;
+            font-size: small;
         }
 
         .paper-layout .paper-content .mid {
@@ -80,22 +88,22 @@ Otherwise, it will be 4vw.*/
             padding: 12px;
         }
 
-            .paper-layout .paper-content .mid .source {
-                text-align: end;
-                width: 100%;
-                font-style: italic;
-                font-size: small;
-            }
-
             .paper-layout .paper-content .mid .thumbnail {
                 width: 100%;
-                /*box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;*/
+                filter: brightness(1.20);
+                box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
             }
 
             .paper-layout .paper-content .mid .subtitle {
                 text-align: center;
                 color: black;
                 font-weight: bold;
+            }
+
+            .paper-layout .paper-content .mid .sentiments h6 {
+                color: rgba(0,0,0,0.75);
+                font-weight: bold;
+                text-align: center;
             }
 
         .paper-layout .paper-content .right {
@@ -116,6 +124,11 @@ Otherwise, it will be 4vw.*/
                         color: black;
                     }
 
+
+            .paper-layout .paper-content .right .agenda-chart {
+                max-height: 250px;
+            }
+
             .paper-layout .paper-content .right .polls .poll {
                 width: 100%;
                 margin-top: 20px;
@@ -129,6 +142,22 @@ Otherwise, it will be 4vw.*/
                     .paper-layout .paper-content .right .polls .poll h6:hover {
                         cursor: pointer;
                         color: black;
+                    }
+
+
+            .paper-layout .paper-content .right .all-speakers {
+                max-height: 550px;
+                overflow-y: auto;
+            }
+
+                .paper-layout .paper-content .right .all-speakers p {
+                    margin-bottom: 6px !important;
+                    text-align: left !important;
+                }
+
+                    .paper-layout .paper-content .right .all-speakers p:hover {
+                        color: black;
+                        cursor: pointer;
                     }
 
         .paper-layout .paper-content .left {

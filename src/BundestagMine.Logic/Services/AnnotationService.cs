@@ -169,6 +169,14 @@ namespace BundestagMine.Logic.Services
         }
 
         /// <summary>
+        /// Gets the average sentiment of a speech.
+        /// </summary>
+        /// <param name="speech"></param>
+        /// <returns></returns>
+        public double GetAverageSentimentOfSpeech(Speech speech) =>
+            _db.Sentiment.Where(s => s.NLPSpeechId == speech.Id).AverageOrDefault(s => s.SentimentSingleScore);
+
+        /// <summary>
         /// Builds reduced models for the sentiments and returns them.
         /// Pass in the parameters as required.
         /// </summary>
@@ -612,6 +620,21 @@ namespace BundestagMine.Logic.Services
                     .Take(limit)
                     .ToList();
         }
+
+        /// <summary>
+        /// Gets the ne with the most occurences in a speech
+        /// </summary>
+        /// <param name="speech"></param>
+        /// <returns></returns>
+        public List<string> GetMostUsedNamedEntitiesOfSpeech(Speech speech, int limit) => _db.NamedEntity
+            .Where(ne => ne.NLPSpeechId == speech.Id && ne.ShoutId == Guid.Empty
+                && !TopicHelper.TopicBlackList.Contains(ne.LemmaValue.ToLower()))
+             .AsEnumerable()
+             .GroupBy(ne => ne.LemmaValue)
+             .OrderByDescending(kv => kv.Count())
+             .Select(kv => kv.Key)
+             .Take(limit)
+             .ToList();
 
         /// <summary>
         /// Fetches a named entity by a name, fraction, party, speaker and so on and looks through all sentiments.

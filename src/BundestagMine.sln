@@ -15,7 +15,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BundestagMine.SqlDatabase",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BundestagMine.Utility", "BundestagMine.Utility\BundestagMine.Utility.csproj", "{A6DCB9D8-A6C5-4770-BDA5-4F2F6C5FCB83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BundestagMine.Logic", "BundestagMine.Logic\BundestagMine.Logic.csproj", "{9933B736-537A-4AFB-8F6F-F56B198EE51F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BundestagMine.Logic", "BundestagMine.Logic\BundestagMine.Logic.csproj", "{9933B736-537A-4AFB-8F6F-F56B198EE51F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{465D84A1-3F33-48C0-896A-1C07B35757D2}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
