@@ -1,13 +1,13 @@
 ﻿using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.SqlDatabase;
 using BundestagMine.Utility;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace BundestagMine.Synchronisation.Services
 {
@@ -265,7 +265,7 @@ namespace BundestagMine.Synchronisation.Services
                             .SelectMany(p => db.Speeches
                                 .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod &&
                                     db.Deputies.SingleOrDefault(d => d.SpeakerId == s.SpeakerId).Fraction == graphFraction.Name))
-                            .SelectMany(s => db.NamedEntity.Where(n => s.Id == n.NLPSpeechId && n.ShoutId == Guid.Empty && n.LemmaValue != null 
+                            .SelectMany(s => db.NamedEntity.Where(n => s.Id == n.NLPSpeechId && n.ShoutId == Guid.Empty && n.LemmaValue != null
                                     && !TopicHelper.TopicBlackList.Contains(n.LemmaValue)))
                             .AsEnumerable()
                             .GroupBy(n => n.LemmaValue.ToLower())

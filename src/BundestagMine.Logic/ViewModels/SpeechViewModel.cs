@@ -13,5 +13,6 @@ namespace BundestagMine.Logic.ViewModels
         public int TopicMentionCount { get; set; }
         public AgendaItem Agenda { get; set; }
         public List<string> Topics { get; set; }
+        public int ApplaudeCount { get; set; }
     }
 }

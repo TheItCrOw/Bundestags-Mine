@@ -1,21 +1,27 @@
-﻿using BundestagMine.Logic.RequestModels.Pixabay;
+﻿using BundestagMine.Logic.HelperModels.DailyPaper;
+using BundestagMine.Logic.RequestModels.Pixabay;
+using BundestagMine.Models.Database;
 using BundestagMine.Models.Database.MongoDB;
 using System.Collections.Generic;
 
 namespace BundestagMine.Logic.ViewModels.DailyPaper
 {
+    /// <summary>
+    /// The viewmodel that holds all information to visualise a daily paper. This model gets json serialized 
+    /// so be aware of that when using dynamic objects or the likes.
+    /// </summary>
     public class DailyPaperViewModel
     {
         public Protocol Protocol { get; set; }
         public SearchHit Thumbnail { get; set; }
 
 
-        // ======================================= NE
+        #region ne
         /// <summary>
         /// The ne with the most occurencens in all speeches.
         /// </summary>
         public List<(NamedEntity, int)> NamedEntitiesOfTheDay { get; set; }
-        public dynamic NamedEntitiesOfTheDayChartData { get; set; }
+        public List<NamedEntityChartData> NamedEntitiesOfTheDayChartData { get; set; }
         public string FirstSpecialTopicOfTheDay { get => NamedEntitiesOfTheDay.Count > 0 ? NamedEntitiesOfTheDay.FirstOrDefault().Item1.LemmaValue : ""; }
         public string SecondSpecialTopicOfTheDay { get => NamedEntitiesOfTheDay.Count > 1 ? NamedEntitiesOfTheDay[1].Item1.LemmaValue : ""; }
         public string ThirdSpecialTopicOfTheDay { get => NamedEntitiesOfTheDay.Count > 2 ? NamedEntitiesOfTheDay[2].Item1.LemmaValue : ""; }
@@ -34,8 +40,9 @@ namespace BundestagMine.Logic.ViewModels.DailyPaper
         /// Item1: Ne, Item2: Percentage
         /// </summary>
         public (string, double) MostPositiveNamedEntity { get; set; }
+        #endregion
 
-
+        #region agenda
         // ======================================= Agenda Items
         /// <summary>
         /// Item1: Agendaitem, Item2: AmountOfSpeech in it
@@ -66,16 +73,16 @@ namespace BundestagMine.Logic.ViewModels.DailyPaper
         public (string, int) LastMostSpeechesAgendaItem
         {
             get => AgendaItems.Count > 0
-                ? (GetAgendaItemsSortedBySpeechesCount.Last().Item1.Title, GetAgendaItemsSortedBySpeechesCount.ToList().Last().Item2)
+                ? (GetAgendaItemsSortedBySpeechesCount.Where(a => a.Item2 > 0).Last().Item1.Title, GetAgendaItemsSortedBySpeechesCount.Where(a => a.Item2 > 0).ToList().Last().Item2)
                 : ("", 0);
         }
         public dynamic GetChartFormattedAgendaItems
         {
             get => GetAgendaItemsSortedBySpeechesCount.Select(t => new { value = t.Item1.Title, count = t.Item2 });
         }
+        #endregion
 
-
-        // ======================================= Sentiments
+        #region sentiments
         public double AverageSentiment { get; set; }
         /// <summary>
         /// The mood of the meeting
@@ -97,22 +104,45 @@ namespace BundestagMine.Logic.ViewModels.DailyPaper
         /// <summary>
         /// Chart data for total sentiment
         /// </summary>
-        public dynamic TotalSentimentChartDistribution { get; set; }
+        public List<SentimentChartData> TotalSentimentChartDistribution { get; set; }
         /// <summary>
         /// This holds the data for sentiment charts foreach fraction holding a speech
         /// </summary>
-        public List<(string, dynamic)> FractionSentimentCharts { get; set; }
+        public List<(string, List<SentimentChartData>)> FractionSentimentCharts { get; set; }
+
+        #endregion
 
         /// <summary>
-        /// This is the namedtity which represents the sentiment the most. If the sentiment ist negativ,
-        /// then the ne should have a negative sentiment
+        /// The polls of this meeting
         /// </summary>
-        public string MostNamedEntityRepresentationOfSentiment {get;set;}
+        public List<(Poll, List<PollChartData>)> Polls { get; set; }
 
+        #region speeches
         public SpeechPartViewModel MostCommentedSpeech { get; set; }
         public SpeechPartViewModel MostPositiveSpeech { get; set; }
         public SpeechPartViewModel MostNegativeSpeech { get; set; }
+        #endregion
 
+        #region facts
+
+        public int TotalSpeechesCount { get; set; }
+        public SpeechViewModel LongestSpeech { get; set; }
+        public (Deputy?, int) MostCommentsByDeputy { get; set; }
+
+        public SpeechViewModel MostApplaudedSpeech { get; set; }
+
+        public (Deputy?, int) MostSpeechesByDeputy { get => AllSpeakers != null ? AllSpeakers.FirstOrDefault() : (null, 0); }
+
+        #endregion
+
+        /// <summary>
+        /// The data for the comment network chart
+        /// </summary>
+        public NetworkData CommentNetworkData { get; set; }
+
+        /// <summary>
+        /// Ordered list of all speakers with their speeches amount
+        /// </summary>
         public List<(Deputy?, int)> AllSpeakers { get; set; }
     }
 }

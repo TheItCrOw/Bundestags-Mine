@@ -3,7 +3,7 @@
 @using BundestagMine.Logic.Services
 @model DailyPaperViewModel
 
-<div class="min-vh-100 p-5">
+<div class="min-vh-100">
     <div class="container-fluid h-100 paper-layout">
         @*header*@
         <div class="paper-header">
@@ -22,7 +22,7 @@
             @*the paper is divided into 3 main columns*@
             <div class="row m-0 p-0">
                 @*left*@
-                <div class="col-lg-2 m-0 left">
+                <div class="col-xl-2 m-0 left">
                     @*most commented speech*@
                     <div class="most-commented-speech">
                         <h4>Hitzige Rede</h4>
@@ -59,11 +59,24 @@
                         <button class="btn btn-dark rounded-0 w-100">Ganze Rede lesen</button>
                     </div>
                     <hr class="bg-lightgray" />
+                    @*all speakers*@
+                    <div>
+                        <h4>Alle Redner(innen)</h4>
+                        <div class="all-speakers">
+                            @foreach (var tuple in Model.AllSpeakers)
+                            {
+                                var speaker = tuple.Item1;
+                                if (speaker == null) continue;
+                                <p class="open-speaker-inspector" data-id="@speaker.SpeakerId">@speaker.GetFullName() (@speaker.GetOrga()) - @tuple.Item2 Reden</p>
+                            }
+                        </div>
+                    </div>
+                    <hr class="bg-lightgray" />
                 </div>
 
 
                 @*mid*@
-                <div class="col-lg-8 m-0 mid">
+                <div class="col-xl-8 m-0 mid">
                     <img src="@Model.Thumbnail?.LargeImageUrl" class="thumbnail" />
                     <label class="source mb-0">Quelle: Pixabay @Model.Thumbnail?.PageUrl</label>
                     <hr class="mt-0 mb-3 bg-lightgray" />
@@ -114,7 +127,7 @@
                                     <script>
                                         // Build each sentiment chart
                                         $(document).ready(function() {
-                                            dailyPaperHandler.buildTotalSentimentChartData('@(Html.Raw(Json.Serialize(fraction.Item2)))',
+                                            dailyPaperHandler.buildSentimentChart('@(Html.Raw(Json.Serialize(fraction.Item2)))',
                                                 '@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-@(cleanFraction)SentimentChart');
                                         })
                                     </script>
@@ -128,17 +141,25 @@
                         <h3 class="subtitle">Es wurde kommentiert</h3>
                         <p>
                             Auch dieses mal gab es wieder Feedback von den Zuhörenden in Form von Kommentaren und Rufen. Das
-                            Kommentar-Netzwerk visualisiert diese.
+                            Kommentar-Netzwerk visualisiert diese. Die Knoten stehen dabei jeweils für einen Redenden, eine
+                            Kante bedeutet, dass mindestens ein Kommentar zwischen den beiden verbundenen Redenden stattfand.
                         </p>
                         @*chart for comment distribution*@
-                        <img class="w-100" src="~/img/chart-beispiel-5.png" />
-                        <label class="source mb-0">NE-Verteilung, sortiert nach Häufigkeit</label>
+                        <div class="comment-network-chart" id="CommentNetworkChart-@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)"></div>
+                        <script>
+                            // Build each sentiment chart
+                            $(document).ready(function() {
+                                dailyPaperHandler.buildCommentNetwork('@(Html.Raw(Json.Serialize("")))',
+                                    'CommentNetworkChart-@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)');
+                            })
+                        </script>
+                        <label class="source mb-0">Kommentar-Netzwerk</label>
                     </div>
                 </div>
 
 
                 @*right*@
-                <div class="col-lg-2 m-0 right">
+                <div class="col-xl-2 m-0 right">
                     @*agenda items listed*@
                     <div class="agenda">
                         <h4>Die Agenda</h4>
@@ -159,7 +180,7 @@
                             Das Schlusslicht war <b>@Model.LastMostSpeechesAgendaItem.Item1</b> mit nur <b>@Model.LastMostSpeechesAgendaItem.Item2</b> Reden.
                         </p>
                         <canvas class="agenda-chart" id="@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-agendaBarChart"></canvas>
-                        <label class="source mb-0">Anzahl der Reden pro Tagesordnungspunkte</label>
+                        <label class="source mb-0">Anzahl der Reden pro Tagesordnungspunkt</label>
                     </div>
                     <hr class="bg-lightgray" />
                     @*commercial artlas*@
@@ -174,18 +195,26 @@
                     @*polls listed*@
                     <div class="polls">
                         <h4>Abstimmungen</h4>
-                        <p>In der Sitzung wurden <b>3</b> namentliche Abstimmungen getätigt.</p>
-                        <div class="poll">
-                            <h6>Änderung des Atomgesetzes</h6>
-                            <img class="w-100" src="/img/chart-beispiel-3.png" />
-                        </div>
-                        <div class="poll">
-                            <h6>Änderung von Verbrauchersteuergesetzen</h6>
-                            <img class="w-100" src="/img/chart-beispiel-3.png" />
-                        </div>
-                        <div class="poll">
-                            <h6>Krisengewinne von Energiekonzernen</h6>
-                            <img class="w-100" src="/img/chart-beispiel-3.png" />
+                        <p>In der Sitzung wurden <b>@Model.Polls.Count</b> namentliche Abstimmungen getätigt.</p>
+                        @foreach (var poll in Model.Polls)
+                        {
+                            <div class="poll">
+                                <h6 class="open-poll" data-id="@poll.Item1.Id">@poll.Item1.Title</h6>
+                                <canvas class="poll-chart" id="@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-@(poll.Item1.Id)BarChart"></canvas>
+                                <script>
+                                    // Build each sentiment chart
+                                    $(document).ready(function() {
+                                        dailyPaperHandler.buildPollBarChart('@(Html.Raw(Json.Serialize(poll.Item2)))',
+                                            '@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-@(poll.Item1.Id)BarChart');
+                                    })
+                                </script>
+                            </div>
+                        }
+                        <div class="flexed justify-content-between align-items-center mt-1 flex-wrap">
+                            <label class="mr-1 mb-0" style="color:#8acd00">Ja</label>
+                            <label class="mr-1 mb-0" style="color:#e70097">Nein</label>
+                            <label class="mr-1 mb-0" style="color:#00b2dc">Enthalten</label>
+                            <label class="mb-0" style="color:#b1b3b4">Nicht abg.</label>
                         </div>
                     </div>
                     <hr class="bg-lightgray" />
@@ -193,11 +222,22 @@
                     <div class="numbers">
                         <h4>Zahlen und Fakten</h4>
                         <p>
-                            Die Sitzung war mit <b>120</b> Reden eine vergleichsweise kurze.<br />
-                            Die längste Rede hielt <b>Annalena Bearbock</b> von der "Bündnis Grünen" mit <b>160</b> Satzzeichen zum Tagesordungspunkt <b>Digitale Macht</b>.<br />
-                            Am Meisten kommentiert wurde von Stephan Brandner von der AfD mit insgesamt <b>8</b> Kommentaren.<br />
-                            Den meisten Beifall bekam die Rede von <b>Olaf Scholz</b> zum Thema <b>Gendern</b>.<br />
-                            Die meisten Reden hielt <b>Max Mustermann</b> mit insgesamt <b>3</b> Reden in <b>2</b> verschiedenen Tagesordnungspunkten.<br />
+                            @{
+                                var length = Model.TotalSpeechesCount > 110 ? "lange" : "kurze";
+                            }
+                            Die Sitzung war mit <b>@Model.TotalSpeechesCount</b> Reden eine vergleichsweise
+                            @length.<br />
+                            Die längste Rede hielt <b>@Model.LongestSpeech.Speaker.GetFullName()</b>
+                            von der @Model.LongestSpeech.Speaker.GetOrga() mit
+                            <b>@Model.LongestSpeech.Speech.Text.Split(" ").Length</b> Worten zum Tagesordungspunkt
+                            <b>@Model.LongestSpeech.Agenda.Title</b>.<br />
+                            Am Meisten kommentiert wurde von <b>@Model.MostCommentsByDeputy.Item1?.GetFullName()</b>
+                            von der <b>@Model.MostCommentsByDeputy.Item1?.GetOrga()</b> mit insgesamt
+                            <b>@Model.MostCommentsByDeputy.Item2</b> Kommentaren.<br />
+                            Den meisten Beifall bekam die Rede von <b>@Model.MostApplaudedSpeech.Speaker.GetFullName()</b>
+                            zum Punkt <b>@Model.MostApplaudedSpeech.Agenda?.Title</b>.<br />
+                            Die meisten Reden hielt <b>@Model.MostSpeechesByDeputy.Item1?.GetFullName()</b>
+                            mit insgesamt <b>@Model.MostSpeechesByDeputy.Item2</b> Reden.<br />
                         </p>
                     </div>
                     <hr class="bg-lightgray" />
@@ -208,22 +248,6 @@
                         <a href="https://www.texttechnologylab.org/" target="_blank">
                             <img class="w-100 img-shadow clickable" src="/img/ttl-logo-white.png" />
                         </a>
-                    </div>
-                    <hr class="bg-lightgray" />
-                    @*all speakers*@
-                    <div>
-                        <h4>Alle Redner(innen)</h4>
-                        <div class="all-speakers">
-                            @foreach (var tuple in Model.AllSpeakers)
-                            {
-                                var speaker = tuple.Item1;
-                                if (speaker == null) continue;
-                                var name = speaker.FirstName + " " + speaker.LastName;
-                                var orga = string.IsNullOrEmpty(speaker.Fraction) ? speaker.Party : speaker.Fraction;
-                                if (string.IsNullOrEmpty(orga)) orga = "Plos";
-                                <p class="open-speaker-inspector" data-id="@speaker.SpeakerId">@name (@orga) - @tuple.Item2 Reden</p>
-                            }
-                        </div>
                     </div>
                     <hr class="bg-lightgray" />
                 </div>
@@ -246,7 +270,7 @@
 
         // Builds the total sentiment chart chart. We pass in the data and the id of the chart canvas
         var totalSentimentChartData = '@(Html.Raw(Json.Serialize(Model.TotalSentimentChartDistribution)))';
-        dailyPaperHandler.buildTotalSentimentChartData(totalSentimentChartData, '@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-totalSentimentAreaChart');
+        dailyPaperHandler.buildSentimentChart(totalSentimentChartData, '@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-totalSentimentAreaChart');
 
         //activate popovers
         $('[data-toggle="popover"]').popover();

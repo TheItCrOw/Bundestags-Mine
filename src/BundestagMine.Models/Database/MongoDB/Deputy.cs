@@ -19,5 +19,8 @@ namespace BundestagMine.Models.Database.MongoDB
         public string LastName { get; set; }
         public string FirstName { get; set; }
         public string SpeakerId { get; set; }
+
+        public string GetFullName() => FirstName + " " + LastName;
+        public string GetOrga() => Fraction ?? Party ?? "Parteilos";
     }
 }

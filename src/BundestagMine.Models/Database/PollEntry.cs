@@ -13,6 +13,18 @@ namespace BundestagMine.Models.Database
         public bool Yes { get; set; }
         public bool No { get; set; }
 
+        public string VoteResultAsGermanString
+        {
+            get
+            {
+                if (Yes) return "Ja";
+                if (No) return "Nein";
+                if (Abstention) return "Enthalten";
+                if (NotSubmitted) return "Nicht abg.";
+                return "Invalide";
+            }
+        }
+
         /// <summary>
         /// Enhaltung
         /// </summary>

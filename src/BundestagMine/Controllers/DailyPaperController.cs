@@ -33,7 +33,7 @@ namespace BundestagMine.Controllers
                 var meetingNumber = int.Parse(splited[0]);
                 var legislaturePeriod = int.Parse(splited[1]);
 
-                var dailyPaperViewModel = _dailyPaperService.BuildDailyPaperViewModelAsync(meetingNumber, legislaturePeriod);
+                var dailyPaperViewModel = _dailyPaperService.BuildDailyPaperViewModel(meetingNumber, legislaturePeriod);
 
 
                 response.status = "200";

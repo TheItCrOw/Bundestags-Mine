@@ -9,6 +9,8 @@ using System.Linq;
 using BundestagMine.Utility;
 using System.Diagnostics;
 using System.Collections;
+using BundestagMine.Logic.HelperModels.DailyPaper;
+using BundestagMine.Models.Database;
 
 namespace BundestagMine.Logic.Services
 {
@@ -87,10 +89,186 @@ namespace BundestagMine.Logic.Services
         }
 
         /// <summary>
+        /// Gets the agendaitems with their speech counts as item2
+        /// </summary>
+        /// <param name="protocolId"></param>
+        /// <param name="period"></param>
+        /// <param name="meetingNumber"></param>
+        /// <returns></returns>
+        private List<(AgendaItem, int)> BuildAgendaItems(Guid protocolId, int period, int meetingNumber) =>
+            _db.AgendaItems
+                    .Where(ag => ag.ProtocolId == protocolId)
+                    .AsEnumerable()
+                    .Select(a =>
+                    (
+                        a,
+                        _metadataService.GetSpeechesCountOfAgendaItem(period, meetingNumber, a.Order)
+                    ))
+                    .OrderBy(t => t.Item1.Order)
+                    .ToList();
+
+        /// <summary>
+        /// Builds the data for the stacked ne chart
+        /// </summary>
+        /// <returns></returns>
+        private DailyPaperViewModel BuildNamedEntitiesOfTheDayChartData(DailyPaperViewModel dailyPaperViewModel)
+        {
+            var data = new List<NamedEntityChartData>();
+            foreach (var ne in dailyPaperViewModel.NamedEntitiesOfTheDay)
+            {
+                // object like: 
+                //  { Count = e.Count(), // This is the amount of occcurences
+                //  Value = e.Key } // This is neg, neu or pos
+                // This is shit with all the dynamics, but its old code...
+                var sentimentOfNe = _annotationService.GetNamedEntityWithCorrespondingSentiment(
+                    ne.Item1.LemmaValue, dailyPaperViewModel.Protocol.Date, dailyPaperViewModel.Protocol.Date, "", "", "");
+                var iterable = ((IEnumerable)sentimentOfNe).Cast<dynamic>();
+                var sentimentData = iterable.Select(i => new SentimentChartData()
+                {
+                    Count = i.Count,
+                    Value = i.Value,
+                }).ToList();
+
+                data.Add(new NamedEntityChartData()
+                {
+                    NamedEntity = ne.Item1.LemmaValue,
+                    NamedEntityOccurences = ne.Item2,
+                    Sentiments = sentimentData
+                });
+
+                // We take this oppurtinity and determine the most neg, neu and pos namedentity.
+                // We do that by calculating by percentage.
+                var neg = iterable.FirstOrDefault(i => i.Value == "neg");
+                var pos = iterable.FirstOrDefault(i => i.Value == "pos");
+                var neu = iterable.FirstOrDefault(i => i.Value == "neu");
+                double total = 0;
+                if (neg?.Count != null) total += neg.Count;
+                if (pos?.Count != null) total += pos.Count;
+                if (neu?.Count != null) total += neu.Count;
+
+                var negPercentage = 100 / (double)total * neg?.Count;
+                if (negPercentage > dailyPaperViewModel.MostNegativNamedEntity.Item2)
+                    dailyPaperViewModel.MostNegativNamedEntity = (ne.Item1.LemmaValue, negPercentage);
+
+                var posPercentage = 100 / (double)total * pos?.Count;
+                if (posPercentage > dailyPaperViewModel.MostPositiveNamedEntity.Item2)
+                    dailyPaperViewModel.MostPositiveNamedEntity = (ne.Item1.LemmaValue, posPercentage);
+
+                var neuPercentage = 100 / (double)total * neu?.Count;
+                if (neuPercentage > dailyPaperViewModel.MostNeutralNamedEntity.Item2)
+                    dailyPaperViewModel.MostNeutralNamedEntity = (ne.Item1.LemmaValue, neuPercentage);
+            }
+            dailyPaperViewModel.NamedEntitiesOfTheDayChartData = data;
+
+            return dailyPaperViewModel;
+        }
+
+        /// <summary>
+        /// Builds the polls
+        /// </summary>
+        /// <param name="period"></param>
+        /// <param name="meetingNumber"></param>
+        /// <returns></returns>
+        private List<(Poll, List<PollChartData>)> BuildPolls(int period, int meetingNumber)
+        {
+            var polls = _db.Polls
+                .Where(p => p.LegislaturePeriod == period && p.ProtocolNumber == meetingNumber)
+                .Include(p => p.Entries)
+                .ToList();
+            var pollData = new List<(Poll, List<PollChartData>)>();
+            // Iterate through them and prepare them for the charts
+            foreach (var poll in polls)
+            {
+                pollData.Add((
+                    poll,
+                    poll.Entries
+                    .GroupBy(e => e.VoteResultAsGermanString)
+                    .Select(g => new PollChartData()
+                    {
+                        Count = g.Count(),
+                        PollResult = g.FirstOrDefault() == null ? "" : g.First().VoteResultAsGermanString
+                    })
+                    .Where(p => !string.IsNullOrEmpty(p.PollResult))
+                    .ToList()
+                ));
+            }
+
+            return pollData;
+        }
+
+        /// <summary>
+        /// Builds the facts and numbers of the paper
+        /// </summary>
+        /// <returns></returns>
+        private DailyPaperViewModel BuildFacts(DailyPaperViewModel dailyPaperViewModel)
+        {
+            // Total speeches
+            dailyPaperViewModel.TotalSpeechesCount = _db.Speeches
+                .Where(s => s.ProtocolNumber == dailyPaperViewModel.Protocol.Number &&
+                    s.LegislaturePeriod == dailyPaperViewModel.Protocol.LegislaturePeriod)
+                .Count();
+
+            // longest speech
+            var longestSpeech = _db.Speeches
+                .Where(s => s.ProtocolNumber == dailyPaperViewModel.Protocol.Number &&
+                    s.LegislaturePeriod == dailyPaperViewModel.Protocol.LegislaturePeriod)
+                .OrderByDescending(s => s.Text.Length)
+                .First();
+            dailyPaperViewModel.LongestSpeech = new SpeechViewModel()
+            {
+                Speech = longestSpeech,
+                Speaker = _db.Deputies.FirstOrDefault(d => d.SpeakerId == longestSpeech.SpeakerId),
+                Agenda = _metadataService.GetAgendaItemOfSpeech(longestSpeech)
+            };
+
+            // most commented deputy
+            // Lets do this without LINQ... speed is not important here and it kinda sucks here
+            var speakerIdToShouts = new Dictionary<string, int>();
+            foreach (var speech in _db.Speeches
+                .Where(s => s.ProtocolNumber == dailyPaperViewModel.Protocol.Number &&
+                    s.LegislaturePeriod == dailyPaperViewModel.Protocol.LegislaturePeriod).ToList())
+            {
+                var shouts = _metadataService.GetActualCommentsOfSpeech(speech);
+                foreach(var shout in shouts)
+                {
+                    if (string.IsNullOrEmpty(shout.SpeakerId)) continue;
+                    // Store the speaker and add up their comments
+                    if (speakerIdToShouts.ContainsKey(shout.SpeakerId))
+                        speakerIdToShouts[shout.SpeakerId] = speakerIdToShouts[shout.SpeakerId] + 1;
+                    else speakerIdToShouts[shout.SpeakerId] = 0;
+                }
+            }
+            dailyPaperViewModel.MostCommentsByDeputy = speakerIdToShouts.OrderByDescending(kv => kv.Value)
+                .Select(kv => (_db.Deputies.FirstOrDefault(d => d.SpeakerId == kv.Key), kv.Value))
+                .FirstOrDefault();
+
+            // most applauded
+            // Lets do this without LINQ... speed is not important here and it kinda sucks here
+            var mostApplaudedSpeech = (new Speech(), 0);
+            foreach(var speech in _db.Speeches
+                .Where(s => s.ProtocolNumber == dailyPaperViewModel.Protocol.Number &&
+                    s.LegislaturePeriod == dailyPaperViewModel.Protocol.LegislaturePeriod).ToList())
+            {
+                var shouts = _metadataService.GetApplaudCommentsOfSpeech(speech);
+                if (shouts.Count > mostApplaudedSpeech.Item2)
+                    mostApplaudedSpeech = (speech, shouts.Count);
+            }
+            dailyPaperViewModel.MostApplaudedSpeech = new SpeechViewModel()
+            {
+                Speech = mostApplaudedSpeech.Item1,
+                Speaker = _db.Deputies.FirstOrDefault(d => d.SpeakerId == mostApplaudedSpeech.Item1.SpeakerId),
+                Agenda = _metadataService.GetAgendaItemOfSpeech(mostApplaudedSpeech.Item1),
+                ApplaudeCount = mostApplaudedSpeech.Item2
+            };
+
+            return dailyPaperViewModel;
+        }
+
+        /// <summary>
         /// Takes in a meetingId and legislaturePeriod and builds the viewmodel data for the paper.
         /// </summary>
         /// <returns></returns>
-        public DailyPaperViewModel BuildDailyPaperViewModelAsync(int meetingNumber, int legislaturePeriod)
+        public DailyPaperViewModel BuildDailyPaperViewModel(int meetingNumber, int legislaturePeriod)
         {
             try
             {
@@ -103,60 +281,13 @@ namespace BundestagMine.Logic.Services
                 if (dailyPaperViewModel.Protocol == default) return null;
 
                 // Get the agenda items
-                dailyPaperViewModel.AgendaItems = _db.AgendaItems
-                    .Where(ag => ag.ProtocolId == dailyPaperViewModel.Protocol.Id)
-                    .AsEnumerable()
-                    .Select(a =>
-                    (
-                        a,
-                        _metadataService.GetSpeechesCountOfAgendaItem(legislaturePeriod, meetingNumber, a.Order)
-                    ))
-                    .OrderBy(t => t.Item1.Order)
-                    .ToList();
+                dailyPaperViewModel.AgendaItems = BuildAgendaItems(dailyPaperViewModel.Protocol.Id, legislaturePeriod, meetingNumber);
 
                 // Determine the theme of the day. That is the ne with the most occurences in all speeches.
                 dailyPaperViewModel.NamedEntitiesOfTheDay = GetSpecialTopicsOfTheDay(meetingNumber, legislaturePeriod);
 
                 // Get the sentiment of each named entity of the day for the stacked bar chart. We sort this in js.
-                var data = new List<dynamic>();
-                foreach (var ne in dailyPaperViewModel.NamedEntitiesOfTheDay)
-                {
-                    // object like: 
-                    //  { Count = e.Count(), // This is the amount of occcurences
-                    //  Value = e.Key } // This is neg, neu or pos
-                    var sentimentOfNe = _annotationService.GetNamedEntityWithCorrespondingSentiment(
-                        ne.Item1.LemmaValue, dailyPaperViewModel.Protocol.Date, dailyPaperViewModel.Protocol.Date, "", "", "");
-                    data.Add(new
-                    {
-                        ne = ne.Item1.LemmaValue,
-                        neOccurences = ne.Item2,
-                        sentiments = sentimentOfNe
-                    });
-
-                    // We take this oppurtinity and determine the most neg, neu and pos namedentity.
-                    // We do that by calculating by percentage.
-                    var iterable = ((IEnumerable)sentimentOfNe).Cast<dynamic>();
-                    var neg = iterable.FirstOrDefault(i => i.Value == "neg");
-                    var pos = iterable.FirstOrDefault(i => i.Value == "pos");
-                    var neu = iterable.FirstOrDefault(i => i.Value == "neu");
-                    double total = 0;
-                    if (neg?.Count != null) total += neg.Count;
-                    if (pos?.Count != null) total += pos.Count;
-                    if (neu?.Count != null) total += neu.Count;
-
-                    var negPercentage = 100 / (double)total * neg?.Count;
-                    if (negPercentage > dailyPaperViewModel.MostNegativNamedEntity.Item2)
-                        dailyPaperViewModel.MostNegativNamedEntity = (ne.Item1.LemmaValue, negPercentage);
-
-                    var posPercentage = 100 / (double)total * pos?.Count;
-                    if (posPercentage > dailyPaperViewModel.MostPositiveNamedEntity.Item2)
-                        dailyPaperViewModel.MostPositiveNamedEntity = (ne.Item1.LemmaValue, posPercentage);
-
-                    var neuPercentage = 100 / (double)total * neu?.Count;
-                    if (neuPercentage > dailyPaperViewModel.MostNeutralNamedEntity.Item2)
-                        dailyPaperViewModel.MostNeutralNamedEntity = (ne.Item1.LemmaValue, neuPercentage);
-                }
-                dailyPaperViewModel.NamedEntitiesOfTheDayChartData = data;
+                dailyPaperViewModel = BuildNamedEntitiesOfTheDayChartData(dailyPaperViewModel);
 
                 // Testing
                 //for (int i = 1; i < 75; i++)
@@ -217,16 +348,21 @@ namespace BundestagMine.Logic.Services
 
                 // Calculate the sentiment foreach fraction
                 var fractionsOfProtocol = _metadataService.GetFractionsOfProtocol(legislaturePeriod, meetingNumber);
-                dailyPaperViewModel.FractionSentimentCharts = new List<(string, dynamic)>();
-                foreach(var fraction in fractionsOfProtocol)
+                dailyPaperViewModel.FractionSentimentCharts = new List<(string, List<SentimentChartData>)>();
+                foreach (var fraction in fractionsOfProtocol)
                 {
                     var sentimentData = _annotationService.GetSentimentsForGraphs(
                     dailyPaperViewModel.Protocol.Date, dailyPaperViewModel.Protocol.Date, fraction, "", "");
-                    // Spaces, slashes and umlaute destroy the js in the frontend.
-                    dailyPaperViewModel.FractionSentimentCharts
-                        .Add((fraction, sentimentData));
+                    dailyPaperViewModel.FractionSentimentCharts.Add((fraction, sentimentData));
                 }
 
+                // Calculate the polls. For the polldata we get objects with the result and their result counts
+                dailyPaperViewModel.Polls = BuildPolls(legislaturePeriod, meetingNumber);
+
+                // Builds the facts
+                dailyPaperViewModel = BuildFacts(dailyPaperViewModel);
+
+                File.WriteAllText("C:\\Users\\Nutzer\\Desktop\\text.json", Newtonsoft.Json.JsonConvert.SerializeObject(dailyPaperViewModel));
                 return dailyPaperViewModel;
             }
             catch (Exception ex)

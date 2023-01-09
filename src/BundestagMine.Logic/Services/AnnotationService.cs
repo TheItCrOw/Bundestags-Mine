@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
+using BundestagMine.Logic.HelperModels.DailyPaper;
 
 namespace BundestagMine.Logic.Services
 {
@@ -187,7 +188,7 @@ namespace BundestagMine.Logic.Services
         /// <param name="party"></param>
         /// <param name="speakerId"></param>
         /// <returns></returns>
-        public dynamic GetSentimentsForGraphs(
+        public List<SentimentChartData> GetSentimentsForGraphs(
             DateTime from,
             DateTime to,
             string fraction,
@@ -202,7 +203,7 @@ namespace BundestagMine.Logic.Services
                 .SelectMany(s => _db.Sentiment.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .AsEnumerable()
                 .GroupBy(t => SentimentScoreToString(t.SentimentSingleScore))
-                .Select(t => new { Element = t.Key, Count = t.Count() })
+                .Select(t => new SentimentChartData { Value = t.Key, Count = t.Count() })
                 .ToList();
             else if (party != string.Empty)
                 return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
@@ -212,7 +213,7 @@ namespace BundestagMine.Logic.Services
                 .SelectMany(s => _db.Sentiment.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .AsEnumerable()
                 .GroupBy(t => SentimentScoreToString(t.SentimentSingleScore))
-                .Select(t => new { Element = t.Key, Count = t.Count() })
+                .Select(t => new SentimentChartData { Value = t.Key, Count = t.Count() })
                 .ToList();
             else if (speakerId != string.Empty)
                 return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
@@ -222,7 +223,7 @@ namespace BundestagMine.Logic.Services
                 .SelectMany(s => _db.Sentiment.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .AsEnumerable()
                 .GroupBy(t => SentimentScoreToString(t.SentimentSingleScore))
-                .Select(t => new { Element = t.Key, Count = t.Count() })
+                .Select(t => new SentimentChartData { Value = t.Key, Count = t.Count() })
                 .ToList();
             else
                 return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
@@ -230,7 +231,7 @@ namespace BundestagMine.Logic.Services
                 .SelectMany(s => _db.Sentiment.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .AsEnumerable()
                 .GroupBy(t => SentimentScoreToString(t.SentimentSingleScore))
-                .Select(t => new { Element = t.Key, Count = t.Count() })
+                .Select(t => new SentimentChartData { Value = t.Key, Count = t.Count() })
                 .ToList();
         }
 

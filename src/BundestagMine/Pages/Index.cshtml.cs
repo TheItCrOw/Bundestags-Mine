@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using BundestagMine.Logic.Services;
 using BundestagMine.Logic.ViewModels.DailyPaper;
 using BundestagMine.Models;
@@ -12,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace BundestagMine.Pages
 {
@@ -38,7 +41,8 @@ namespace BundestagMine.Pages
         public void OnGet()
         {
             // Just for development
-            DailyPaper = _dailyPaperService.BuildDailyPaperViewModelAsync(75, 20);
+            DailyPaper = JsonConvert.DeserializeObject<DailyPaperViewModel>(System.IO.File.ReadAllText("C:\\Users\\Nutzer\\Desktop\\text.json"));
+            //DailyPaper = _dailyPaperService.BuildDailyPaperViewModel(66, 20);
         }
     }
 }

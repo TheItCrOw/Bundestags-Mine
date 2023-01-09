@@ -114,6 +114,17 @@ namespace BundestagMine.Logic.Services
                 .ToList();
 
         /// <summary>
+        /// Gets all applaud comments of a speech
+        /// </summary>
+        /// <param name="speech"></param>
+        /// <returns></returns>
+        public List<Shout> GetApplaudCommentsOfSpeech(Speech speech) => _db.SpeechSegment
+                .Where(ss => ss.SpeechId == speech.Id)
+                .Include(ss => ss.Shouts)
+                .SelectMany(ss => ss.Shouts.Where(sh => sh.Text.ToLower().Contains("beifall")))
+                .ToList();
+
+        /// <summary>
         /// Gets all speakers of a protocol meeting
         /// </summary>
         /// <param name="meeting"></param>
