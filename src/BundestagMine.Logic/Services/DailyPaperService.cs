@@ -16,6 +16,7 @@ namespace BundestagMine.Logic.Services
 {
     public class DailyPaperService
     {
+        private readonly GraphDataService _graphDataService;
         private readonly PixabayApiService _pixabayApiService;
         private readonly AnnotationService _annotationService;
         private readonly MetadataService _metadataService;
@@ -26,8 +27,10 @@ namespace BundestagMine.Logic.Services
             ILogger<DailyPaperService> logger,
             MetadataService metadataService,
             AnnotationService annotationService,
-            PixabayApiService pixabayApiService)
+            PixabayApiService pixabayApiService,
+            GraphDataService graphDataService)
         {
+            _graphDataService = graphDataService;
             _pixabayApiService = pixabayApiService;
             _annotationService = annotationService;
             _metadataService = metadataService;
@@ -361,6 +364,9 @@ namespace BundestagMine.Logic.Services
 
                 // Builds the facts
                 dailyPaperViewModel = BuildFacts(dailyPaperViewModel);
+
+                // Build the comment network
+                dailyPaperViewModel.CommentNetworkData = _graphDataService.GetActualCommentNetworkOfProtocol(legislaturePeriod, meetingNumber);
 
                 File.WriteAllText("C:\\Users\\Nutzer\\Desktop\\text.json", Newtonsoft.Json.JsonConvert.SerializeObject(dailyPaperViewModel));
                 return dailyPaperViewModel;

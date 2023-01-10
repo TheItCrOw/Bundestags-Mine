@@ -21,7 +21,7 @@ namespace BundestagMine.Pages
     public class IndexModel : PageModel
     {
         private readonly DailyPaperService _dailyPaperService;
-        private readonly GraphService _graphService;
+        private readonly GraphDataService _graphService;
         private readonly BundestagMineDbContext _db;
         private readonly ILogger<IndexModel> _logger;
 
@@ -29,7 +29,7 @@ namespace BundestagMine.Pages
 
         public IndexModel(ILogger<IndexModel> logger, 
             BundestagMineDbContext db,
-            GraphService graphService,
+            GraphDataService graphService,
             DailyPaperService dailyPaperService)
         {
             _dailyPaperService = dailyPaperService;
@@ -42,7 +42,7 @@ namespace BundestagMine.Pages
         {
             // Just for development
             DailyPaper = JsonConvert.DeserializeObject<DailyPaperViewModel>(System.IO.File.ReadAllText("C:\\Users\\Nutzer\\Desktop\\text.json"));
-            //DailyPaper = _dailyPaperService.BuildDailyPaperViewModel(66, 20);
+            //DailyPaper = _dailyPaperService.BuildDailyPaperViewModel(69, 20);
         }
     }
 }

@@ -86,7 +86,7 @@ namespace BundestagMine
 
             services.AddTransient<AnnotationService>();
             services.AddTransient<ViewRenderService>();
-            services.AddTransient<GraphService>();
+            services.AddTransient<GraphDataService>();
             services.AddTransient<MetadataService>();
             services.AddTransient<BundestagScraperService>();
             services.AddTransient<TopicAnalysisService>();

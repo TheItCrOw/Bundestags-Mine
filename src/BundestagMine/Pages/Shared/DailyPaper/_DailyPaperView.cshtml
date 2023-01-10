@@ -67,7 +67,7 @@
                             {
                                 var speaker = tuple.Item1;
                                 if (speaker == null) continue;
-                                <p class="open-speaker-inspector" data-id="@speaker.SpeakerId">@speaker.GetFullName() (@speaker.GetOrga()) - @tuple.Item2 Reden</p>
+                                <p class="open-speaker-inspector mb-0" data-id="@speaker.SpeakerId">@speaker.GetFullName() (@speaker.GetOrga()) - @tuple.Item2 Reden</p>
                             }
                         </div>
                     </div>
@@ -149,7 +149,7 @@
                         <script>
                             // Build each sentiment chart
                             $(document).ready(function() {
-                                dailyPaperHandler.buildCommentNetwork('@(Html.Raw(Json.Serialize("")))',
+                                dailyPaperHandler.buildCommentNetwork('@(Html.Raw(Json.Serialize(Model.CommentNetworkData)))',
                                     'CommentNetworkChart-@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)');
                             })
                         </script>
@@ -190,6 +190,7 @@
                         <a href="https://www.artlas.design" target="_blank">
                             <img class="w-100 clickable" src="/img/ARTLAS/artlas-logo.png" />
                         </a>
+                        <p class="mb-0">Jetzt auch mit <b>Online-Shop</b> für erschwingliche Kunst!</p>
                     </div>
                     <hr class="bg-lightgray" />
                     @*polls listed*@

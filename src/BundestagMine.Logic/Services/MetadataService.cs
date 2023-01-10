@@ -21,6 +21,15 @@ namespace BundestagMine.Logic.Services
         }
 
         /// <summary>
+        /// Gets all the speecehs of a protocol
+        /// </summary>
+        /// <param name="period"></param>
+        /// <param name="meetingNumber"></param>
+        /// <returns></returns>
+        public IEnumerable<Speech> GetSpeechesOfProtocol(int period, int meetingNumber) => _db.Speeches
+            .Where(s => s.LegislaturePeriod == period && s.ProtocolNumber == meetingNumber);            
+
+        /// <summary>
         /// Gets the count of speeches in an agendaitem
         /// </summary>
         /// <param name="period"></param>

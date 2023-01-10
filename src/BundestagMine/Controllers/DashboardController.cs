@@ -31,7 +31,7 @@ namespace BundestagMine.Controllers
         private readonly ILogger<DashboardController> _logger;
         private readonly TopicAnalysisService _topicAnalysisService;
         private readonly BundestagScraperService _bundestagScraperService;
-        private readonly GraphService _graphService;
+        private readonly GraphDataService _graphService;
         private readonly MetadataService _metadataService;
         private readonly ViewRenderService _viewRenderService;
         private readonly AnnotationService _annotationService;
@@ -41,7 +41,7 @@ namespace BundestagMine.Controllers
         public DashboardController(BundestagMineDbContext db, AnnotationService tokenService,
             ViewRenderService viewRenderService,
             MetadataService metadataService,
-            GraphService graphService,
+            GraphDataService graphService,
             BundestagScraperService bundestagScraperService,
             TopicAnalysisService topicAnalysisService,
             ILogger<DashboardController> logger,
