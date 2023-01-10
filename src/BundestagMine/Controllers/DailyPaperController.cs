@@ -1,4 +1,5 @@
 ﻿using BundestagMine.Logic.Services;
+using BundestagMine.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,18 +13,21 @@ namespace BundestagMine.Controllers
     public class DailyPaperController : Controller
     {
         private readonly ILogger<DailyPaperController> _logger;
+        private readonly ViewRenderService _viewRenderService;
         private readonly DailyPaperService _dailyPaperService;
 
         public DailyPaperController(ILogger<DailyPaperController> logger, 
-            DailyPaperService dailyPaperService)
+            DailyPaperService dailyPaperService,
+            ViewRenderService viewRenderService)
         {
+            _viewRenderService = viewRenderService;
             _dailyPaperService = dailyPaperService;
             _logger = logger;
         }
 
 
         [HttpGet("/api/DailyPaperController/GetDailyPaperOfProtocol/{meetingAndPeriodNumber}")]
-        public IActionResult GetDailyPaperOfProtocol(string meetingAndPeriodNumber)
+        public async Task<IActionResult> GetDailyPaperOfProtocol(string meetingAndPeriodNumber)
         {
             dynamic response = new ExpandoObject();
 
@@ -33,9 +37,9 @@ namespace BundestagMine.Controllers
                 var meetingNumber = int.Parse(splited[0]);
                 var legislaturePeriod = int.Parse(splited[1]);
 
-                var dailyPaperViewModel = _dailyPaperService.BuildDailyPaperViewModel(meetingNumber, legislaturePeriod);
+                var dailyPaperViewModel = _dailyPaperService.GetDailyPaperAsViewModel(meetingNumber, legislaturePeriod);
 
-
+                response.result = await _viewRenderService.RenderToStringAsync("DailyPaper/_DailyPaperView", dailyPaperViewModel);
                 response.status = "200";
             }
             catch (Exception ex)

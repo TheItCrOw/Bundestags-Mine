@@ -9,6 +9,7 @@ using BundestagMine.Logic.Services;
 using BundestagMine.Logic.ViewModels.DailyPaper;
 using BundestagMine.Models;
 using BundestagMine.SqlDatabase;
+using BundestagMine.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +28,9 @@ namespace BundestagMine.Pages
 
         public DailyPaperViewModel DailyPaper { get; set; }
 
-        public IndexModel(ILogger<IndexModel> logger, 
+        public List<(int, int, string)> ProtocolNumbers { get; set; }
+
+        public IndexModel(ILogger<IndexModel> logger,
             BundestagMineDbContext db,
             GraphDataService graphService,
             DailyPaperService dailyPaperService)
@@ -40,9 +43,14 @@ namespace BundestagMine.Pages
 
         public void OnGet()
         {
-            // Just for development
-            DailyPaper = JsonConvert.DeserializeObject<DailyPaperViewModel>(System.IO.File.ReadAllText("C:\\Users\\Nutzer\\Desktop\\text.json"));
-            //DailyPaper = _dailyPaperService.BuildDailyPaperViewModel(69, 20);
+            // Get all protocols numbers for the dailypaper
+            ProtocolNumbers = _dailyPaperService.GetProtocolsWithDailyPaper()
+                .Select(p => new Tuple<int, int, string>(
+                    p.LegislaturePeriod, p.Number, DateHelper.DateToGermanDate(p.Date)
+                    ).ToValueTuple())
+                .OrderByDescending(t => t.Item1)
+                .ThenByDescending(t => t.Item2)
+                .ToList();
         }
     }
 }

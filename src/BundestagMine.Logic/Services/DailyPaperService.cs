@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Collections;
 using BundestagMine.Logic.HelperModels.DailyPaper;
 using BundestagMine.Models.Database;
+using Newtonsoft.Json;
 
 namespace BundestagMine.Logic.Services
 {
@@ -37,6 +38,36 @@ namespace BundestagMine.Logic.Services
             _logger = logger;
             _db = db;
         }
+
+        /// <summary>
+        /// Gets a dailypaperviewmodel from the db
+        /// </summary>
+        /// <param name="period"></param>
+        /// <param name="number"></param>
+        /// <returns></returns>
+        public DailyPaperViewModel GetDailyPaperAsViewModel(int period, int number)
+        {
+            var dp = _db.DailyPapers.FirstOrDefault(d => d.LegislaturePeriod == period && d.ProtocolNumber == number);
+            if (dp == null) return null;
+            return JsonConvert.DeserializeObject<DailyPaperViewModel>(dp.JsonDataString);
+        }
+
+        /// <summary>
+        /// Gets all protocols without a daily paper to it
+        /// </summary>
+        /// <returns></returns>
+        public List<Protocol> GetProtocolsWithoutDailyPaper() => _db.Protocols
+            .Where(p => !_db.DailyPapers.Any(d => (d.LegislaturePeriod == p.LegislaturePeriod && d.ProtocolNumber == p.Number)))
+            .ToList();
+
+        /// <summary>
+        /// Gets all protocols with a daily paper to it
+        /// </summary>
+        /// <returns></returns>
+        public List<Protocol> GetProtocolsWithDailyPaper() => _db.Protocols
+            .Where(p => _db.DailyPapers
+              .Any(d => d.LegislaturePeriod == p.LegislaturePeriod && d.ProtocolNumber == p.Number))
+            .ToList();
 
         /// <summary>
         /// Gets the special themes of the day ordered and as tuples. Item1:NE, Item2:Count
@@ -268,6 +299,14 @@ namespace BundestagMine.Logic.Services
         }
 
         /// <summary>
+        /// Builds the dailypaper for a given protocol
+        /// </summary>
+        /// <param name="protocol"></param>
+        /// <returns></returns>
+        public DailyPaperViewModel BuildDailyPaperViewModel(Protocol protocol) =>
+            BuildDailyPaperViewModel(protocol.Number, protocol.LegislaturePeriod);
+
+        /// <summary>
         /// Takes in a meetingId and legislaturePeriod and builds the viewmodel data for the paper.
         /// </summary>
         /// <returns></returns>
@@ -291,13 +330,6 @@ namespace BundestagMine.Logic.Services
 
                 // Get the sentiment of each named entity of the day for the stacked bar chart. We sort this in js.
                 dailyPaperViewModel = BuildNamedEntitiesOfTheDayChartData(dailyPaperViewModel);
-
-                // Testing
-                //for (int i = 1; i < 75; i++)
-                //{
-                //    var th = GetSpecialTopicsOfTheDay(i, 20);
-                //    if (th == null) continue;
-                //}
 
                 // Get the thumbnail
                 dailyPaperViewModel.Thumbnail = _pixabayApiService
@@ -368,7 +400,6 @@ namespace BundestagMine.Logic.Services
                 // Build the comment network
                 dailyPaperViewModel.CommentNetworkData = _graphDataService.GetActualCommentNetworkOfProtocol(legislaturePeriod, meetingNumber);
 
-                File.WriteAllText("C:\\Users\\Nutzer\\Desktop\\text.json", Newtonsoft.Json.JsonConvert.SerializeObject(dailyPaperViewModel));
                 return dailyPaperViewModel;
             }
             catch (Exception ex)

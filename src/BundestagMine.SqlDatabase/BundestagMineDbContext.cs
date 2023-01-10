@@ -42,5 +42,6 @@ namespace BundestagMine.SqlDatabase
         public DbSet<PollEntry> PollEntries { get; set; }
         public DbSet<AgendaItem> AgendaItems { get; set; }
         public DbSet<ImportedEntity> ImportedEntities { get; set; }
+        public DbSet<DailyPaper> DailyPapers { get; set; }
     }
 }

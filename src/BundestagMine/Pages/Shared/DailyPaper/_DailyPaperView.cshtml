@@ -3,277 +3,301 @@
 @using BundestagMine.Logic.Services
 @model DailyPaperViewModel
 
-<div class="min-vh-100">
-    <div class="container-fluid h-100 paper-layout">
-        @*header*@
-        <div class="paper-header">
-            <img class="logo" src="/img/logo/Logo_schwarz_transparent_RGB_534x512.png" />
-            <h1>Neues vom Schürfer</h1>
-            <h4>Die aktuellen Ergebnisse der <span class="meeting">@Model.Protocol.Number</span>. Sitzung direkt aus der Bundestags-Mine</h4>
-            <div class="meta">
-                <p>www.bundestag-mine.de</p>
-                <p class="date">@DateHelper.DateToGermanDate(Model.Protocol.Date)</p>
-                <p>@(Model.Protocol.LegislaturePeriod). Legislaturperiode</p>
+@if (Model != null)
+{
+    <div class="min-vh-100">
+        <div class="container-fluid h-100 paper-layout">
+            @*header*@
+            <div class="paper-header">
+                <img class="logo" src="/img/logo/Logo_schwarz_transparent_RGB_534x512.png" />
+                <h1>Neues vom Schürfer</h1>
+                <h4>Die aktuellen Ergebnisse der <span class="meeting">@Model.Protocol.Number</span>. Sitzung direkt aus der Bundestags-Mine</h4>
+                <div class="meta">
+                    <p>www.bundestag-mine.de</p>
+                    <p class="date">@DateHelper.DateToGermanDate(Model.Protocol.Date)</p>
+                    <p>@(Model.Protocol.LegislaturePeriod). Legislaturperiode</p>
+                </div>
             </div>
-        </div>
-        @*content*@
-        <div class="paper-content">
+            @*content*@
+            <div class="paper-content">
 
-            @*the paper is divided into 3 main columns*@
-            <div class="row m-0 p-0">
-                @*left*@
-                <div class="col-xl-2 m-0 left">
-                    @*most commented speech*@
-                    <div class="most-commented-speech">
-                        <h4>Hitzige Rede</h4>
-                        <partial name="~/Pages/Shared/DailyPaper/PaperParts/_SpeechPartView.cshtml" model="@Model.MostCommentedSpeech" />
-                        <button class="btn btn-dark rounded-0 w-100">Ganze Rede lesen</button>
+                @*the paper is divided into 3 main columns*@
+                <div class="row m-0 p-0">
+                    @*left*@
+                    <div class="col-xl-2 m-0 left">
+                        @*most commented speech*@
+                        <div class="most-commented-speech">
+                            <h4>Hitzige Rede</h4>
+                            <partial name="~/Pages/Shared/DailyPaper/PaperParts/_SpeechPartView.cshtml" model="@Model.MostCommentedSpeech" />
+                            <button class="btn btn-dark rounded-0 w-100 open-speech-btn" data-id="@Model.MostCommentedSpeech.Speech.Id">
+                                Ganze Rede lesen
+                            </button>
+                        </div>
+                        <hr class="bg-lightgray" />
+                        @*most negative speech*@
+                        <div class="most-commented-speech">
+                            <h4>Negativste Rede</h4>
+                            <partial name="~/Pages/Shared/DailyPaper/PaperParts/_SpeechPartView.cshtml" model="@Model.MostNegativeSpeech" />
+                            <button class="btn btn-dark rounded-0 w-100 open-speech-btn" data-id="@Model.MostCommentedSpeech.Speech.Id">
+                                Ganze Rede lesen
+                            </button>
+                        </div>
+                        <hr class="bg-lightgray" />
+                        @*most positive speech*@
+                        <div class="most-commented-speech">
+                            <h4>Positivste Rede</h4>
+                            <partial name="~/Pages/Shared/DailyPaper/PaperParts/_SpeechPartView.cshtml" model="@Model.MostPositiveSpeech" />
+                            <button class="btn btn-dark rounded-0 w-100 open-speech-btn" data-id="@Model.MostCommentedSpeech.Speech.Id">
+                                Ganze Rede lesen
+                            </button>
+                        </div>
+                        <hr class="bg-lightgray" />
+                        @*all speakers*@
+                        <div>
+                            <h4>Alle Redner(innen)</h4>
+                            <div class="all-speakers">
+                                @foreach (var tuple in Model.AllSpeakers)
+                                {
+                                    var speaker = tuple.Item1;
+                                    if (speaker == null) continue;
+                                    <p class="open-speaker-inspector mb-0" data-id="@speaker.SpeakerId">@speaker.GetFullName() (@speaker.GetOrga()) - @tuple.Item2 Reden</p>
+                                }
+                            </div>
+                        </div>
+                        <hr class="bg-lightgray" />
                     </div>
-                    <hr class="bg-lightgray" />
-                    @*most negative speech*@
-                    <div class="most-commented-speech">
-                        <h4>Negativste Rede</h4>
-                        <partial name="~/Pages/Shared/DailyPaper/PaperParts/_SpeechPartView.cshtml" model="@Model.MostNegativeSpeech" />
-                        <button class="btn btn-dark rounded-0 w-100">Ganze Rede lesen</button>
-                    </div>
-                    <hr class="bg-lightgray" />
-                    @*commercial bundestags mine*@
-                    <div class="donate">
-                        <h4>[Werbung]</h4>
-                        <p class="mb-0">
-                            Die Bundestags-Mine wird aus eigener Tasche finanziert und ehrenamtlich entwickelt. Es ist ein
-                            Projekt eines Studenten. Über Support
-                            jeglicher Art freuen wir uns sehr - sei es via Spenden oder Feedback. Mehr dazu im Support-Tab
-                            oder direkt hier über den Paypal-Button.
-                        </p>
-                        <img class="w-100 mt-1 mb-1" src="/img/logo/Logo mit Schriftzug_schwarz_transparent_RGB_1024x473.png" />
-                        <a class="btn btn-warning rounded-0 w-100 mt-1 text-black" target="_blank" href="https://www.paypal.com/donate/?hosted_button_id=3HC4L477XZRXU">
-                            Spenden
-                        </a>
-                    </div>
-                    <hr class="bg-lightgray" />
-                    @*most positive speech*@
-                    <div class="most-commented-speech">
-                        <h4>Positivste Rede</h4>
-                        <partial name="~/Pages/Shared/DailyPaper/PaperParts/_SpeechPartView.cshtml" model="@Model.MostPositiveSpeech" />
-                        <button class="btn btn-dark rounded-0 w-100">Ganze Rede lesen</button>
-                    </div>
-                    <hr class="bg-lightgray" />
-                    @*all speakers*@
-                    <div>
-                        <h4>Alle Redner(innen)</h4>
-                        <div class="all-speakers">
-                            @foreach (var tuple in Model.AllSpeakers)
-                            {
-                                var speaker = tuple.Item1;
-                                if (speaker == null) continue;
-                                <p class="open-speaker-inspector mb-0" data-id="@speaker.SpeakerId">@speaker.GetFullName() (@speaker.GetOrga()) - @tuple.Item2 Reden</p>
-                            }
+
+
+                    @*mid*@
+                    <div class="col-xl-8 m-0 mid">
+                        <img src="@Model.Thumbnail?.LargeImageUrl" class="thumbnail" />
+                        <label class="source mb-0">Quelle: Pixabay @Model.Thumbnail?.PageUrl</label>
+                        <hr class="mt-0 mb-3 bg-lightgray" />
+                        @*named entityt*@
+                        <div>
+                            <h3 class="subtitle">Sonderthema des Tages: <b>@(Model.FirstSpecialTopicOfTheDay)</b></h3>
+                            <p>
+                                Die Named-Entity-Analyse hat ergeben, dass vorallem <b>@Model.FirstSpecialTopicOfTheDay</b>,
+                                <b>@Model.SecondSpecialTopicOfTheDay</b> und
+                                <b>@Model.ThirdSpecialTopicOfTheDay</b> in den Reden der Abgeordneten präsent war. Wenig frequentiert waren hingegen
+                                <b>@Model.LastSpecialTopicOfTheDay</b> und <b>@Model.SecondLastSpecialTopicOfTheDay</b>.
+                                Bei diesen Ergebnissen handelt es sich um gefilterte Auswertungen. Named-Entities wie "SPD"
+                                (Inklusive anderer Parteien) oder "Deutschland" sind immer präsent in den Reden und dominieren
+                                die Ergebnisse. Es ist spannender zu sehen, über was neben dieser "Standard-Phrasen" geredet wird.
+                                Daher werden diese hier raus gefiltert.
+                            </p>
+                            @*chart for ne distribution*@
+                            <canvas id="@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-topicBarChart"></canvas>
+                            <label class="source mb-0">Gefilterte NE-Verteilung, sortiert nach Häufigkeit und deren Sentiment-Anteilen</label>
+                        </div>
+                        <hr class="bg-lightgray" />
+                        @*sentiment*@
+                        <div class="sentiments">
+                            <h3 class="subtitle">Die Stimmung war <b>@Model.MeetingMood</b></h3>
+                            <p>
+                                Der durchschnittliche Sentiment lag bei <b>@Model.AverageSentiment.ToString("0.##")</b>,
+                                wobei im Kontext von <b>@Model.MostNegativNamedEntity.Item1</b> zu
+                                <b>@(Model.MostNegativNamedEntity.Item2.ToString("0.##"))%</b> negativ gesprochen wurde.
+                                Positiv dagegen war der Umgang mit <b>@Model.MostPositiveNamedEntity.Item1</b> - hier wurde
+                                zu <b>@(Model.MostPositiveNamedEntity.Item2.ToString("0.##"))%</b> positiv gesprochen.
+                                Mit <b>@(Model.MostNeutralNamedEntity.Item2.ToString("0.##"))%</b> neutralem Sentiment
+                                ging es um <b>@Model.MostNeutralNamedEntity.Item1</b>.
+                            </p>
+                            <h6>Sentiment-Verteilungen nach Fraktion:</h6>
+                            @*chart for sentiment distribution*@
+                            <div class="row m-0 p-0">
+                                <div class="col-lg-3 m-0 p-1">
+                                    <h6>Insgesamt</h6>
+                                    <canvas class="sentiment-chart" id="@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-totalSentimentAreaChart"></canvas>
+                                </div>
+                                @*foreach fraction*@
+                                @foreach (var fraction in Model.FractionSentimentCharts)
+                                {
+                                    var cleanFraction = DateHelper.ConvertGermanUmlaute(fraction.Item1.Replace(" ", "").Replace("/", ""));
+                                    <div class="col-lg-3 m-0 p-1">
+                                        <h6>@fraction.Item1</h6>
+                                        <canvas class="sentiment-chart" id="@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-@(cleanFraction)SentimentChart"></canvas>
+                                        <script>
+                                            // Build each sentiment chart
+                                            $(document).ready(function() {
+                                                dailyPaperHandler.buildSentimentChart('@(Html.Raw(Json.Serialize(fraction.Item2)))',
+                                                    '@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-@(cleanFraction)SentimentChart');
+                                            })
+                                        </script>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <hr class="bg-lightgray" />
+                        @*Comments network*@
+                        <div>
+                            <h3 class="subtitle">Es wurde kommentiert</h3>
+                            <p>
+                                Auch dieses mal gab es wieder Feedback von den Zuhörenden in Form von Kommentaren und Rufen. Das
+                                Kommentar-Netzwerk visualisiert diese. Die Knoten stehen dabei jeweils für einen Redenden, eine
+                                Kante bedeutet, dass mindestens ein Kommentar zwischen den beiden verbundenen Redenden stattfand.
+                                Die Farbe der Knoten indiziert die Fraktion/Partei. Die Breite der Kanten zeigt die Menge der
+                                Kommentare zwischen den beiden verbundenen Knoten. Die Farbe der Kante ergibt sich aus dem
+                                Durchschnitts-Sentiment aller Kommentare dieser Kante. <br />
+                                <b>Hinweis:</b> Sarkastische Kommentare werden häufig als positiver Sentiment aufgefasst, obwohl diese
+                                klar negativ gemeint sind.
+                            </p>
+                            @*chart for comment distribution*@
+                            <div class="comment-network-chart" id="CommentNetworkChart-@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)"></div>
+                            <script>
+                                // Build each sentiment chart
+                                $(document).ready(function() {
+                                    dailyPaperHandler.buildCommentNetwork('@(Html.Raw(Json.Serialize(Model.CommentNetworkData)))',
+                                        'CommentNetworkChart-@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)');
+                                })
+                            </script>
+                            <label class="source mb-0">Kommentar-Netzwerk (Beinhaltet keinen Applaus)</label>
                         </div>
                     </div>
-                    <hr class="bg-lightgray" />
-                </div>
 
 
-                @*mid*@
-                <div class="col-xl-8 m-0 mid">
-                    <img src="@Model.Thumbnail?.LargeImageUrl" class="thumbnail" />
-                    <label class="source mb-0">Quelle: Pixabay @Model.Thumbnail?.PageUrl</label>
-                    <hr class="mt-0 mb-3 bg-lightgray" />
-                    @*named entityt*@
-                    <div>
-                        <h3 class="subtitle">Sonderthema des Tages: <b>@(Model.FirstSpecialTopicOfTheDay)</b></h3>
-                        <p>
-                            Die Named-Entity-Analyse hat ergeben, dass vorallem <b>@Model.FirstSpecialTopicOfTheDay</b>,
-                            <b>@Model.SecondSpecialTopicOfTheDay</b> und
-                            <b>@Model.ThirdSpecialTopicOfTheDay</b> in den Reden der Abgeordneten präsent war. Wenig frequentiert waren hingegen
-                            <b>@Model.LastSpecialTopicOfTheDay</b> und <b>@Model.SecondLastSpecialTopicOfTheDay</b>.
-                            Bei diesen Ergebnissen handelt es sich um gefilterte Auswertungen. Named-Entities wie "SPD"
-                            (Inklusive anderer Parteien) oder "Deutschland" sind immer präsent in den Reden und dominieren
-                            die Ergebnisse. Es ist spannender zu sehen, über was neben dieser "Standard-Phrasen" geredet wird.
-                            Daher werden diese hier raus gefiltert.
-                        </p>
-                        @*chart for ne distribution*@
-                        <canvas id="@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-topicBarChart"></canvas>
-                        <label class="source mb-0">Gefilterte NE-Verteilung, sortiert nach Häufigkeit und deren Sentiment-Anteilen</label>
-                    </div>
-                    <hr class="bg-lightgray" />
-                    @*sentiment*@
-                    <div class="sentiments">
-                        <h3 class="subtitle">Die Stimmung war <b>@Model.MeetingMood</b></h3>
-                        <p>
-                            Der durchschnittliche Sentiment lag bei <b>@Model.AverageSentiment.ToString("0.##")</b>,
-                            wobei im Kontext von <b>@Model.MostNegativNamedEntity.Item1</b> zu
-                            <b>@(Model.MostNegativNamedEntity.Item2.ToString("0.##"))%</b> negativ gesprochen wurde.
-                            Positiv dagegen war der Umgang mit <b>@Model.MostPositiveNamedEntity.Item1</b> - hier wurde
-                            zu <b>@(Model.MostPositiveNamedEntity.Item2.ToString("0.##"))%</b> positiv gesprochen.
-                            Mit <b>@(Model.MostNeutralNamedEntity.Item2.ToString("0.##"))%</b> neutralem Sentiment
-                            ging es um <b>@Model.MostNeutralNamedEntity.Item1</b>.
-                        </p>
-                        <h6>Sentiment-Verteilungen nach Fraktion:</h6>
-                        @*chart for sentiment distribution*@
-                        <div class="row m-0 p-0">
-                            <div class="col-lg-3 m-0 p-1">
-                                <h6>Insgesamt</h6>
-                                <canvas class="sentiment-chart" id="@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-totalSentimentAreaChart"></canvas>
-                            </div>
-                            @*foreach fraction*@
-                            @foreach (var fraction in Model.FractionSentimentCharts)
+                    @*right*@
+                    <div class="col-xl-2 m-0 right">
+                        @*agenda items listed*@
+                        <div class="agenda">
+                            <h4>Die Agenda</h4>
+                            <p>Folgende Tagesordnungspunkte standen an:</p>
+                            <p class="list">
+                                @for (var i = 0; i < Model.AgendaItems.Count; i++)
+                                {
+                                    <span class="read-more-agenda" data-text="@Model.AgendaItems[i].Item1.Description">
+                                        @(i + 1). @(Model.AgendaItems[i].Item1.Title)
+                                    </span>
+                                    <br />
+                                }
+                            </p>
+                            <p>
+                                Der beliebteste Tagesordnungspunkt mit den meisten Reden war dabei
+                                <b>@Model.MostSpeechesAgendaItem.Item1</b> mit <b>@Model.MostSpeechesAgendaItem.Item2</b> Reden, gefolgt von
+                                <b>@Model.SecondMostSpeechesAgendaItem.Item1</b> mit <b>@Model.SecondMostSpeechesAgendaItem.Item2</b> Reden.
+                                Das Schlusslicht war <b>@Model.LastMostSpeechesAgendaItem.Item1</b> mit nur <b>@Model.LastMostSpeechesAgendaItem.Item2</b> Reden.
+                            </p>
+                            <canvas class="agenda-chart" id="@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-agendaBarChart"></canvas>
+                            <label class="source mb-0">Anzahl der Reden pro Tagesordnungspunkt</label>
+                        </div>
+                        <hr class="bg-lightgray" />
+                        @*commercial artlas*@
+                        <div>
+                            <h4>[Werbung]</h4>
+                            <p class="mb-0">Logo und Erklärvideo der Bundestags-Mine angefertigt von <b>ARTLAS DESIGNS</b></p>
+                            <a href="https://www.artlas.design" target="_blank">
+                                <img class="w-100 clickable" src="/img/ARTLAS/artlas-logo.png" />
+                            </a>
+                            <p class="mb-0">Jetzt auch mit <b>Online-Shop</b> für erschwingliche Kunst!</p>
+                        </div>
+                        <hr class="bg-lightgray" />
+                        @*about the paper*@
+                        <div>
+                            <h4>Über den Schürfer</h4>
+                            <p>
+                                Der Schürfer ist eine Bezeichnung für die künstliche Intelligenz, welcher die Daten des
+                                Bundestags unterzogen werden. Jede Ausgabe des Schürfers wurde automatisch generiert und
+                                gebaut - es steckt keine Menschenhand dahinter.
+                            </p>
+                        </div>
+                        <hr class="bg-lightgray" />
+                        @*polls listed*@
+                        <div class="polls">
+                            <h4>Abstimmungen</h4>
+                            <p>In der Sitzung wurden <b>@Model.Polls.Count</b> namentliche Abstimmungen getätigt.</p>
+                            @foreach (var poll in Model.Polls)
                             {
-                                var cleanFraction = DateHelper.ConvertGermanUmlaute(fraction.Item1.Replace(" ", "").Replace("/", ""));
-                                <div class="col-lg-3 m-0 p-1">
-                                    <h6>@fraction.Item1</h6>
-                                    <canvas class="sentiment-chart" id="@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-@(cleanFraction)SentimentChart"></canvas>
+                                <div class="poll">
+                                    <h6 class="open-poll" data-id="@poll.Item1.Id">@poll.Item1.Title</h6>
+                                    <canvas class="poll-chart" id="@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-@(poll.Item1.Id)BarChart"></canvas>
                                     <script>
                                         // Build each sentiment chart
                                         $(document).ready(function() {
-                                            dailyPaperHandler.buildSentimentChart('@(Html.Raw(Json.Serialize(fraction.Item2)))',
-                                                '@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-@(cleanFraction)SentimentChart');
+                                            dailyPaperHandler.buildPollBarChart('@(Html.Raw(Json.Serialize(poll.Item2)))',
+                                                '@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-@(poll.Item1.Id)BarChart');
                                         })
                                     </script>
                                 </div>
                             }
-                        </div>
-                    </div>
-                    <hr class="bg-lightgray" />
-                    @*Comments network*@
-                    <div>
-                        <h3 class="subtitle">Es wurde kommentiert</h3>
-                        <p>
-                            Auch dieses mal gab es wieder Feedback von den Zuhörenden in Form von Kommentaren und Rufen. Das
-                            Kommentar-Netzwerk visualisiert diese. Die Knoten stehen dabei jeweils für einen Redenden, eine
-                            Kante bedeutet, dass mindestens ein Kommentar zwischen den beiden verbundenen Redenden stattfand.
-                        </p>
-                        @*chart for comment distribution*@
-                        <div class="comment-network-chart" id="CommentNetworkChart-@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)"></div>
-                        <script>
-                            // Build each sentiment chart
-                            $(document).ready(function() {
-                                dailyPaperHandler.buildCommentNetwork('@(Html.Raw(Json.Serialize(Model.CommentNetworkData)))',
-                                    'CommentNetworkChart-@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)');
-                            })
-                        </script>
-                        <label class="source mb-0">Kommentar-Netzwerk</label>
-                    </div>
-                </div>
-
-
-                @*right*@
-                <div class="col-xl-2 m-0 right">
-                    @*agenda items listed*@
-                    <div class="agenda">
-                        <h4>Die Agenda</h4>
-                        <p>Folgende Tagesordnungspunkte standen an:</p>
-                        <p class="list">
-                            @for (var i = 0; i < Model.AgendaItems.Count; i++)
-                            {
-                                <span class="read-more-agenda" data-text="@Model.AgendaItems[i].Item1.Description">
-                                    @(i + 1). @(Model.AgendaItems[i].Item1.Title)
-                                </span>
-                                <br />
-                            }
-                        </p>
-                        <p>
-                            Der beliebteste Tagesordnungspunkt mit den meisten Reden war dabei
-                            <b>@Model.MostSpeechesAgendaItem.Item1</b> mit <b>@Model.MostSpeechesAgendaItem.Item2</b> Reden, gefolgt von
-                            <b>@Model.SecondMostSpeechesAgendaItem.Item1</b> mit <b>@Model.SecondMostSpeechesAgendaItem.Item2</b> Reden.
-                            Das Schlusslicht war <b>@Model.LastMostSpeechesAgendaItem.Item1</b> mit nur <b>@Model.LastMostSpeechesAgendaItem.Item2</b> Reden.
-                        </p>
-                        <canvas class="agenda-chart" id="@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-agendaBarChart"></canvas>
-                        <label class="source mb-0">Anzahl der Reden pro Tagesordnungspunkt</label>
-                    </div>
-                    <hr class="bg-lightgray" />
-                    @*commercial artlas*@
-                    <div>
-                        <h4>[Werbung]</h4>
-                        <p class="mb-0">Logo und Erklärvideo der Bundestags-Mine angefertigt von <b>ARTLAS DESIGNS</b></p>
-                        <a href="https://www.artlas.design" target="_blank">
-                            <img class="w-100 clickable" src="/img/ARTLAS/artlas-logo.png" />
-                        </a>
-                        <p class="mb-0">Jetzt auch mit <b>Online-Shop</b> für erschwingliche Kunst!</p>
-                    </div>
-                    <hr class="bg-lightgray" />
-                    @*polls listed*@
-                    <div class="polls">
-                        <h4>Abstimmungen</h4>
-                        <p>In der Sitzung wurden <b>@Model.Polls.Count</b> namentliche Abstimmungen getätigt.</p>
-                        @foreach (var poll in Model.Polls)
-                        {
-                            <div class="poll">
-                                <h6 class="open-poll" data-id="@poll.Item1.Id">@poll.Item1.Title</h6>
-                                <canvas class="poll-chart" id="@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-@(poll.Item1.Id)BarChart"></canvas>
-                                <script>
-                                    // Build each sentiment chart
-                                    $(document).ready(function() {
-                                        dailyPaperHandler.buildPollBarChart('@(Html.Raw(Json.Serialize(poll.Item2)))',
-                                            '@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-@(poll.Item1.Id)BarChart');
-                                    })
-                                </script>
+                            <div class="flexed justify-content-between align-items-center mt-1 flex-wrap">
+                                <label class="mr-1 mb-0" style="color:#8acd00">Ja</label>
+                                <label class="mr-1 mb-0" style="color:#e70097">Nein</label>
+                                <label class="mr-1 mb-0" style="color:#00b2dc">Enthalten</label>
+                                <label class="mb-0" style="color:#b1b3b4">Nicht abg.</label>
                             </div>
-                        }
-                        <div class="flexed justify-content-between align-items-center mt-1 flex-wrap">
-                            <label class="mr-1 mb-0" style="color:#8acd00">Ja</label>
-                            <label class="mr-1 mb-0" style="color:#e70097">Nein</label>
-                            <label class="mr-1 mb-0" style="color:#00b2dc">Enthalten</label>
-                            <label class="mb-0" style="color:#b1b3b4">Nicht abg.</label>
                         </div>
+                        <hr class="bg-lightgray" />
+                        @*commercial bundestags mine*@
+                        <div class="donate">
+                            <h4>[Werbung]</h4>
+                            <p class="mb-0">
+                                Die Bundestags-Mine wird aus eigener Tasche finanziert und ehrenamtlich entwickelt. Es ist ein
+                                Projekt eines Studenten. Über Support
+                                jeglicher Art freuen wir uns sehr - sei es via Spenden oder Feedback. Mehr dazu im Support-Tab
+                                oder direkt hier über den Paypal-Button.
+                            </p>
+                            <img class="w-100 mt-1 mb-1" src="/img/logo/Logo mit Schriftzug_schwarz_transparent_RGB_1024x473.png" />
+                            <a class="btn btn-warning rounded-0 w-100 mt-1 text-black" target="_blank" href="https://www.paypal.com/donate/?hosted_button_id=3HC4L477XZRXU">
+                                Spenden
+                            </a>
+                        </div>
+                        <hr class="bg-lightgray" />
+                        @*Numbers and facts*@
+                        <div class="numbers">
+                            <h4>Zahlen und Fakten</h4>
+                            <p>
+                                @{
+                                    var length = Model.TotalSpeechesCount > 110 ? "lange" : "kurze";
+                                }
+                                Die Sitzung war mit <b>@Model.TotalSpeechesCount</b> Reden eine vergleichsweise
+                                @length.<br />
+                                Die längste Rede hielt <b>@Model.LongestSpeech.Speaker.GetFullName()</b>
+                                von der @Model.LongestSpeech.Speaker.GetOrga() mit
+                                <b>@Model.LongestSpeech.Speech.Text.Split(" ").Length</b> Worten zum Tagesordungspunkt
+                                <b>@Model.LongestSpeech.Agenda.Title</b>.<br />
+                                Am Meisten kommentiert wurde von <b>@Model.MostCommentsByDeputy.Item1?.GetFullName()</b>
+                                von der <b>@Model.MostCommentsByDeputy.Item1?.GetOrga()</b> mit insgesamt
+                                <b>@Model.MostCommentsByDeputy.Item2</b> Kommentaren.<br />
+                                Den meisten Beifall bekam die Rede von <b>@Model.MostApplaudedSpeech.Speaker.GetFullName()</b>
+                                zum Punkt <b>@Model.MostApplaudedSpeech.Agenda?.Title</b>.<br />
+                                Die meisten Reden hielt <b>@Model.MostSpeechesByDeputy.Item1?.GetFullName()</b>
+                                mit insgesamt <b>@Model.MostSpeechesByDeputy.Item2</b> Reden.<br />
+                            </p>
+                        </div>
+                        <hr class="bg-lightgray" />
+                        @*commercial ttl*@
+                        <div>
+                            <h4>[Werbung]</h4>
+                            <p>Alle NLP-Analysen stammen vom Text Technology Lab</p>
+                            <a href="https://www.texttechnologylab.org/" target="_blank">
+                                <img class="w-100 img-shadow clickable" src="/img/ttl-logo-white.png" />
+                            </a>
+                        </div>
+                        <hr class="bg-lightgray" />
                     </div>
-                    <hr class="bg-lightgray" />
-                    @*Numbers and facts*@
-                    <div class="numbers">
-                        <h4>Zahlen und Fakten</h4>
-                        <p>
-                            @{
-                                var length = Model.TotalSpeechesCount > 110 ? "lange" : "kurze";
-                            }
-                            Die Sitzung war mit <b>@Model.TotalSpeechesCount</b> Reden eine vergleichsweise
-                            @length.<br />
-                            Die längste Rede hielt <b>@Model.LongestSpeech.Speaker.GetFullName()</b>
-                            von der @Model.LongestSpeech.Speaker.GetOrga() mit
-                            <b>@Model.LongestSpeech.Speech.Text.Split(" ").Length</b> Worten zum Tagesordungspunkt
-                            <b>@Model.LongestSpeech.Agenda.Title</b>.<br />
-                            Am Meisten kommentiert wurde von <b>@Model.MostCommentsByDeputy.Item1?.GetFullName()</b>
-                            von der <b>@Model.MostCommentsByDeputy.Item1?.GetOrga()</b> mit insgesamt
-                            <b>@Model.MostCommentsByDeputy.Item2</b> Kommentaren.<br />
-                            Den meisten Beifall bekam die Rede von <b>@Model.MostApplaudedSpeech.Speaker.GetFullName()</b>
-                            zum Punkt <b>@Model.MostApplaudedSpeech.Agenda?.Title</b>.<br />
-                            Die meisten Reden hielt <b>@Model.MostSpeechesByDeputy.Item1?.GetFullName()</b>
-                            mit insgesamt <b>@Model.MostSpeechesByDeputy.Item2</b> Reden.<br />
-                        </p>
-                    </div>
-                    <hr class="bg-lightgray" />
-                    @*commercial ttl*@
-                    <div>
-                        <h4>[Werbung]</h4>
-                        <p>Alle NLP-Analysen stammen vom Text Technology Lab</p>
-                        <a href="https://www.texttechnologylab.org/" target="_blank">
-                            <img class="w-100 img-shadow clickable" src="/img/ttl-logo-white.png" />
-                        </a>
-                    </div>
-                    <hr class="bg-lightgray" />
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    // Build the charts.
-    $(document).ready(function() {
+    <script>
+        // Build the charts.
+        $(document).ready(function() {
 
-        // Builds the topic chart. We pass in the data and the id of the chart canvas
-        var topicChartData = '@(Html.Raw(Json.Serialize(Model.NamedEntitiesOfTheDayChartData)))';
-        dailyPaperHandler.buildTopicSentimentStackedBarChart(topicChartData, '@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-topicBarChart');
+            // Builds the topic chart. We pass in the data and the id of the chart canvas
+            var topicChartData = '@(Html.Raw(Json.Serialize(Model.NamedEntitiesOfTheDayChartData)))';
+            dailyPaperHandler.buildTopicSentimentStackedBarChart(topicChartData, '@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-topicBarChart');
 
-        // Builds the agenda chart. We pass in the data and the id of the chart canvas
-        var agendaChartData = '@(Html.Raw(Json.Serialize(Model.GetChartFormattedAgendaItems)))';
-        dailyPaperHandler.buildAgendaBarChart(agendaChartData, '@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-agendaBarChart');
+            // Builds the agenda chart. We pass in the data and the id of the chart canvas
+            var agendaChartData = '@(Html.Raw(Json.Serialize(Model.GetChartFormattedAgendaItems)))';
+            dailyPaperHandler.buildAgendaBarChart(agendaChartData, '@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-agendaBarChart');
 
-        // Builds the total sentiment chart chart. We pass in the data and the id of the chart canvas
-        var totalSentimentChartData = '@(Html.Raw(Json.Serialize(Model.TotalSentimentChartDistribution)))';
-        dailyPaperHandler.buildSentimentChart(totalSentimentChartData, '@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-totalSentimentAreaChart');
+            // Builds the total sentiment chart chart. We pass in the data and the id of the chart canvas
+            var totalSentimentChartData = '@(Html.Raw(Json.Serialize(Model.TotalSentimentChartDistribution)))';
+            dailyPaperHandler.buildSentimentChart(totalSentimentChartData, '@(Model.Protocol.LegislaturePeriod)-@(Model.Protocol.Number)-totalSentimentAreaChart');
 
-        //activate popovers
-        $('[data-toggle="popover"]').popover();
-    })
-</script>
+            //activate popovers
+            $('[data-toggle="popover"]').popover();
+        })
+    </script>
+}

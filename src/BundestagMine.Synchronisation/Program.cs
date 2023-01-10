@@ -1,9 +1,11 @@
-﻿using BundestagMine.Models.Database;
+﻿using BundestagMine.Logic.Services;
+using BundestagMine.Models.Database;
 using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.MongoDB;
 using BundestagMine.SqlDatabase;
 using BundestagMine.Synchronisation.Services;
 using BundestagMine.Utility;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -25,6 +27,8 @@ namespace BundestagMine.Synchronisation
         // We need a englisch format date, since the IIS on the server only works with those...
         private static string _fullLogFileName = $"{ConfigManager.GetImportLogOutputPath()}{DateTime.Now.ToString("yyyy-MM-dd")}.txt";
 
+        private static IServiceProvider serviceProvider;
+
         static void Main(string[] args)
         {
             // Creates a log set of 20 MB files like:
@@ -39,6 +43,29 @@ namespace BundestagMine.Synchronisation
 
             try
             {
+                // Setup all the services needed for the synchronisation
+                IServiceCollection services = new ServiceCollection();
+                services.AddLogging(c => c.ClearProviders());
+                services.AddTransient<AnnotationService>();
+                services.AddTransient<GraphDataService>();
+                services.AddTransient<MetadataService>();
+                services.AddTransient<BundestagScraperService>();
+                services.AddTransient<TopicAnalysisService>();
+                services.AddTransient<ImportService>();
+                services.AddTransient<GlobalSearchService>();
+                services.AddTransient<DownloadCenterService>();
+                services.AddTransient<DailyPaperService>();
+                services.AddTransient<PixabayApiService>();
+                // Add the default db context
+                services.AddDbContext<BundestagMineDbContext>(
+                    option => option.UseSqlServer(ConfigManager.GetConnectionString(), o => o.CommandTimeout(600)));
+                // Add the token db context
+                services.AddDbContext<BundestagMineTokenDbContext>(
+                    option => option.UseSqlServer(ConfigManager.GetTokenDbConnectionString(), o => o.CommandTimeout(600)));
+
+                serviceProvider = services.BuildServiceProvider();
+
+
                 MainAsync().GetAwaiter().GetResult();
             }
             catch (Exception ex)
@@ -70,25 +97,51 @@ namespace BundestagMine.Synchronisation
             var parser = new ImportedEntityParser();
             var entityResult = await parser.ParseNewPotentialEntities();
 
-            Log.Information("============================================================================");
-            Log.Information("Checking new AGENDA ITEMS");
-            Log.Information("============================================================================");
-            var scraper = new BundestagScraper();
-            var agendaItemResult = scraper.FetchNewAgendaItems();
+            //Log.Information("============================================================================");
+            //Log.Information("Checking new AGENDA ITEMS");
+            //Log.Information("============================================================================");
+            //var scraper = new BundestagScraper();
+            //var agendaItemResult = scraper.FetchNewAgendaItems();
+
+            //Log.Information("============================================================================");
+            //Log.Information("Checking new POLLS");
+            //Log.Information("============================================================================");
+            //Log.Information("Exporting polls from Bundestag...");
+            //var exportPollsResult = scraper.ExportAbstimmungslisten();
+
+            //Log.Information("Importing polls into database...");
+            //var importer = new ExcelImporter();
+            //Log.Information("XLSX ======================================");
+            //importer.ImportXLSXPolls();
+            //Log.Information("XLS  ======================================");
+            //importer.ImportXLSPolls();
 
             Log.Information("============================================================================");
-            Log.Information("Checking new POLLS");
+            Log.Information("Building the new Daily Papers");
             Log.Information("============================================================================");
-            Log.Information("Exporting polls from Bundestag...");
-            var exportPollsResult = scraper.ExportAbstimmungslisten();
+            using (var db = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
+            {
+                //Foreach protocol without a daily paper - build the daily paper.
+                foreach (var protocol in serviceProvider.GetService<DailyPaperService>().GetProtocolsWithoutDailyPaper())
+                {
+                    try
+                    {
+                        Log.Information($"Creating daily paper for protocol: {protocol.LegislaturePeriod}, " +
+                            $"{protocol.Number}");
+                        var dailyPaper = BuildDailyPaper(protocol);
+                        db.DailyPapers.Add(dailyPaper);
+                        db.SaveChanges();
+                        Log.Information($"Saved!");
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, $"Error building the daily paper for protocol: " +
+                            $"{protocol.LegislaturePeriod},{protocol.Number}");
+                    }
+                }
+            }
 
-            Log.Information("Importing polls into database...");
-            var importer = new ExcelImporter();
-            Log.Information("XLSX ======================================");
-            importer.ImportXLSXPolls();
-            Log.Information("XLS  ======================================");
-            importer.ImportXLSPolls();
-
+            // Graphs
             if (CacheService.NewProtocolsStored == 0)
             {
                 Log.Information("No new entities imported, therefore no graph calculations need to be done.");
@@ -145,10 +198,28 @@ namespace BundestagMine.Synchronisation
             Log.CloseAndFlush();
 
             // Send a mail about the import.
-            MailManager.SendMail($"Import-Bericht {curDate.ToShortDateString()}",
-                $"Stati:<br/>Entity-Import: {entityResult}<br/>Agenda-Scrape: {agendaItemResult}<br/>Polls-Scrape: {exportPollsResult}<br/><br/>Log im Anhang.",
-                ConfigManager.GetImportReportRecipients(),
-                new List<Attachment> { new Attachment(_fullLogFileName) });
+            //MailManager.SendMail($"Import-Bericht {curDate.ToShortDateString()}",
+            //    $"Stati:<br/>Entity-Import: {entityResult}<br/>Agenda-Scrape: {agendaItemResult}<br/>Polls-Scrape: {exportPollsResult}<br/><br/>Log im Anhang.",
+            //    ConfigManager.GetImportReportRecipients(),
+            //    new List<Attachment> { new Attachment(_fullLogFileName) });
+        }
+
+        /// <summary>
+        /// Builds the daily paper to a given protocol
+        /// </summary>
+        /// <param name="protocol"></param>
+        /// <returns></returns>
+        private static DailyPaper BuildDailyPaper(Protocol protocol)
+        {
+            return new DailyPaper()
+            {
+                Created = DateTime.Now,
+                ProtocolDate = protocol.Date,
+                ProtocolNumber = protocol.Number,
+                JsonDataString = JsonConvert.SerializeObject(
+                    serviceProvider.GetService<DailyPaperService>().BuildDailyPaperViewModel(protocol)),
+                LegislaturePeriod = protocol.LegislaturePeriod,
+            };
         }
     }
 }

@@ -233,7 +233,6 @@
     DailyPaperHandler.prototype.buildCommentNetwork = async function (data, graphId) {
         data = JSON.parse(data);
         console.log(data);
-
         // We need this for coloring the nodes
         function getColorOfParty(party) {
             if (party.toLowerCase().includes('cdu') || party.toLowerCase().includes('csu')) {
@@ -246,14 +245,14 @@
                 return 'dodgerblue';
             } else if (party.toLowerCase().includes('linke')) {
                 return 'purple';
-            } else if (party.includes('NDNIS')) {
+            } else if (party.toLowerCase().includes('ndnis')) {
                 return 'green';
             } else {
                 return 'gray';
             }
         }
 
-        // Need this for coloring the sentiment
+        // Needed for coloring the links
         function getColorOfSentiment(sentiment) {
             if (sentiment == 0.0) {
                 return 'steelblue';
@@ -365,8 +364,60 @@
         }
     }
 
+    // Loads a new daily paper and shows it
+    DailyPaperHandler.prototype.loadNewDailyPaper = async function (period, protocolNumber) {
+        // Show loading
+        $('#dailyPaperContent .loader').fadeIn(250);
+        // Get the new rendered daily paper
+        var view = await getDailyPaper(period, protocolNumber);
+        // add the html
+        $('#dailyPaperContent .actual-paper-container').html(view);
+        // disable loader
+        $('#dailyPaperContent .loader').fadeOut(250);
+    }
+
+    // Inits the handler. That is the up most paper in the dropdown
+    DailyPaperHandler.prototype.init = async function () {
+        // We build the newest daily paper in the init
+        var selected = $('#dailyPaperContent .daily-papers-select').find("option:selected");
+        var param = selected.data('param').split(',');
+        var period = param[0];
+        var protocolNumber = param[1];
+
+        dailyPaperHandler.loadNewDailyPaper(period, protocolNumber);
+    }
+
     return DailyPaperHandler;
 }());
 
 // Use this item to call all globalsearch logic
 var dailyPaperHandler = new DailyPaperHandler();
+
+// Handle the exapnding of the paper to fullscreen
+$('body').on('click', '#dailyPaperContent .fullscreen-btn', function () {
+    // For that, we just disable the sidemenu for now
+    var menu = $('.sidebar');
+    if (menu.hasClass('toggled')) {
+        menu.removeClass('toggled');
+        menu.show();
+    } else {
+        menu.addClass('toggled');
+        menu.hide();
+    }
+})
+
+// Handle the opening of the mailing list
+$('body').on('click', '#dailyPaperContent .mail-list-btn', function () {
+    // For that, we just disable the sidemenu for now
+    $('#dailyPaperMailingListModal').modal('show');
+})
+
+// Handle the switching of the daily papers
+$('body').on('change', '#dailyPaperContent .daily-papers-select', async function () {
+    var selected = $(this).find("option:selected");
+    var param = selected.data('param').split(',');
+    var period = param[0];
+    var protocolNumber = param[1];
+
+    dailyPaperHandler.loadNewDailyPaper(period, protocolNumber);
+})

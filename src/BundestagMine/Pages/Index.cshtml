@@ -51,7 +51,7 @@
     <!-- Page Wrapper -->
     <div id="wrapper">
         <!-- Sidebar -->
-        <ul class="navbar-nav sidebar side-bar-shadow bg-darkprime accordion" id="accordionSidebar">
+        <ul class="navbar-nav sidebar side-bar-shadow bg-darkprime accordion" id="accordionSidebar" data-expanded="true">
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand p-2 d-flex mt-2 align-items-center selected-nav-item justify-content-center nav-item nav-item-switcher" data-id="homeContent">
                 <img src="~/img/logo/Logo_weiß_transparent_RGB_534x512.png" class="menu-icon" />
@@ -66,7 +66,7 @@
             <li class="nav-item active nav-item-switcher" data-id="dailyPaperContent">
                 <a class="nav-link">
                     <i class="fas fa-newspaper"></i>
-                    <span>Neues vom Schürfer (IM AUFBAU)</span>
+                    <span>Neues vom Schürfer</span>
                 </a>
             </li>
 
@@ -177,7 +177,7 @@
             <nav class="navbar navbar-expand bg-warning static-top justify-content-between">
                 <!-- Sidebar Toggle (Topbar) -->
                 <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3"
-                        onclick="if ($('#accordionSidebar').hasClass('toggled')){ $('#accordionSidebar').removeClass('toggled'); } else { $('#accordionSidebar').addClass('toggled'); }">
+                        onclick="if ($('#accordionSidebar').hasClass('toggled')){ $('#accordionSidebar').removeClass('toggled'); $('#accordionSidebar').show(); } else { $('#accordionSidebar').addClass('toggled'); }">
                     <i class="fa fa-bars"></i>
                 </button>
             </nav>
@@ -219,7 +219,12 @@
                         <div class="flexed justify-content-center align-items-center">
                             <div class="fulltext-analysis-div mt-2">
                                 <!--loader-->
-                                <div class="loader display-none"><p>Analyse wird generiert</p><div class="lds-ripple"><div></div><div></div></div></div>
+                                <div class="loader display-none">
+                                    <p>
+                                        Analyse wird generiert. Dies kann bis zu mehreren Sekunden dauern. Mehr dazu im FAQ.
+                                    </p>
+                                    <div class="lds-ripple"><div></div><div></div></div>
+                                </div>
                                 <!--empty message-->
                                 <div class="empty-message">
                                     <h5>Wählen Sie eine Rede aus, damit diese analysiert werden kann.</h5>
@@ -419,7 +424,7 @@
                                                 <!-- Card Header - Dropdown -->
                                                 <div class="card-header border-0 rounded-0 py-2 bg-transparent d-flex flex-row align-items-center justify-content-between">
                                                     <p class="m-0 font-weight-bold text-black-50 small-font">
-                                                        Top <span class="minimum"></span> Token nach Häufigkeit.<br/>[GRADE NICHT VERFÜGBAR - SIEHE FAQ]
+                                                        Top <span class="minimum"></span> Token nach Häufigkeit.<br />[GRADE NICHT VERFÜGBAR - SIEHE FAQ]
                                                     </p>
                                                 </div>
                                                 <!-- Card Body -->
@@ -445,7 +450,7 @@
                                                 <!-- Card Header - Dropdown -->
                                                 <div class="card-header rounded-0 bg-transparent border-0 py-2 d-flex flex-row align-items-center justify-content-between">
                                                     <p class="m-0 font-weight-bold text-black-50 small-font">
-                                                        Top <span class="minimum"></span> POS nach Häufigkeit.<br/>[GRADE NICHT VERFÜGBAR - SIEHE FAQ]
+                                                        Top <span class="minimum"></span> POS nach Häufigkeit.<br />[GRADE NICHT VERFÜGBAR - SIEHE FAQ]
                                                     </p>
                                                 </div>
                                                 <!-- Card Body -->
@@ -763,7 +768,45 @@
 
             @*daily paper*@
             <div id="dailyPaperContent" class="h-100 position-relative">
-                <partial name="~/Pages/Shared/DailyPaper/_DailyPaperView.cshtml" model="@Model.DailyPaper" />
+                @*top navbar selector*@
+                <div class="selector">
+                    <div class="flexed align-items-center justify-content-between">
+                        <select class="form-select form-control rounded-0 daily-papers-select">
+                            @foreach (var tuple in Model.ProtocolNumbers)
+                            {
+                                <option data-param="@(tuple.Item1),@(tuple.Item2)">
+                                    @(tuple.Item1). LP, @(tuple.Item2). Sitzung - (@tuple.Item3)
+                                </option>
+                            }
+                        </select>
+                        <div class="flexed align-items-center bg-light">
+                            @*mailing list*@
+                            <button class="btn btn-light rounded-0 mail-list-btn"
+                                    data-toggle="popover" data-content="Neues vom Schürfer abonnieren" data-trigger="hover">
+                                <i class="fas fa-envelope-open-text"></i>
+                            </button>
+                            @*adjust font-size*@
+                            <div class="flexed align-items-center justify-content-center pl-1 pr-1">
+                                <i class="fas fa-text-height"></i>
+                                <input type="range" class="form-range" min="10" max="25" value="14">
+                            </div>
+                            @*expand*@
+                            <button class="btn btn-light rounded-0 fullscreen-btn"
+                                    data-toggle="popover" data-content="Vollbild Lesemodus an/aus" data-trigger="hover">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                @*the actual paper*@
+                <div class="position-relative min-vh-100">
+                    @*the loader*@
+                    <div class="loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                    <div class="actual-paper-container">
+                        <partial name="~/Pages/Shared/DailyPaper/_DailyPaperView.cshtml" model="@Model.DailyPaper" />
+                    </div>
+                </div>
             </div>
 
             @*a modal that shows the details of an agenda item when clicked*@
@@ -880,6 +923,35 @@
             <div class="modal-content w-100 rounded-0 card-shadow">
                 <div class="view">
                     <partial name="~/Pages/Shared/_SpeakerInspectorView.cshtml" model="null" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*daily paper mailing list modal*@
+    <div class="modal fade bg-gradient-light p-0" id="dailyPaperMailingListModal" tabindex="-1" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content w-100 rounded-0 card-shadow">
+                @*header*@
+                <div class="modal-header bg-transparent rounded-0 text-dark pl-3 pr-3 pb-1 pt-1 text-center ">
+                    <h5 class="modal-title text-dark font-weight-bold w-100">
+                        Neues vom Schürfer abonnieren
+                    </h5>
+                    <button type="button" class="close text-black" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">-</span>
+                    </button>
+                </div>
+                @*body*@
+                <div class="modal-body">
+                    <p class="text-center">
+                        Hinterlegen Sie jetzt Ihre E-Mail Adresse, um sofort informiert zu werden, sobald es Neues vom
+                        Schürfer gibt!
+                    </p>
+                    <input type="email" class="form-control rounded-0 w-100" placeholder="Email..."/>
+                    <i class="small-font">Sie können das Abo jederzeit beenden. Wir senden Ihnen keine Werbung.</i>
+                    <button class="btn btn-warning rounded-0 mt-3 float-right submit-mail-btn">
+                        Abonnieren
+                    </button>
                 </div>
             </div>
         </div>

@@ -41,6 +41,9 @@ $(document).ready(async function () {
     // Init the download center
     downloadCenterHandler.init(allFractions, allParties, allSpeaker);
 
+    // Init the daily paper
+    dailyPaperHandler.init();
+
     // some animations
     setTimeout(function () {
         $('.speeches-count').slideDown(500);
