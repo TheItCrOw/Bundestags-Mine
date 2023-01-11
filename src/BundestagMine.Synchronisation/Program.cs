@@ -97,24 +97,24 @@ namespace BundestagMine.Synchronisation
             var parser = new ImportedEntityParser();
             var entityResult = await parser.ParseNewPotentialEntities();
 
-            //Log.Information("============================================================================");
-            //Log.Information("Checking new AGENDA ITEMS");
-            //Log.Information("============================================================================");
-            //var scraper = new BundestagScraper();
-            //var agendaItemResult = scraper.FetchNewAgendaItems();
+            Log.Information("============================================================================");
+            Log.Information("Checking new AGENDA ITEMS");
+            Log.Information("============================================================================");
+            var scraper = new BundestagScraper();
+            var agendaItemResult = scraper.FetchNewAgendaItems();
 
-            //Log.Information("============================================================================");
-            //Log.Information("Checking new POLLS");
-            //Log.Information("============================================================================");
-            //Log.Information("Exporting polls from Bundestag...");
-            //var exportPollsResult = scraper.ExportAbstimmungslisten();
+            Log.Information("============================================================================");
+            Log.Information("Checking new POLLS");
+            Log.Information("============================================================================");
+            Log.Information("Exporting polls from Bundestag...");
+            var exportPollsResult = scraper.ExportAbstimmungslisten();
 
-            //Log.Information("Importing polls into database...");
-            //var importer = new ExcelImporter();
-            //Log.Information("XLSX ======================================");
-            //importer.ImportXLSXPolls();
-            //Log.Information("XLS  ======================================");
-            //importer.ImportXLSPolls();
+            Log.Information("Importing polls into database...");
+            var importer = new ExcelImporter();
+            Log.Information("XLSX ======================================");
+            importer.ImportXLSXPolls();
+            Log.Information("XLS  ======================================");
+            importer.ImportXLSPolls();
 
             Log.Information("============================================================================");
             Log.Information("Building the new Daily Papers");
@@ -198,10 +198,10 @@ namespace BundestagMine.Synchronisation
             Log.CloseAndFlush();
 
             // Send a mail about the import.
-            //MailManager.SendMail($"Import-Bericht {curDate.ToShortDateString()}",
-            //    $"Stati:<br/>Entity-Import: {entityResult}<br/>Agenda-Scrape: {agendaItemResult}<br/>Polls-Scrape: {exportPollsResult}<br/><br/>Log im Anhang.",
-            //    ConfigManager.GetImportReportRecipients(),
-            //    new List<Attachment> { new Attachment(_fullLogFileName) });
+            MailManager.SendMail($"Import-Bericht {curDate.ToShortDateString()}",
+                $"Stati:<br/>Entity-Import: {entityResult}<br/>Agenda-Scrape: {agendaItemResult}<br/>Polls-Scrape: {exportPollsResult}<br/><br/>Log im Anhang.",
+                ConfigManager.GetImportReportRecipients(),
+                new List<Attachment> { new Attachment(_fullLogFileName) });
         }
 
         /// <summary>

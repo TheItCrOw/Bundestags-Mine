@@ -38,6 +38,31 @@ else
                 </a>
             </div>
             <hr class="mt-2" />
+            <h5>Daily Paper Abonnements (@Model.AllDailyPaperSubscriptions.Count):</h5>
+            @*daily paper subs*@
+            <div class="import-list">
+                @foreach (var sub in Model.AllDailyPaperSubscriptions)
+                {
+                    <div class="flexed align-items-center justify-content-between">
+                        <label>@sub.Email</label>
+                        <label>@sub.GetStatus()</label>
+                    </div>
+                }
+            </div>
+            <hr class="mt-2" />
+            <h5>"Not up to date"-Daily Paper Abonnements (@Model.NotUpToDateSubscriptions.Count):</h5>
+            @*daily paper subs*@
+            <div class="import-list">
+                @foreach (var sub in Model.NotUpToDateSubscriptions)
+                {
+                    <div class="flexed align-items-center justify-content-between">
+                        <label>@sub.Email</label>
+                        <label>@sub.GetStatus()</label>
+                    </div>
+                }
+            </div>
+            <button class="btn btn-warning rounded-0 send-sub-mails-btn">Mails versenden</button>
+            <hr class="mt-2" />
             <h5>Import-Logs (@Model.ImportLogsList.Count):</h5>
             @*Imports*@
             <div class="import-list">
@@ -100,4 +125,22 @@ else
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Send the news mails
+        $('body').on('click', '.send-sub-mails-btn', async function() {
+            const result = await $.ajax({
+                url: "/api/DailyPaperController/SendNewDailyPaperMails/",
+                type: "GET",
+                dataType: "json",
+                accepts: {
+                    text: "application/json"
+                },
+            });
+
+            if (result.status == 200) alert("Alle Emails versandt: " + result.message);
+            else if (result.status == 300) alert("Nicht alle Mails versandt: " + result.message);
+            else alert("Etwas ist schief geladen: " + result.message);
+        });
+    </script>
 }

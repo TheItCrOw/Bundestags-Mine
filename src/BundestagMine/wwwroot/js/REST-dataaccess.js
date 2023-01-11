@@ -796,7 +796,7 @@ async function downloadDataZip(filename, callback) {
 }
 // ============================================== Daily Paper ======================================
 
-// Get all polls of a speaker as PollViewModels
+// Gets a daily paper view by period and number
 async function getDailyPaper(period, number) {
     try {
         var param = period + ',' + number;
@@ -809,6 +809,24 @@ async function getDailyPaper(period, number) {
             },
         });
         return result.result;
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+}
+
+// Posts a subscription
+async function postDailyPaperSubscription(mail) {
+    try {
+        const result = await $.ajax({
+            url: "/api/DailyPaperController/PostSubscription/" + mail,
+            type: "POST",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result;
     } catch (error) {
         console.error(error);
         return undefined;

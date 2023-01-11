@@ -73,9 +73,33 @@ namespace BundestagMine.Utility
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 // TODO: Log this here some day :-)
+            }
+        }
+
+        /// <summary>
+        /// Checks if the mail is valid
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        public static bool IsValidEmail(string email)
+        {
+            var trimmedEmail = email.Trim();
+
+            if (trimmedEmail.EndsWith("."))
+            {
+                return false;
+            }
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == trimmedEmail;
+            }
+            catch
+            {
+                return false;
             }
         }
     }

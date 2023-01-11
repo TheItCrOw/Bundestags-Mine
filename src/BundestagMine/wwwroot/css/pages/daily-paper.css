@@ -74,6 +74,9 @@ Otherwise, it will be 4vw.*/
             word-break: break-word;
         }
 
+        .paper-layout .paper-content .shouts p{
+            text-align:left !important;
+        }
 
         .paper-layout .paper-content .source {
             text-align: end;
@@ -176,19 +179,19 @@ Otherwise, it will be 4vw.*/
 
 
         .paper-layout .paper-content .all-speakers {
-            max-height: 550px;
+            max-height: 600px;
             overflow-y: auto;
         }
 
-        .paper-layout .paper-content .right .all-speakers p {
-            margin-bottom: 6px !important;
-            text-align: left !important;
-        }
-
-            .paper-layout .paper-content .right .all-speakers p:hover {
-                color: black;
-                cursor: pointer;
+            .paper-layout .paper-content .all-speakers p {
+                margin-bottom: 6px !important;
+                text-align: left !important;
             }
+
+                .paper-layout .paper-content .all-speakers p:hover {
+                    color: black;
+                    cursor: pointer;
+                }
 
         .paper-layout .paper-content .left {
             padding-right: 12px;
@@ -202,7 +205,7 @@ Otherwise, it will be 4vw.*/
             }
 
 .daily-paper-fullscreen-content {
-    min-height:100vh;
+    min-height: 100vh;
 }
 
 #dailyPaperContent .loader {
@@ -213,7 +216,7 @@ Otherwise, it will be 4vw.*/
     top: 0;
     min-height: 100%; /*This is the height of all the headers. Its hacky, yes. Wont work on mobile.*/
     left: 0;
-    display:none;
+    display: none;
 }
 
     #dailyPaperContent .loader .lds-ripple {
@@ -229,4 +232,3 @@ Otherwise, it will be 4vw.*/
     z-index: 11;
     top: 0;
 }
-

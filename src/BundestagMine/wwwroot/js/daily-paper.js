@@ -232,7 +232,6 @@
     // Builds the comment network
     DailyPaperHandler.prototype.buildCommentNetwork = async function (data, graphId) {
         data = JSON.parse(data);
-        console.log(data);
         // We need this for coloring the nodes
         function getColorOfParty(party) {
             if (party.toLowerCase().includes('cdu') || party.toLowerCase().includes('csu')) {
@@ -387,6 +386,23 @@
         dailyPaperHandler.loadNewDailyPaper(period, protocolNumber);
     }
 
+    // Handles the adding of a subscription
+    DailyPaperHandler.prototype.dailyPaperSubscribe = async function (mail) {
+        console.log(mail);
+
+        if (!validateEmail(mail)) {
+            $('#dailyPaperMailingListModal .error-message').html("Die E-Mail Adresse ist ungültig.");
+            return;
+        }
+
+        var post = await postDailyPaperSubscription(mail);
+        if (post.status == 200) {
+            $('#dailyPaperMailingListModal .info-message').html(post.result);
+        } else {
+            $('#dailyPaperMailingListModal .error-message').html(post.message);
+        }
+    }
+
     return DailyPaperHandler;
 }());
 
@@ -409,7 +425,20 @@ $('body').on('click', '#dailyPaperContent .fullscreen-btn', function () {
 // Handle the opening of the mailing list
 $('body').on('click', '#dailyPaperContent .mail-list-btn', function () {
     // For that, we just disable the sidemenu for now
+    $('#dailyPaperMailingListModal .error-message').html("");
+    $('#dailyPaperMailingListModal .info-message').html("");
     $('#dailyPaperMailingListModal').modal('show');
+})
+
+// Handle the subscribe to the mailing list
+$('body').on('click', '#dailyPaperMailingListModal .submit-mail-btn', function () {
+    // We build the newest daily paper in the init
+    // Clear all messages
+    $('#dailyPaperMailingListModal .error-message').html("");
+    $('#dailyPaperMailingListModal .info-message').html("");
+    // Check mail
+    var mail = $('#dailyPaperMailingListModal .mail-input').val();
+    dailyPaperHandler.dailyPaperSubscribe(mail);
 })
 
 // Handle the switching of the daily papers

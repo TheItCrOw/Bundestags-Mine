@@ -40,6 +40,23 @@ namespace BundestagMine.Logic.Services
         }
 
         /// <summary>
+        /// Gets the newest daily paper
+        /// </summary>
+        /// <returns></returns>
+        public DailyPaper GetNewestDailyPaper() => _db.DailyPapers
+            .OrderByDescending(d => d.LegislaturePeriod)
+            .ThenByDescending(d => d.ProtocolNumber)
+            .First();
+
+        /// <summary>
+        /// Gets all subscriptions which arent up to date in receving their daily paper.
+        /// </summary>
+        /// <returns></returns>
+        public List<DailyPaperSubscription> GetNotUpToDateSubscriptions() => _db.DailyPaperSubscriptions
+            .Where(s => s.Active && s.LastSentDailyPaperId != GetNewestDailyPaper().Id)
+            .ToList();
+
+        /// <summary>
         /// Gets a dailypaperviewmodel from the db
         /// </summary>
         /// <param name="period"></param>

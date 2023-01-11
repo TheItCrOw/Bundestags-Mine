@@ -1,7 +1,9 @@
 using BundestagMine.Data;
 using BundestagMine.Logic.Services;
 using BundestagMine.Logic.ViewModels.Import;
+using BundestagMine.Models.Database;
 using BundestagMine.Services;
+using BundestagMine.SqlDatabase;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -14,6 +16,8 @@ namespace BundestagMine.Pages
 {
     public class AdminCockpitModel : PageModel
     {
+        private readonly BundestagMineDbContext _db;
+        private readonly DailyPaperService _dailyPaperService;
         private readonly ImportService _importService;
         private readonly SignInManager<IdentityUser> _signInManager;
 
@@ -46,8 +50,22 @@ namespace BundestagMine.Pages
         [BindProperty]
         public List<string> ImportableDeputies { get; set; }
 
-        public AdminCockpitModel(SignInManager<IdentityUser> signInManager, ImportService importService)
+        [BindProperty]
+        /// <summary>
+        /// These are the subscriptions which havent received mail for atleast one new daily paper version
+        /// </summary>
+        public List<DailyPaperSubscription> NotUpToDateSubscriptions { get; set; }
+
+        [BindProperty]
+        public List<DailyPaperSubscription> AllDailyPaperSubscriptions { get; set; }
+
+        public AdminCockpitModel(SignInManager<IdentityUser> signInManager, 
+            ImportService importService,
+            DailyPaperService dailyPaperService,
+            BundestagMineDbContext db)
         {
+            _db = db;
+            _dailyPaperService = dailyPaperService;
             _importService = importService;
             _signInManager = signInManager;
         }
@@ -59,6 +77,8 @@ namespace BundestagMine.Pages
             ImportLogsList = _importService.GetImportLogFileNames();
             ImportableProtocols = _importService.GetToBeImportedProtocols().ToList();
             ImportableDeputies = _importService.GetToBeImportedDeputies().ToList();
+            NotUpToDateSubscriptions = _dailyPaperService.GetNotUpToDateSubscriptions();
+            AllDailyPaperSubscriptions = _db.DailyPaperSubscriptions.Take(200).ToList();
         }
 
         public async Task<IActionResult> OnPostAsync()
