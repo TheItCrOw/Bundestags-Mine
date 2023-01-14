@@ -1,6 +1,7 @@
 ﻿@using BundestagMine.Logic.ViewModels.DailyPaper
 @using BundestagMine.Utility
 @using BundestagMine.Logic.Services
+@using BundestagMine.SqlDatabase
 @model DailyPaperViewModel
 
 @if (Model != null)
@@ -70,7 +71,7 @@
 
                     @*mid*@
                     <div class="col-xl-8 m-0 mid">
-                        <img src="@Model.Thumbnail?.LargeImageUrl" class="thumbnail" />
+                        <img src="@(ConfigManager.GetBase64SourcePrefix())@Model.Thumbnail.LargeImageAsBase64" class="thumbnail" />
                         <label class="source mb-0">Quelle: Pixabay @Model.Thumbnail?.PageUrl</label>
                         <hr class="mt-0 mb-3 bg-lightgray" />
                         @*named entityt*@
@@ -138,7 +139,7 @@
                                 Kante bedeutet, dass mindestens ein Kommentar zwischen den beiden verbundenen Redenden stattfand.
                                 Die Farbe der Knoten indiziert die Fraktion/Partei. Die Breite der Kanten zeigt die Menge der
                                 Kommentare zwischen den beiden verbundenen Knoten. Die Farbe der Kante ergibt sich aus dem
-                                Durchschnitts-Sentiment aller Kommentare dieser Kante (Ab der 20. LP, 18. Sitzung. Davor sind diese, 
+                                Durchschnitts-Sentiment aller Kommentare dieser Kante (Ab der 20. LP, 18. Sitzung. Davor sind diese,
                                 dank fehlender Daten, immer neutral). <br />
                                 <b>Hinweis:</b> Sarkastische Kommentare werden häufig als positiver Sentiment aufgefasst, obwohl diese
                                 klar negativ gemeint sind.

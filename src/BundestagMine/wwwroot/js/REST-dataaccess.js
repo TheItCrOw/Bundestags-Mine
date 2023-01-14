@@ -819,7 +819,7 @@ async function getDailyPaper(period, number) {
 async function postDailyPaperSubscription(mail) {
     try {
         const result = await $.ajax({
-            url: "/api/DailyPaperController/PostSubscription/" + mail,
+            url: "/api/DailyPaperController/PostSubscription/" + escapeMail(mail),
             type: "POST",
             dataType: "json",
             accepts: {

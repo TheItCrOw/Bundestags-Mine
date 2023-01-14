@@ -62,6 +62,10 @@ namespace BundestagMine.SqlDatabase
         public static string GetPresetDatasetsLastUpdateDate() =>
             _config.GetSection("Configurations").GetSection("DownloadCenter").GetSection("PresetDatasetsLastUpdateDate").Value;
 
+        public static string GetPixabayAPIKey() => _config.GetSection("PixabayAPI").GetSection("APIKey").Value;
+        public static string GetPixabayBaseUrl() => _config.GetSection("PixabayAPI").GetSection("BaseUrl").Value;
+        public static string GetPixabayDefaultParameters() => _config.GetSection("PixabayAPI").GetSection("DefaultParameters").Value;
+
         /// <summary>
         /// Returns the db options we need to pass into each new db context.
         /// </summary>

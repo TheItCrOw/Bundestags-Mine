@@ -17,5 +17,6 @@ namespace BundestagMine.Logic.RequestModels.Pixabay
         public string User { get; set; }
 
         public int Views { get; set; }
+        public string LargeImageAsBase64 { get; set; }
     }
 }

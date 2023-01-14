@@ -56,9 +56,11 @@ namespace BundestagMine.Controllers
                 var emailCounter = 0;
                 foreach (var sub in sendList)
                 {
-                    var unsubscribeUrl = baseUrl + "/api/DailyPaperController/DeleteSubscription/" + sub.Email;
+                    var unsubscribeUrl = baseUrl + "/api/DailyPaperController/DeleteSubscription/" + sub.Email.ToEscapedMail();
                     try
                     {
+                        // We cant send one mail with many recipients because of the unsub link that needs to
+                        // be generated
                         MailManager.SendMail("Neues vom Schürfer!",
                             MailManager.CreateMailWithButtonHtml("Es gibt Neues vom Schürfer",
                             "Sie erhalten diese Mail, da Sie den Schürfer abonniert haben." +
@@ -97,6 +99,7 @@ namespace BundestagMine.Controllers
         public async Task<string> DeleteSubscription(string mail)
         {
             dynamic response = new ExpandoObject();
+            mail = mail.ToUnescapedMail();
 
             try
             {
@@ -132,6 +135,7 @@ namespace BundestagMine.Controllers
         public async Task<IActionResult> PostSubscription(string mail)
         {
             dynamic response = new ExpandoObject();
+            mail = mail.ToUnescapedMail();
 
             try
             {
@@ -146,7 +150,7 @@ namespace BundestagMine.Controllers
                 var subscription = _db.DailyPaperSubscriptions.FirstOrDefault(d => d.Email.ToLower() == mail.ToLower());
 
                 var baseUrl = Request.Scheme + "://" + Request.Host;
-                var unsubscribeUrl = baseUrl + "/api/DailyPaperController/DeleteSubscription/" + mail;
+                var unsubscribeUrl = baseUrl + "/api/DailyPaperController/DeleteSubscription/" + mail.ToEscapedMail();
 
                 if (subscription != default)
                 {

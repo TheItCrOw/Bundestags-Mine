@@ -450,3 +450,10 @@ $('body').on('change', '#dailyPaperContent .daily-papers-select', async function
 
     dailyPaperHandler.loadNewDailyPaper(period, protocolNumber);
 })
+
+// Handle the changing of the font size
+$('body').on('input', '#dailyPaperContent .font-size-range', function () {
+    var val = $(this).val();
+    $('#dailyPaperContent .actual-paper-container').find('p').css('font-size', parseInt(val));
+    $('#dailyPaperContent .actual-paper-container').find('p').css('line-height', (parseInt(val) + 1).toString() + "px");
+})

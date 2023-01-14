@@ -1,4 +1,5 @@
 ﻿using BundestagMine.Logic.Services;
+using BundestagMine.Logic.ViewModels.DailyPaper;
 using BundestagMine.Models.Database;
 using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.MongoDB;

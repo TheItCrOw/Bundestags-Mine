@@ -18,6 +18,9 @@ function generateUUID() { // Public Domain/MIT
     });
 }
 
+// Escapes the mail symbols such as dot and at
+function escapeMail(mail) { return mail.replace("@", "{AT}").replace(".", "{DOT}"); }
+
 // Parses a date into the given format
 function parseToGermanDate(input) {
     var dmy = input.split("-");

@@ -16,6 +16,9 @@ namespace BundestagMine.Utility
             return str;
         }
 
+        public static string ToUnescapedMail(this string? str) => str.Replace("{AT}", "@").Replace("{DOT}", ".");
+        public static string ToEscapedMail(this string? str) => str.Replace("@", "{AT}").Replace(".", "{DOT}");
+
         /// <summary>
         /// Sometimes, NE start or end with ! and other satzzeichen. Clean them from them.
         /// </summary>

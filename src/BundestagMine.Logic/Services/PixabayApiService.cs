@@ -1,4 +1,5 @@
 ﻿using BundestagMine.Logic.RequestModels.Pixabay;
+using BundestagMine.SqlDatabase;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -16,12 +17,14 @@ namespace BundestagMine.Logic.Services
         private readonly ILogger<PixabayApiService> _logger;
         private readonly string _baseUrl;
         private readonly string _searchParameters;
+        private readonly string _apiKey;
 
         public PixabayApiService(ILogger<PixabayApiService> logger)
         {
             _logger = logger;
-            _baseUrl = "https://pixabay.com/api/";
-            _searchParameters = "?key=32678171-e177e2e12ff150474a84d582e&q={SEARCHTERM}&image_type=photo&pretty=true&lang=de&orientation=horizontal&category={CATEGORY}";
+            _baseUrl = ConfigManager.GetPixabayBaseUrl();
+            _apiKey = ConfigManager.GetPixabayAPIKey();
+            _searchParameters = ConfigManager.GetPixabayDefaultParameters();
         }
 
         /// <summary>
@@ -35,7 +38,10 @@ namespace BundestagMine.Logic.Services
             var fullUri = _baseUrl + _searchParameters;
             fullUri = fullUri.Replace("{SEARCHTERM}", searchTerm).Replace("{CATEGORY}", category);
             _logger.LogInformation("New API request to pixabay with url: " + fullUri);
-            var parameters = _searchParameters.Replace("{SEARCHTERM}", searchTerm).Replace("{CATEGORY}", category); 
+            var parameters = _searchParameters
+                .Replace("{SEARCHTERM}", searchTerm)
+                .Replace("{KEY}", _apiKey)
+                .Replace("{CATEGORY}", category); 
 
             try
             {
@@ -55,7 +61,12 @@ namespace BundestagMine.Logic.Services
                         var searchResults = JsonConvert.DeserializeObject<ImageSearchResult>(await response.Content.ReadAsStringAsync());
                         var random = new Random();
                         // Lets take a random image from the best 15 images.
-                        return searchResults.Hits.OrderBy(x => x.Views).Take(50).OrderBy(x => random.Next()).First();
+                        var hit = searchResults.Hits.OrderBy(x => x.Views).Take(50).OrderBy(x => random.Next()).First();
+                        // We want to store the image, so base64 encode it.
+                        var imageBytes = await client.GetByteArrayAsync(hit.LargeImageUrl);
+                        var imageAsBase64 = Convert.ToBase64String(imageBytes);
+                        hit.LargeImageAsBase64 = imageAsBase64;
+                        return hit;
                     }
                     else
                     {
