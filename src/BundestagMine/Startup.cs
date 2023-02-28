@@ -95,6 +95,7 @@ namespace BundestagMine
             services.AddTransient<DownloadCenterService>();
             services.AddTransient<DailyPaperService>();
             services.AddTransient<PixabayApiService>();
+            services.AddTransient<TextSummarizationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

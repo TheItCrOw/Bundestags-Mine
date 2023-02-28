@@ -4,6 +4,7 @@ using BundestagMine.SqlDatabase;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BundestagMine.SqlDatabase.Migrations
 {
     [DbContext(typeof(BundestagMineDbContext))]
-    partial class BundestagMineDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230226092412_AddedAbstractPEGASUSSummary")]
+    partial class AddedAbstractPEGASUSSummary
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -607,44 +609,6 @@ namespace BundestagMine.SqlDatabase.Migrations
                     b.HasIndex("PollId");
 
                     b.ToTable("PollEntries");
-                });
-
-            modelBuilder.Entity("BundestagMine.Models.Database.TextSummarizationEvaluationScore", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("AverageWordsPerSentence")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LevenstheinSimilaritiesOfSentences")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("NamedEntityDistance")
-                        .HasColumnType("float");
-
-                    b.Property<string>("ScoreExplanation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("SpeechId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<double>("SummaryCompressionRate")
-                        .HasColumnType("float");
-
-                    b.Property<int>("SummaryScore")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TextSummarizationMethod")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TextSummarizationEvaluationScores");
                 });
 
             modelBuilder.Entity("BundestagMine.Models.Database.MongoDB.NLPSpeech", b =>

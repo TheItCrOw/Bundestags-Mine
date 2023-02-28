@@ -1,0 +1,60 @@
+﻿@page
+@model BundestagMine.Pages.ResearchCenter.IndexModel
+@{
+    ViewData["Title"] = "Research-Center";
+}
+
+<head>
+    <link href="./css/pages/research-center.css" rel="stylesheet">
+</head>
+
+<nav class="bg-dark card-shadow">
+    <div class="container flexed justify-content-between align-items-center">
+        <a class="btn rounded-0" asp-page="/Index">
+            <div>
+                <img class="logo" src="/img/logo/Logo_weiß_transparent_RGB_534x512.png" />
+                <h5 class="ml-2 mb-0 text-light small-font">Bundestags-Mine</h5>
+            </div>
+        </a>
+        <h5 class="m-0 font-weight-bold text-light">
+            Research-Center
+        </h5>
+        <a class="btn rounded-0 hidden">
+            <div>
+                <img class="logo" src="/img/Logo_weiß_transparent_RGB_534x512.png" />
+                <h5 class="ml-2 mb-0 text-light small-font">Bundestags-Mine</h5>
+            </div>
+        </a>
+    </div>
+</nav>
+
+<div class="page-wrapper">
+    <div class="container mt-5">
+
+        @*Annotations*@
+        <div class="research-topic">
+            <h5 class="font-weight-bold">Text Technology Lab und SpaCy (Named-Entities, Sentiment etc.)</h5>
+            <p class="text-black-50">
+                SpaCy ist eine Library, welche NLP Werkzeuge und Methoden bereitstellt. Das Text Technology Lab
+                der Goethe-Universität Frankfurt nutzt diese, um NLP Pipelines zu erstellen.
+                Dies werden von der Bundestags-Mine genutzt, um die Reden der Abgeordneten im Deutschen Bundestag
+                zu analysieren und annotieren.
+            </p>
+            <button class="read-more-btn btn btn-warning float-right">Mehr erfahren</button>
+        </div>
+
+        @*text summarization*@
+        <div class="research-topic">
+            <h5 class="font-weight-bold">Automatic Text Summarization</h5>
+            <p class="text-black-50">
+                Die Kunst, Dokumente und Texte maschinell zusammenzufassen. Dies wird in der Bundestags-Mine genutzt,
+                um die Reden der Abgeordneten im Deutschen Bundestag automatisch zusammenzufassen.
+            </p>
+            <a class="read-more-btn btn btn-warning float-right" asp-page="AutomaticTextSummarization/">
+                Mehr erfahren
+            </a>
+        </div>
+
+
+    </div>
+</div>

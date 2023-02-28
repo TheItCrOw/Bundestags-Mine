@@ -16,9 +16,11 @@ using Serilog;
 using Serilog.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace BundestagMine.Synchronisation
@@ -57,6 +59,7 @@ namespace BundestagMine.Synchronisation
                 services.AddTransient<DownloadCenterService>();
                 services.AddTransient<DailyPaperService>();
                 services.AddTransient<PixabayApiService>();
+                services.AddTransient<TextSummarizationService>();
                 // Add the default db context
                 services.AddDbContext<BundestagMineDbContext>(
                     option => option.UseSqlServer(ConfigManager.GetConnectionString(), o => o.CommandTimeout(600)));
@@ -85,9 +88,82 @@ namespace BundestagMine.Synchronisation
         private static async Task MainAsync()
         {
             var curDate = DateTime.Now;
-            MailManager.SendMail($"Import-Start um {curDate}",
-                $"Der Entity-Import startet jetzt.",
-                ConfigManager.GetImportReportRecipients());
+            //MailManager.SendMail($"Import-Start um {curDate}",
+            //    $"Der Entity-Import startet jetzt.",
+            //    ConfigManager.GetImportReportRecipients());
+
+            // Testing:
+
+            serviceProvider.GetService<TextSummarizationService>().EvaluateSummariesOfAllSpeeches();
+
+            return;
+
+
+            var scriptDirectory = ConfigManager.GetPythonScriptPath();
+            var scriptName = Path.Combine(scriptDirectory, ConfigManager.GetPythonScriptName());
+            var inputFileName = Path.Combine(scriptDirectory, "input.txt");
+            var outputFileName = Path.Combine(scriptDirectory, "output.json");
+            //var text = "Die CDU hat es wieder mal verkackt, irgendwas zu machen. Ergo machen wir das jetzt!";
+
+            using (var db = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
+            {
+                foreach (var speech in db.Protocols
+                    .OrderByDescending(p => p.LegislaturePeriod).ThenByDescending(p => p.Number)
+                    .QueryInChunksOf(2)
+                    .SelectMany(p => db.NLPSpeeches
+                        .Where(s => s.LegislaturePeriod == p.LegislaturePeriod && p.Number == s.ProtocolNumber
+                                && string.IsNullOrEmpty(s.AbstractSummaryPEGASUS) && s.Text.Length > 0))
+                    .ToList())
+                {
+                    Console.WriteLine("Doing: " + speech.Id);
+                    File.WriteAllText(inputFileName, speech.Text);
+
+                    var startInfo = new ProcessStartInfo(ConfigManager.GetPythonExePath())
+                    {
+                        RedirectStandardOutput = true,
+                        UseShellExecute = false,
+                        Arguments = $"\"{scriptName}\"",
+                        WorkingDirectory = scriptDirectory,
+                        StandardOutputEncoding = Encoding.UTF8,
+                    };
+
+                    using (var process = Process.Start(startInfo))
+                    {
+                        using (var reader = process.StandardOutput)
+                        {
+                            var status = reader.ReadToEnd();
+                            // No idea where the fuck these \n and \r coming from jesus christ this sucks. 
+                            var result = File.ReadAllText(outputFileName);
+                            dynamic asJson = JsonConvert.DeserializeObject(result);
+                            if (status.Contains("GOOD"))
+                            {
+                                // This result holds the generated summary. Store it
+                                speech.AbstractSummaryPEGASUS = asJson.abstract_summary;
+                                if (string.IsNullOrEmpty(speech.ExtractiveSummary))
+                                    speech.ExtractiveSummary = asJson.extractive_summary;
+                                if (string.IsNullOrEmpty(speech.EnglishTranslationOfSpeech))
+                                    speech.EnglishTranslationOfSpeech = asJson.english_translation;
+                                await db.SaveChangesAsync();
+                                Console.WriteLine($"Done speech LP: {speech.LegislaturePeriod}/{speech.ProtocolNumber}");
+                                Console.WriteLine("The resulting summary: " + asJson.abstract_summary);
+                            }
+                            else
+                            {
+                                Log.Error("Error while trying to summarize a speech:\n" + asJson.ex + "\n" + asJson.traceback);
+                                Console.WriteLine("Error summarizing the speech: " + speech.Id);
+                            }
+                        }
+                    }
+
+                    if (File.Exists(inputFileName))
+                        File.Delete(inputFileName);
+
+                    if (File.Exists(outputFileName))
+                        File.Delete(outputFileName);
+                }
+            }
+
+            return;
 
             Log.Information("Starting a new import run now at " + curDate);
             Log.Information("\n");
@@ -199,10 +275,10 @@ namespace BundestagMine.Synchronisation
             Log.CloseAndFlush();
 
             // Send a mail about the import.
-            MailManager.SendMail($"Import-Bericht {curDate.ToShortDateString()}",
-                $"Stati:<br/>Entity-Import: {entityResult}<br/>Agenda-Scrape: {agendaItemResult}<br/>Polls-Scrape: {exportPollsResult}<br/><br/>Log im Anhang.",
-                ConfigManager.GetImportReportRecipients(),
-                new List<Attachment> { new Attachment(_fullLogFileName) });
+            //MailManager.SendMail($"Import-Bericht {curDate.ToShortDateString()}",
+            //    $"Stati:<br/>Entity-Import: {entityResult}<br/>Agenda-Scrape: {agendaItemResult}<br/>Polls-Scrape: {exportPollsResult}<br/><br/>Log im Anhang.",
+            //    ConfigManager.GetImportReportRecipients(),
+            //    new List<Attachment> { new Attachment(_fullLogFileName) });
         }
 
         /// <summary>

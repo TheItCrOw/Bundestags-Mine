@@ -1,0 +1,83 @@
+﻿.page-wrapper {
+    min-height: 100vh;
+}
+
+nav {
+}
+
+    nav .logo {
+        width: 50px;
+        height: auto;
+    }
+
+.research-topic {
+    padding: 12px;
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    border-radius: 3px;
+    margin-bottom: 70px;
+}
+
+    .research-topic .read-more-btn {
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    }
+
+/*Automatic Text Summarization Area*/
+
+#summaryDatatable_wrapper {
+    margin-bottom: 100px;
+}
+
+    #summaryDatatable_wrapper table {
+        border: gray 1px solid;
+        background-color: ghostwhite;
+    }
+
+    #summaryDatatable_wrapper th {
+        background-color: white;
+        position: sticky;
+        top: 0;
+        border-bottom: 1px gray solid;
+        border-right: white 1px solid;
+        text-align: center;
+    }
+
+    #summaryDatatable_wrapper table td {
+        word-wrap: break-word;
+        border-left: lightgray 1px solid;
+        white-space: inherit;
+        text-overflow: ellipsis;
+        border-bottom: gray 1px solid;
+        max-height: 150px !important;
+        font-size: small;
+    }
+
+    #summaryDatatable_wrapper input[type="search"] {
+        border: 1px lightgray solid;
+    }
+
+    #summaryDatatable_wrapper .paginate_button {
+        margin: 5px;
+        cursor: pointer !important;
+        padding: 6px;
+        color: black;
+    }
+
+        #summaryDatatable_wrapper .paginate_button.previous {
+            border: gray 1px solid;
+        }
+
+        #summaryDatatable_wrapper .paginate_button.next {
+            border: gray 1px solid;
+        }
+
+        #summaryDatatable_wrapper .paginate_button.current {
+            font-weight: bold;
+            border-bottom: black 1px solid;
+        }
+
+    #summaryDatatable_wrapper .list-entry {
+    }
+
+
+/*Automatic Text Summarization Area End*/

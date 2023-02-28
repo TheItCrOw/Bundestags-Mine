@@ -99,7 +99,6 @@ namespace BundestagMine.Logic.Services
                 var name = (deputy.FirstName + "+" + deputy.LastName);
                 var url = ConfigManager.GetPortraitDatabaseQueryUrl() + name;
                 var imagesOverview = Dcsoup.Parse(new Uri(url), 3000);
-                var test = imagesOverview.GetElementsByClass("rowGridContainer");
                 var container = imagesOverview.GetElementsByClass("rowGridContainer")[0];
                 var elements = container.GetElementsByClass("item");
                 if (elements.Count != 0)

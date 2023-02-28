@@ -1,0 +1,149 @@
+﻿@page
+@model BundestagMine.Pages.ResearchCenter.AutomaticTextSummarizationModel
+@{
+    ViewData["Title"] = "Text Summarization";
+}
+
+<head>
+    <link href="../css/pages/research-center.css" rel="stylesheet">
+    <link href="~/lib/datatables/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+</head>
+
+<nav class="bg-dark card-shadow">
+    <div class="container flexed justify-content-between align-items-center">
+        <a class="btn rounded-0" asp-page="/Index">
+            <div>
+                <img class="logo" src="/img/logo/Logo_weiß_transparent_RGB_534x512.png" />
+                <h5 class="ml-2 mb-0 text-light small-font">Bundestags-Mine</h5>
+            </div>
+        </a>
+        <h5 class="m-0 font-weight-bold text-light">
+            Research-Center
+        </h5>
+        <a class="btn rounded-0 hidden">
+            <div>
+                <img class="logo" src="/img/Logo_weiß_transparent_RGB_534x512.png" />
+                <h5 class="ml-2 mb-0 text-light small-font">Bundestags-Mine</h5>
+            </div>
+        </a>
+    </div>
+</nav>
+
+<div class="page-wrapper">
+    <div class="mt-5 container-fluid">
+        <div class="container">
+            <h5>Automatic Text Summarization</h5>
+            <p class="text-black-50">
+                Auflistung aller Reden, die einer automatischen Text Summarization unterzogen wurden zum Vergleich.
+                Angewandte Methoden: TextRank (Extractive), BART (Abstract), PEGASUS (Abstract). Der TScore steht für den
+                Translation Score, also wie gut die Übersetzung der deutschen Rede ins Englische gelungen ist (Auf
+                Basis einer Kosinus-Ähnlichkeit).
+            </p>
+        </div>
+
+        @*actual list*@
+        <div>
+            <table id="summaryDatatable" class="table table-striped table-bordered dt-responsive nowrap" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Text</th>
+                        <th>Übersetzung</th>
+                        <th>Ü-S.</th>
+                        <th>TextRank</th>
+                        <th>TR-S.</th>
+                        <th>BART</th>
+                        <th>B-S.</th>
+                        <th>PEGASUS</th>
+                        <th>P-S.</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/lib/datatables/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $("#summaryDatatable").DataTable({
+                "processing": true,
+                "serverSide": true,
+                "filter": true,
+                "searching": false,
+                "ajax": {
+                    "url": "/api/ResearchController/GetNLPSpeeches/",
+                    "type": "POST",
+                    "datatype": "json"
+                },
+                "columnDefs": [{
+                    "targets": [0],
+                    "visible": false,
+                    "searchable": false
+                }],
+                "columns": [
+                    { "data": "id", "name": "Id", "autoWidth": true },
+                    { "data": "text", "name": "Text", "autoWidth": true },
+                    { "data": "englishTranslationOfSpeech", "name": "Übersetzung", "autoWidth": true },
+                    {
+                        "data": "protocolNumber", "name": "Ü-S.", "autoWidth": true,
+                        "render": function(data, type, full) {
+                            return `<p class='text-center font-weight-bold'>${data}</p>`;
+                        }
+                    },
+                    { "data": "extractiveSummary", "name": "TextRank", "autoWidth": true },
+                    {
+                        "data": "textRankEval", "name": "TR-S.", "autoWidth": true,
+                        "render": function(data, type, full) {
+                            return `
+                            <div>
+                            <p class='font-weight-bold text-center w-100'>
+                                ${data.summaryScore}
+                            </p>
+                            <label style="white-space: pre-line">${data.scoreExplanation}</label>
+                            </div>`;
+                        }
+                    },
+                    { "data": "abstractSummary", "name": "BART", "autoWidth": true },
+                    {
+                        "data": "bartEval", "name": "B-S.", "autoWidth": true,
+                        "render": function(data, type, full) {
+                            return `
+                            <div>
+                            <p class='font-weight-bold text-center w-100'>
+                                ${data.summaryScore}
+                            </p>
+                            <label style="white-space: pre-line">${data.scoreExplanation}</label>
+                            </div>`;
+                        }
+                    },
+                    { "data": "abstractSummaryPEGASUS", "name": "PEGASUS", "autoWidth": true },
+                    {
+                        "data": "pegasusEval", "name": "P-S.", "autoWidth": true,
+                        "render": function(data, type, full) {
+                            return `
+                            <div>
+                            <p class='font-weight-bold text-center w-100'>
+                                ${data.summaryScore}
+                            </p>
+                            <label style="white-space: pre-line">${data.scoreExplanation}</label>
+                            </div>`;
+                        }
+                    },
+                ],
+                columnDefs: [
+                    {
+                        render: function(data, type, full, meta) {
+                            return "<div class='list-entry'>" + data + "</div>";
+                        },
+                        targets: 3
+                    }
+                ]
+            });
+        });
+    </script>
+}

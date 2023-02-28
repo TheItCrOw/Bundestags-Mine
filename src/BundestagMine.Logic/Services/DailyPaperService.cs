@@ -352,6 +352,11 @@ namespace BundestagMine.Logic.Services
                 dailyPaperViewModel.Thumbnail = _pixabayApiService
                     .SearchForImageAsync(dailyPaperViewModel.NamedEntitiesOfTheDay.First().Item1.LemmaValue, "")
                     .GetAwaiter().GetResult();
+                // If the main topic doesnt have any images, search for the second topic
+                if (dailyPaperViewModel.Thumbnail == null && dailyPaperViewModel.NamedEntitiesOfTheDay.Count > 1)
+                    dailyPaperViewModel.Thumbnail = _pixabayApiService
+                        .SearchForImageAsync(dailyPaperViewModel.NamedEntitiesOfTheDay[1].Item1.LemmaValue, "")
+                        .GetAwaiter().GetResult();
 
                 // Gets the most controverse speech.
                 var mostCommentedsSpeech = _db.Speeches

@@ -66,6 +66,11 @@ namespace BundestagMine.SqlDatabase
         public static string GetPixabayBaseUrl() => _config.GetSection("PixabayAPI").GetSection("BaseUrl").Value;
         public static string GetPixabayDefaultParameters() => _config.GetSection("PixabayAPI").GetSection("DefaultParameters").Value;
 
+        public static string GetPythonScriptPath() => _config.GetSection("TextSummarizationPython").GetSection("PythonScriptPath").Value;
+        public static string GetPythonScriptName() => _config.GetSection("TextSummarizationPython").GetSection("PythonScriptName").Value;
+        public static string GetPythonExePath() => _config.GetSection("TextSummarizationPython").GetSection("PythonExePath").Value;
+
+
         /// <summary>
         /// Returns the db options we need to pass into each new db context.
         /// </summary>
