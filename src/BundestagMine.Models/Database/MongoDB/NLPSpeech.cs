@@ -22,5 +22,6 @@ namespace BundestagMine.Models.Database.MongoDB
         public string AbstractSummaryPEGASUS { get; set; }
         public string ExtractiveSummary { get; set; }
         public string EnglishTranslationOfSpeech { get; set; }
+        public double EnglishTranslationScore { get; set; }
     }
 }

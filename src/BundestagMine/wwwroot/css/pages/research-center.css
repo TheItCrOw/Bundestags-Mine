@@ -33,11 +33,16 @@ nav {
         background-color: ghostwhite;
     }
 
+    #summaryDatatable_wrapper .dataTables_scrollBody {
+        border-bottom: gray 1px solid;
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    }
+
     #summaryDatatable_wrapper th {
         background-color: white;
         position: sticky;
         top: 0;
-        border-bottom: 1px gray solid;
+        border-bottom: 1px transparent solid;
         border-right: white 1px solid;
         text-align: center;
     }

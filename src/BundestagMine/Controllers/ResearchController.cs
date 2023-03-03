@@ -44,8 +44,8 @@ namespace BundestagMine.Controllers
                 int recordsTotal = 0;
 
                 var speeches = _db.NLPSpeeches
-                    .Where(s => !string.IsNullOrEmpty(s.EnglishTranslationOfSpeech) && s.ProtocolNumber > 70)
-                    .Where(s => string.IsNullOrEmpty(searchValue) || s.Text.ToLower().Contains(searchValue.ToLower()));
+                    .Where(s => !string.IsNullOrEmpty(s.EnglishTranslationOfSpeech) && (s.ProtocolNumber > 58 || s.ProtocolNumber < 13))
+                    .Where(s => string.IsNullOrEmpty(searchValue) || s.Id.ToString().ToLower() == searchValue.ToLower());
 
                 recordsTotal = speeches.Count();
                 var data = speeches.Skip(skip)
@@ -59,7 +59,7 @@ namespace BundestagMine.Controllers
                             s.Id,
                             s.Text,
                             s.EnglishTranslationOfSpeech,
-                            s.ProtocolNumber,
+                            s.EnglishTranslationScore,
                             s.ExtractiveSummary,
                             TextRankEval = evaluations.FirstOrDefault(e => e.TextSummarizationMethod == TextSummarizationMethods.TextRank),
                             s.AbstractSummary,
@@ -76,8 +76,8 @@ namespace BundestagMine.Controllers
                         if (sortColumnDirection == "asc") data = data.OrderBy(s => s.TextRankEval.SummaryScore);
                         else if (sortColumnDirection == "desc") data = data.OrderByDescending(s => s.TextRankEval.SummaryScore);
                     if (sortColumn == "Ü-S.")
-                        if (sortColumnDirection == "asc") data = data.OrderBy(s => s.ProtocolNumber);
-                        else if (sortColumnDirection == "desc") data = data.OrderByDescending(s => s.ProtocolNumber);
+                        if (sortColumnDirection == "asc") data = data.OrderBy(s => s.EnglishTranslationScore);
+                        else if (sortColumnDirection == "desc") data = data.OrderByDescending(s => s.EnglishTranslationScore);
                     if (sortColumn == "P-S.")
                         if (sortColumnDirection == "asc") data = data.OrderBy(s => s.PegasusEval.SummaryScore);
                         else if (sortColumnDirection == "desc") data = data.OrderByDescending(s => s.PegasusEval.SummaryScore);

@@ -36,7 +36,8 @@ namespace BundestagMine.Logic.Services
         public void EvaluateSummariesOfAllSpeeches()
         {
             var speeches = _db.NLPSpeeches
-                .Where(s => !string.IsNullOrEmpty(s.EnglishTranslationOfSpeech) && s.ProtocolNumber > 70)
+                .Where(s => !string.IsNullOrEmpty(s.EnglishTranslationOfSpeech) 
+                && (s.ProtocolNumber > 58 || s.ProtocolNumber < 13))
                 .ToList();
 
             foreach (var speech in speeches)
@@ -163,9 +164,9 @@ namespace BundestagMine.Logic.Services
             if (neDistance >= 0.75)
             {
                 var value = 0;
-                if (neDistance >= 3) value += 5;
-                else if (neDistance >= 2) value += 4;
-                else if (neDistance >= 1) value += 3;
+                if (neDistance >= 3) value += 7;
+                else if (neDistance >= 2) value += 5;
+                else if (neDistance >= 1) value += 4;
                 else if (neDistance >= 0.75) value += 2;
                 finalScoreValue -= value;
                 evaluation.ScoreExplanation += "Zusammenfassung hatte keine optimale Named-Entity-Relations-Dichte. " +
@@ -191,7 +192,6 @@ namespace BundestagMine.Logic.Services
                 counter++;
             }
             evaluation.LevenstheinSimilaritiesOfSentences = String.Join(";", levensteinValues);
-
 
             // Averga sentence length. Every 30 words per average one point
             if(avgWordsPerSentence >= 20)

@@ -37,7 +37,8 @@
                 Auflistung aller Reden, die einer automatischen Text Summarization unterzogen wurden zum Vergleich.
                 Angewandte Methoden: TextRank (Extractive), BART (Abstract), PEGASUS (Abstract). Der TScore steht für den
                 Translation Score, also wie gut die Übersetzung der deutschen Rede ins Englische gelungen ist (Auf
-                Basis einer Kosinus-Ähnlichkeit).
+                Basis einer Kosinus-Ähnlichkeit).<br/>
+                Mit der Suche können nur Ids gesucht werden.
             </p>
         </div>
 
@@ -74,7 +75,10 @@
                 "processing": true,
                 "serverSide": true,
                 "filter": true,
-                "searching": false,
+                "scrollY": '100vh',
+                "scrollCollapse": true,
+                "scrollX": true,
+                //"searching": false,
                 "ajax": {
                     "url": "/api/ResearchController/GetNLPSpeeches/",
                     "type": "POST",
@@ -90,9 +94,10 @@
                     { "data": "text", "name": "Text", "autoWidth": true },
                     { "data": "englishTranslationOfSpeech", "name": "Übersetzung", "autoWidth": true },
                     {
-                        "data": "protocolNumber", "name": "Ü-S.", "autoWidth": true,
+                        "data": "englishTranslationScore", "name": "Ü-S.", "autoWidth": true,
                         "render": function(data, type, full) {
-                            return `<p class='text-center font-weight-bold'>${data}</p>`;
+                            console.log(data);
+                            return `<p class='text-center font-weight-bold'>${parseFloat(data).toFixed(2)}</p>`;
                         }
                     },
                     { "data": "extractiveSummary", "name": "TextRank", "autoWidth": true },
@@ -104,6 +109,8 @@
                             <p class='font-weight-bold text-center w-100'>
                                 ${data.summaryScore}
                             </p>
+                            ${buildSummarizationScoreDetails(data)}
+                            <p class='text-underlined text-center w-100'>Erklärung</p>
                             <label style="white-space: pre-line">${data.scoreExplanation}</label>
                             </div>`;
                         }
@@ -117,6 +124,8 @@
                             <p class='font-weight-bold text-center w-100'>
                                 ${data.summaryScore}
                             </p>
+                            ${buildSummarizationScoreDetails(data)}
+                            <p class='text-underlined text-center w-100'>Erklärung</p>
                             <label style="white-space: pre-line">${data.scoreExplanation}</label>
                             </div>`;
                         }
@@ -130,6 +139,8 @@
                             <p class='font-weight-bold text-center w-100'>
                                 ${data.summaryScore}
                             </p>
+                            ${buildSummarizationScoreDetails(data)}
+                            <p class='text-underlined text-center w-100'>Erklärung</p>
                             <label style="white-space: pre-line">${data.scoreExplanation}</label>
                             </div>`;
                         }
@@ -145,5 +156,31 @@
                 ]
             });
         });
+
+        function buildSummarizationScoreDetails(data){
+            return `
+                <div>
+                    <p class='text-underlined text-center w-100'>Parameter</p>
+                    <div class='flexed justify-content-between'>
+                        <p class='mb-0'>NE-Distanz:</p>
+                        <p class='mb-0 ml-1'>${data.namedEntityDistance.toFixed(2)}</p>
+                    </div>
+                    <div class='flexed justify-content-between'>
+                        <p class='mb-0'>LV:</p>
+                        <p class='mb-0 ml-1'>${data.levenstheinSimilaritiesOfSentences?.split(';')
+                            .map(l => l.length > 4 ? l.substring(0, 4) : l).join('; ')}</p>
+                    </div>
+                    <div class='flexed justify-content-between'>
+                        <p class='mb-0'>Worte/Satz:</p>
+                        <p class='mb-0 ml-1'>${data.averageWordsPerSentence}</p>
+                    </div>
+                    <div class='flexed justify-content-between'>
+                        <p class='mb-0'>Kompression:</p>
+                        <p class='mb-0 ml-1'>${data.summaryCompressionRate.toFixed(2)}%</p>
+                    </div>
+                </div>
+                <hr />
+            `;
+        }
     </script>
 }
