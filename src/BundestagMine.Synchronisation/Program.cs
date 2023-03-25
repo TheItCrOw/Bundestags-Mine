@@ -108,73 +108,74 @@ namespace BundestagMine.Synchronisation
 
 
             // EVALUATING THE TRANSLATION ======================================================
-            using (var db = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
-            {
-                foreach (var speech in db.Protocols
-                    .Where(p => p.LegislaturePeriod == 20 && (p.Number < 13 || p.Number > 58))
-                    .OrderByDescending(p => p.LegislaturePeriod).ThenBy(p => p.Number)
-                    .QueryInChunksOf(2)
-                    .SelectMany(p => db.NLPSpeeches
-                        .Where(s => s.LegislaturePeriod == p.LegislaturePeriod && p.Number == s.ProtocolNumber
-                                && !string.IsNullOrEmpty(s.EnglishTranslationOfSpeech)
-                                && s.Text.Length > 0))
-                    .ToList())
-                {
-                    Console.WriteLine("Doing: " + speech.Id);
-                    var transfer = new
-                    {
-                        german = speech.Text,
-                        english = speech.EnglishTranslationOfSpeech
-                    };
-                    File.WriteAllText(inputFileName, JsonConvert.SerializeObject(transfer));
+            //using (var db = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
+            //{
+            //    foreach (var speech in db.Protocols
+            //        .Where(p => p.LegislaturePeriod == 20 && (p.Number < 13 || p.Number > 58))
+            //        .OrderByDescending(p => p.LegislaturePeriod).ThenBy(p => p.Number)
+            //        .QueryInChunksOf(2)
+            //        .SelectMany(p => db.NLPSpeeches
+            //            .Where(s => s.LegislaturePeriod == p.LegislaturePeriod && p.Number == s.ProtocolNumber
+            //                    && !string.IsNullOrEmpty(s.EnglishTranslationOfSpeech)
+            //                    && s.Text.Length > 0))
+            //        .ToList())
+            //    {
+            //        Console.WriteLine("Doing: " + speech.Id);
+            //        var transfer = new
+            //        {
+            //            german = speech.Text,
+            //            english = speech.EnglishTranslationOfSpeech
+            //        };
+            //        File.WriteAllText(inputFileName, JsonConvert.SerializeObject(transfer));
 
-                    var startInfo = new ProcessStartInfo(ConfigManager.GetPythonExePath())
-                    {
-                        RedirectStandardOutput = true,
-                        UseShellExecute = false,
-                        Arguments = $"\"{scriptName}\"",
-                        WorkingDirectory = scriptDirectory,
-                        StandardOutputEncoding = Encoding.UTF8,
-                    };
+            //        var startInfo = new ProcessStartInfo(ConfigManager.GetPythonExePath())
+            //        {
+            //            RedirectStandardOutput = true,
+            //            UseShellExecute = false,
+            //            Arguments = $"\"{scriptName}\"",
+            //            WorkingDirectory = scriptDirectory,
+            //            StandardOutputEncoding = Encoding.UTF8,
+            //        };
 
-                    using (var process = Process.Start(startInfo))
-                    {
-                        using (var reader = process.StandardOutput)
-                        {
-                            var status = reader.ReadToEnd();
-                            // No idea where the fuck these \n and \r coming from jesus christ this sucks. 
-                            var result = File.ReadAllText(outputFileName);
-                            dynamic asJson = JsonConvert.DeserializeObject(result);
-                            if (status.Contains("GOOD"))
-                            {
-                                // This result holds the generated summary. Store it
-                                speech.EnglishTranslationScore = asJson.similarity;
-                                await db.SaveChangesAsync();
-                                Console.WriteLine($"Done speech LP: {speech.LegislaturePeriod}/{speech.ProtocolNumber}");
-                                Console.WriteLine("The resulting score: " + asJson.similarity);
-                            }
-                            else
-                            {
-                                Log.Error("Error while trying to evaluate summary of speech:\n" + asJson.ex + "\n" + asJson.traceback);
-                                Console.WriteLine("Error evaluating translation of the speech: " + speech.Id);
-                            }
-                        }
-                    }
+            //        using (var process = Process.Start(startInfo))
+            //        {
+            //            using (var reader = process.StandardOutput)
+            //            {
+            //                var status = reader.ReadToEnd();
+            //                // No idea where the fuck these \n and \r coming from jesus christ this sucks. 
+            //                var result = File.ReadAllText(outputFileName);
+            //                dynamic asJson = JsonConvert.DeserializeObject(result);
+            //                if (status.Contains("GOOD"))
+            //                {
+            //                    // This result holds the generated summary. Store it
+            //                    speech.EnglishTranslationScore = asJson.similarity;
+            //                    await db.SaveChangesAsync();
+            //                    Console.WriteLine($"Done speech LP: {speech.LegislaturePeriod}/{speech.ProtocolNumber}");
+            //                    Console.WriteLine("The resulting score: " + asJson.similarity);
+            //                }
+            //                else
+            //                {
+            //                    Log.Error("Error while trying to evaluate summary of speech:\n" + asJson.ex + "\n" + asJson.traceback);
+            //                    Console.WriteLine("Error evaluating translation of the speech: " + speech.Id);
+            //                }
+            //            }
+            //        }
 
-                    if (File.Exists(inputFileName))
-                        File.Delete(inputFileName);
+            //        if (File.Exists(inputFileName))
+            //            File.Delete(inputFileName);
 
-                    if (File.Exists(outputFileName))
-                        File.Delete(outputFileName);
-                }
-            }
+            //        if (File.Exists(outputFileName))
+            //            File.Delete(outputFileName);
+            //    }
+            //}
 
-            return;
+            //return;
 
             // SUMARIZING SCRIPTS ======================================================
             using (var db = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
             {
                 foreach (var speech in db.Protocols
+                    .Where(p => p.LegislaturePeriod == 20 && (p.Number > 58 || p.Number < 13))
                     .OrderByDescending(p => p.LegislaturePeriod).ThenBy(p => p.Number)
                     .QueryInChunksOf(2)
                     .SelectMany(p => db.NLPSpeeches
@@ -182,7 +183,7 @@ namespace BundestagMine.Synchronisation
                                 && string.IsNullOrEmpty(s.AbstractSummaryPEGASUS) && s.Text.Length > 0))
                     .ToList())
                 {
-                    Console.WriteLine("Doing: " + speech.Id);
+                    Console.WriteLine("Doing: " + speech.Id + $" of {speech.LegislaturePeriod}|{speech.ProtocolNumber}");
                     File.WriteAllText(inputFileName, speech.Text);
 
                     var startInfo = new ProcessStartInfo(ConfigManager.GetPythonExePath())

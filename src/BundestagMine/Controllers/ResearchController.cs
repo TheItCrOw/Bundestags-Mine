@@ -26,6 +26,28 @@ namespace BundestagMine.Controllers
             _logger = logger;
         }
 
+        [HttpGet("/api/ResearchController/DownloadTextSummarizationPaper/")]
+        public IActionResult DownloadTextSummarizationPaper()
+        {
+            dynamic response = new ExpandoObject();
+
+            try
+            {
+                response.status = "200";
+                var filepath = "~/files/Chancen_und_Risiken_von Text_Summarization.pdf";
+                Response.Headers.Add("Content-Disposition", "inline; filename=Chancen_und_Risiken_von Text_Summarization.pdf");
+                return File(filepath, "application/pdf");
+            }
+            catch (Exception ex)
+            {
+                response.status = "400";
+                response.message = "Couldn't download the paper, error in logs";
+                _logger.LogError(ex, "Error download the paper:");
+            }
+
+            return Json(response);
+        }
+
 
         [HttpPost("/api/ResearchController/GetNLPSpeeches/")]
         public IActionResult GetNLPSpeeches()

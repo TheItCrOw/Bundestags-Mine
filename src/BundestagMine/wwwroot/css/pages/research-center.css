@@ -24,6 +24,10 @@ nav {
 
 /*Automatic Text Summarization Area*/
 
+.datatable-container{
+    position:relative;
+}
+
 #summaryDatatable_wrapper {
     margin-bottom: 100px;
 }

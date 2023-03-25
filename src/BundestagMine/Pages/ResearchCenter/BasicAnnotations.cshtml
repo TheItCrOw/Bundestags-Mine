@@ -1,0 +1,179 @@
+﻿@page
+@model BundestagMine.Pages.ResearchCenter.BasicAnnotationsModel
+@{
+    ViewData["Title"] = "spaCy Annotationen";
+}
+
+<head>
+    <link href="../css/pages/research-center.css" rel="stylesheet">
+</head>
+
+<nav class="bg-dark card-shadow">
+    <div class="container flexed justify-content-between align-items-center">
+        <a class="btn rounded-0" asp-page="/Index">
+            <div>
+                <img class="logo" src="/img/logo/Logo_weiß_transparent_RGB_534x512.png" />
+                <h5 class="ml-2 mb-0 text-light small-font">Bundestags-Mine</h5>
+            </div>
+        </a>
+        <h5 class="m-0 font-weight-bold text-light">
+            Research-Center
+        </h5>
+        <a class="btn rounded-0 hidden">
+            <div>
+                <img class="logo" src="/img/Logo_weiß_transparent_RGB_534x512.png" />
+                <h5 class="ml-2 mb-0 text-light small-font">Bundestags-Mine</h5>
+            </div>
+        </a>
+    </div>
+</nav>
+
+<div class="page-wrapper">
+    <div class="mt-4 pb-5 container-fluid">
+        <div class="container">
+            <a class="clickable text-dark" asp-page="Index">
+                <i class="fas fa-chevron-left"></i> Übersicht
+            </a>
+            <h5 class="mt-3">Text Technology Lab</h5>
+            <div>
+                <i class="text-black-50">
+                    "Das TTLab (Text Technology Lab) unter der Leitung von Prof. Alexander Mehler ist Teil des
+                    Fachbereichs Informatik und Mathematik an der Goethe-Universität Frankfurt. Es erforscht formale,
+                    algorithmische Modelle, um unser Verständnis der Informationsverarbeitung in den Geisteswissenschaften
+                    zu vertiefen. Wir untersuchen sowohl diachrone, zeitabhängige als auch synchrone Aspekte der Verarbeitung
+                    sprachlicher und nicht-sprachlicher, multimodaler Zeichen. Das Labor arbeitet interdisziplinär, um eine
+                    Brücke zwischen der Informatik und der korpusbasierten Forschung in den Geisteswissenschaften
+                    zu schlagen. Zu diesem Zweck entwickeln wir Informationsmodelle und Algorithmen für die
+                    Analyse von Texten, Bildern und anderen für die geisteswissenschaftliche Forschung relevanten Objekten."
+                </i>
+                <p>- <a href="https://www.texttechnologylab.org/" target="_blank">TTLab</a></p>
+            </div>
+            <hr />
+            <h5 class="mt-3">spaCy</h5>
+            <div>
+                <p class="text-black-50">
+                    spaCy ist eine Python-Library, veröffentlicht unter der MIT-Open-Source Lizenz. Sie unterstützt Entwickler
+                    im Bereich des Natural Language Processing. Die Library verwendet zur Analyse von Texten Techniken wie
+                    Tokenisierung, Part-of-speech (POS) Tagging, Lemmatisierungen und vieles mehr. <br />
+                    Im Kontext der Bundestags-Mine wird sie vom Text Technology Lab genutzt, um NLP pipelines einzurichten,
+                    welche die Reden des deutschen Bundestags durchlaufen. Die Ergebnisse dieser Analysen sind underanderem
+                    Token, Sentiments und Named-Entities.
+                </p>
+            </div>
+            <hr />
+            <h5 class="mt-3">Token</h5>
+            <div>
+                <p class="text-black-50 w-100">
+                    Die grundsätzliche Idee von Tokenisierung ist es, den gegebenen Text in kleinere Untereinheiten aufzuteilen.
+                    Je nach Tokenizer kann ein Token entweder ein Wort, ein Zeichen oder ein Teilwort sein. Der Satz:
+                </p>
+                <p class="w-100 text-center">
+                    "Meine sehr verehrten Kolleginnen und Kollegen!"
+                </p>
+                <p class="text-black-50">
+                    hat die folgenden Token in der Bundestags-Mine:
+                </p>
+                <p class="w-100 text-center">
+                    "Meine"; "sehr"; "verehrten"; "Kolleginnen"; "und"; "Kollegen"; "!"
+                </p>
+            </div>
+            <hr />
+            <h5 class="mt-3">Lemmatisierung</h5>
+            <div>
+                <p class="text-black-50">
+                    Bei der Lemmatisierung wird versucht, die Grundform des Wortes zu extrahieren (wie man es typischerweise
+                    in einem Wörterbuch findet). So ist das Lemma von "Mine" weiterhin "Mine", aber das Lemma von "ist"
+                    wäre "sein". Am Beispiel vom obigen Satz:
+                </p>
+                <p class="text-center">
+                    "Meine sehr verehrten Kolleginnen und Kollegen!"
+                    <br />
+                    <span class="text-black-50">ist lemmatisiert:</span>
+                    <br />
+                    "Meine sehr verehren Kollegin und Kollege!"
+                </p>
+            </div>
+            <hr />
+            <h5 class="mt-3">Part-of-speech (POS) Tagging</h5>
+            <div>
+                <p class="text-black-50">
+                    Beim POS-Tagging wird den einzelnen Token die jeweils passende Wortart zugeordnet. Wortarten sind
+                    unteranderem Nomen, Verben, Adverben, Pronomen etc. Am Beispiel vom obigen Satz:
+                </p>
+                <p class="text-center">
+                    "Meine sehr verehrten Kolleginnen und Kollegen!"
+                    <br />
+                    <span class="text-black-50">hat folgende POS:</span>
+                    <br />
+                    "PPOSAT ADV ADJA NN KON NN"
+                </p>
+                <p class="text-black-50">
+                    Dabei stehen die Abkürzungen für folgende Tags:
+                </p>
+                <ul>
+                    <li>PPOSAT: besitzanzeigende Determinante</li>
+                    <li>ADV: Adverb</li>
+                    <li>ADJA: attributives Adjektiv</li>
+                    <li>NN: Nomen</li>
+                    <li>KON: koordinierende Konjunktion</li>
+                </ul>
+            </div>
+            <hr />
+            <h5 class="mt-3">Named-Entity Recognition (NER)</h5>
+            <div>
+                <p class="text-black-50">
+                    Die Aufgabe der NER ist es, Eigennamen (benannte Entitäten) unter Token zu bestimmen und diese dann
+                    zu kategorisieren. Folgende Kategorien gibt es in der Bundestags-Mine:
+                </p>
+                <ul>
+                    <li>PER: Person</li>
+                    <li>ORG: Organisation</li>
+                    <li>LOC: Location (Ort)</li>
+                    <li>MISC: Miscellaneous (Sonstiges)</li>
+                </ul>
+                <p class="text-black-50">Ein Beispiel anhand eines Satzes:</p>
+                <p class="text-center">
+                    "Herr Kollege Fiedler hat es auch bestätigt."
+                    <br />
+                    <span class="text-black-50">hat einen erkannten Eigennamen:</span>
+                    <br />
+                    "Fiedler" = Person
+                </p>
+                <p class="text-black-50">
+                    In der Bundestags-Mine werden die Named-Entities dazu genutzt, Themen der Reden und damit Redenden
+                    zu bestimmen. Dabei wird auf eine gefilterte Anzahl der Named-Entities pro Rede geschaut.
+                </p>
+                <span>Named-Entities sind ein Kernstück der Bundestags-Mine.</span>
+            </div>
+            <hr />
+            <h5 class="mt-3">Sentiment-Analyse</h5>
+            <div>
+                <p class="text-black-50">
+                    Die Sentiment-Analyse wertet Texte aus, um dessen Aussagen als positiv, neutral oder negativ einzuordnen
+                    und die darunter liegende Stimmung zu erkennen. Dafür wird ein Wert berechnet, der von -1 bis 1 reicht.
+                    -1 bedeutet dabei sehr negativ, 0 gleicht neutral und 1 einem sehr positiven Sentiment.
+                    In der Bundestags-Mine werden die Reden der Abgeordneten
+                    einer solche Analyse auf satzbasis unterzogen. Es wird also ein Sentiment pro Satz definiert. Ein
+                    Beispiel:
+                </p>
+                <p class="text-center">
+                    <i>
+                        "Denn wenn sie der bockigen und trotzigen Ampel jetzt nicht klar und eindeutig ihre Grenzen aufzeigen,
+                        dann wird diese Ampel dauerhaft auf ihrer Nase rumtanzen, so wie heute schon bei der Unterbringung
+                        von Flüchtlingen, bei der Krankenhausplanung, beim Pakt für den Rechtsstaat und jetzt auch noch beim
+                        Hinweisgeberschutz"
+                    </i>
+                    <br />
+                    <span class="text-black-50">besitzt einen Sentiment-Wert von:</span>
+                    <br />
+                    <span class="text-danger">-0.45 (negativ)</span>
+                </p>
+                <span>
+                    Die Sentiment-Analyse wird in der Bundestags-Mine unteranderem dazu genutzt, um Stimmungen und Meinungen
+                    von Redenden gegenüber aktuellen Themen zuzuordnen. Die Sentiment-Analyse bildet damit zusammen mit der 
+                    Named-Entity Recognition die Kernfunktionalität der Bundestags-Mine.
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
