@@ -95,17 +95,17 @@ namespace BundestagMine.Controllers
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
                 {
                     if (sortColumn == "TR-S.")
-                        if (sortColumnDirection == "asc") data = data.OrderBy(s => s.TextRankEval.SummaryScore);
-                        else if (sortColumnDirection == "desc") data = data.OrderByDescending(s => s.TextRankEval.SummaryScore);
+                        if (sortColumnDirection == "asc") data = data.Where(s => s.TextRankEval != null).OrderBy(s => s.TextRankEval?.SummaryScore);
+                        else if (sortColumnDirection == "desc") data = data.Where(s => s.TextRankEval != null).OrderByDescending(s => s.TextRankEval?.SummaryScore);
                     if (sortColumn == "Ü-S.")
-                        if (sortColumnDirection == "asc") data = data.OrderBy(s => s.EnglishTranslationScore);
-                        else if (sortColumnDirection == "desc") data = data.OrderByDescending(s => s.EnglishTranslationScore);
+                        if (sortColumnDirection == "asc") data = data.Where(s => s.EnglishTranslationScore != null).OrderBy(s => s.EnglishTranslationScore);
+                        else if (sortColumnDirection == "desc") data = data.Where(s => s.EnglishTranslationScore != null).OrderByDescending(s => s.EnglishTranslationScore);
                     if (sortColumn == "P-S.")
-                        if (sortColumnDirection == "asc") data = data.OrderBy(s => s.PegasusEval.SummaryScore);
-                        else if (sortColumnDirection == "desc") data = data.OrderByDescending(s => s.PegasusEval.SummaryScore);
+                        if (sortColumnDirection == "asc") data = data.Where(s => s.PegasusEval != null).OrderBy(s => s.PegasusEval?.SummaryScore);
+                        else if (sortColumnDirection == "desc") data = data.Where(s => s.PegasusEval != null).OrderByDescending(s => s.PegasusEval?.SummaryScore);
                     if (sortColumn == "B-S.")
-                        if (sortColumnDirection == "asc") data = data.OrderBy(s => s.BartEval.SummaryScore);
-                        else if (sortColumnDirection == "desc") data = data.OrderByDescending(s => s.BartEval.SummaryScore);
+                        if (sortColumnDirection == "asc") data = data.Where(s => s.BartEval != null).OrderBy(s => s.BartEval?.SummaryScore);
+                        else if (sortColumnDirection == "desc") data = data.Where(s => s.BartEval != null).OrderByDescending(s => s.BartEval?.SummaryScore);
                 }
 
                 var jsonData = new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = data.ToList() };

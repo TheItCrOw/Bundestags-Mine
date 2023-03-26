@@ -93,146 +93,49 @@ namespace BundestagMine.Synchronisation
             //    $"Der Entity-Import startet jetzt.",
             //    ConfigManager.GetImportReportRecipients());
 
-            // Testing:
-
-            //serviceProvider.GetService<TextSummarizationService>().EvaluateSummariesOfAllSpeeches();
-
-            //return;
-
-            var scriptDirectory = ConfigManager.GetPythonScriptPath();
-            var scriptName = Path.Combine(scriptDirectory, ConfigManager.GetPythonScriptName());
-            var inputFileName = Path.Combine(scriptDirectory, "input.txt");
-            var outputFileName = Path.Combine(scriptDirectory, "output.json");
-
-            // EVALUATING THE TRANSLATION ======================================================
-
-
-            // EVALUATING THE TRANSLATION ======================================================
-            //using (var db = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
-            //{
-            //    foreach (var speech in db.Protocols
-            //        .Where(p => p.LegislaturePeriod == 20 && (p.Number < 13 || p.Number > 58))
-            //        .OrderByDescending(p => p.LegislaturePeriod).ThenBy(p => p.Number)
-            //        .QueryInChunksOf(2)
-            //        .SelectMany(p => db.NLPSpeeches
-            //            .Where(s => s.LegislaturePeriod == p.LegislaturePeriod && p.Number == s.ProtocolNumber
-            //                    && !string.IsNullOrEmpty(s.EnglishTranslationOfSpeech)
-            //                    && s.Text.Length > 0))
-            //        .ToList())
-            //    {
-            //        Console.WriteLine("Doing: " + speech.Id);
-            //        var transfer = new
-            //        {
-            //            german = speech.Text,
-            //            english = speech.EnglishTranslationOfSpeech
-            //        };
-            //        File.WriteAllText(inputFileName, JsonConvert.SerializeObject(transfer));
-
-            //        var startInfo = new ProcessStartInfo(ConfigManager.GetPythonExePath())
-            //        {
-            //            RedirectStandardOutput = true,
-            //            UseShellExecute = false,
-            //            Arguments = $"\"{scriptName}\"",
-            //            WorkingDirectory = scriptDirectory,
-            //            StandardOutputEncoding = Encoding.UTF8,
-            //        };
-
-            //        using (var process = Process.Start(startInfo))
-            //        {
-            //            using (var reader = process.StandardOutput)
-            //            {
-            //                var status = reader.ReadToEnd();
-            //                // No idea where the fuck these \n and \r coming from jesus christ this sucks. 
-            //                var result = File.ReadAllText(outputFileName);
-            //                dynamic asJson = JsonConvert.DeserializeObject(result);
-            //                if (status.Contains("GOOD"))
-            //                {
-            //                    // This result holds the generated summary. Store it
-            //                    speech.EnglishTranslationScore = asJson.similarity;
-            //                    await db.SaveChangesAsync();
-            //                    Console.WriteLine($"Done speech LP: {speech.LegislaturePeriod}/{speech.ProtocolNumber}");
-            //                    Console.WriteLine("The resulting score: " + asJson.similarity);
-            //                }
-            //                else
-            //                {
-            //                    Log.Error("Error while trying to evaluate summary of speech:\n" + asJson.ex + "\n" + asJson.traceback);
-            //                    Console.WriteLine("Error evaluating translation of the speech: " + speech.Id);
-            //                }
-            //            }
-            //        }
-
-            //        if (File.Exists(inputFileName))
-            //            File.Delete(inputFileName);
-
-            //        if (File.Exists(outputFileName))
-            //            File.Delete(outputFileName);
-            //    }
-            //}
-
-            //return;
-
-            // SUMARIZING SCRIPTS ======================================================
             using (var db = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
             {
                 foreach (var speech in db.Protocols
-                    .Where(p => p.LegislaturePeriod == 20 && (p.Number > 58 || p.Number < 13))
-                    .OrderByDescending(p => p.LegislaturePeriod).ThenBy(p => p.Number)
+                    .Where(p => p.LegislaturePeriod == 20)
                     .QueryInChunksOf(2)
                     .SelectMany(p => db.NLPSpeeches
                         .Where(s => s.LegislaturePeriod == p.LegislaturePeriod && p.Number == s.ProtocolNumber
-                                && string.IsNullOrEmpty(s.AbstractSummaryPEGASUS) && s.Text.Length > 0))
+                                && s.Text.Length > 400))
                     .ToList())
                 {
-                    Console.WriteLine("Doing: " + speech.Id + $" of {speech.LegislaturePeriod}|{speech.ProtocolNumber}");
-                    File.WriteAllText(inputFileName, speech.Text);
-
-                    var startInfo = new ProcessStartInfo(ConfigManager.GetPythonExePath())
+                    try
                     {
-                        RedirectStandardOutput = true,
-                        UseShellExecute = false,
-                        Arguments = $"\"{scriptName}\"",
-                        WorkingDirectory = scriptDirectory,
-                        StandardOutputEncoding = Encoding.UTF8,
-                    };
+                        Console.WriteLine($"Doing speech {speech.Id} of {speech.LegislaturePeriod}|{speech.ProtocolNumber}");
+                        var analysedSpeechTuple = serviceProvider.GetService<TextSummarizationService>()
+                            .RunSpeechThroughSummarizationPipeline(speech);
 
-                    using (var process = Process.Start(startInfo))
-                    {
-                        using (var reader = process.StandardOutput)
-                        {
-                            var status = reader.ReadToEnd();
-                            // No idea where the fuck these \n and \r coming from jesus christ this sucks. 
-                            var result = File.ReadAllText(outputFileName);
-                            dynamic asJson = JsonConvert.DeserializeObject(result);
-                            if (status.Contains("GOOD"))
-                            {
-                                // This result holds the generated summary. Store it
-                                speech.AbstractSummaryPEGASUS = asJson.abstract_summary;
-                                if (string.IsNullOrEmpty(speech.ExtractiveSummary))
-                                    speech.ExtractiveSummary = asJson.extractive_summary;
-                                if (string.IsNullOrEmpty(speech.EnglishTranslationOfSpeech))
-                                    speech.EnglishTranslationOfSpeech = asJson.english_translation;
-                                await db.SaveChangesAsync();
-                                Console.WriteLine($"Done speech LP: {speech.LegislaturePeriod}/{speech.ProtocolNumber}");
-                                Console.WriteLine("The resulting summary: " + asJson.abstract_summary);
-                            }
-                            else
-                            {
-                                Log.Error("Error while trying to summarize a speech:\n" + asJson.ex + "\n" + asJson.traceback);
-                                Console.WriteLine("Error summarizing the speech: " + speech.Id);
-                            }
-                        }
+                        db.NLPSpeeches.Update(analysedSpeechTuple.Item1);
+
+                        var existingEvaluations = serviceProvider.GetService<TextSummarizationService>().GetEvaluationsOfSpeech(speech.Id);
+
+                        if (!existingEvaluations.Any(e => e.TextSummarizationMethod == TextSummarizationMethods.TextRank))
+                            db.TextSummarizationEvaluationScores
+                                .Add(analysedSpeechTuple.Item2.FirstOrDefault(e => e.TextSummarizationMethod == TextSummarizationMethods.TextRank));
+
+                        if (!existingEvaluations.Any(e => e.TextSummarizationMethod == TextSummarizationMethods.PEGASUSSamSum))
+                            db.TextSummarizationEvaluationScores
+                                .Add(analysedSpeechTuple.Item2.FirstOrDefault(e => e.TextSummarizationMethod == TextSummarizationMethods.PEGASUSSamSum));
+
+                        if (!existingEvaluations.Any(e => e.TextSummarizationMethod == TextSummarizationMethods.BARTSamSum))
+                            db.TextSummarizationEvaluationScores
+                                .Add(analysedSpeechTuple.Item2.FirstOrDefault(e => e.TextSummarizationMethod == TextSummarizationMethods.BARTSamSum));
+
+                        await db.SaveChangesAsync();
+                        Console.WriteLine($"==== Done speech {speech.Id} of {speech.LegislaturePeriod}|{speech.ProtocolNumber}! ====");
                     }
-
-                    if (File.Exists(inputFileName))
-                        File.Delete(inputFileName);
-
-                    if (File.Exists(outputFileName))
-                        File.Delete(outputFileName);
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine("Something was wrong with this speech... Error. Check the logs");
+                        Log.Error(ex, "Error with speech " + speech.Id);
+                    }
                 }
             }
             return;
-
-            // SUMARIZING SCRIPTS ======================================================
 
             Log.Information("Starting a new import run now at " + curDate);
             Log.Information("\n");

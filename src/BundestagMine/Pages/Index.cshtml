@@ -58,8 +58,9 @@
             </a>
 
             <!-- Heading -->
-            <div class="text-center mb-2 sidebar-heading mt-3">
+            <div class="text-center mb-0 sidebar-heading mt-3 text-light">
                 Funktionen
+                <hr class="bg-secondary mt-1 mb-0" />
             </div>
 
             <!-- Nav Item - Daily Paper -->
@@ -156,6 +157,20 @@
                 <a class="nav-link">
                     <i class="fab fa-paypal"></i>
                     <span>Support</span>
+                </a>
+            </li>
+
+            <!-- Heading -->
+            <div class="text-center mb-0 mt-2 sidebar-heading text-light">
+                Seiten
+                <hr class="bg-secondary mt-1 mb-0" />
+            </div>
+
+            <!-- Nav Item - Research Center -->
+            <li class="nav-item active">
+                <a class="nav-link text-white-50" asp-page="/ResearchCenter/Index" target="_blank">
+                    <i class="fas fa-university"></i>
+                    <span>Research Center</span>
                 </a>
             </li>
         </ul>
@@ -786,8 +801,8 @@
                                 <i class="fas fa-envelope-open-text"></i>
                             </button>
                             @*adjust font-size*@
-                            <div class="flexed align-items-center justify-content-center pl-1 pr-1" 
-                            data-toggle="popover" data-content="Textgröße anpassen" data-trigger="hover">
+                            <div class="flexed align-items-center justify-content-center pl-1 pr-1"
+                                 data-toggle="popover" data-content="Textgröße anpassen" data-trigger="hover">
                                 <i class="fas fa-text-height"></i>
                                 <input type="range" class="form-range font-size-range" min="10" max="25" value="14">
                             </div>
@@ -948,12 +963,12 @@
                         Hinterlegen Sie jetzt Ihre E-Mail Adresse, um sofort informiert zu werden, sobald es Neues vom
                         Schürfer gibt!
                     </p>
-                    <input type="email" class="form-control rounded-0 w-100 mail-input" placeholder="Email..."/>
+                    <input type="email" class="form-control rounded-0 w-100 mail-input" placeholder="Email..." />
                     <i class="text-danger small-font error-message mr-1"></i>
                     <i class="small-font">Sie können das Abo jederzeit beenden. Wir senden Ihnen keine Werbung.</i>
                     <button class="btn btn-warning rounded-0 mt-3 mb-2 float-right submit-mail-btn">
                         Abonnieren
-                    </button>   
+                    </button>
                     <p class="text-warning info-message"></p>
                 </div>
             </div>

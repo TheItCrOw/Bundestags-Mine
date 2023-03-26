@@ -3,8 +3,10 @@ using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.SqlDatabase;
 using BundestagMine.Utility;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -18,13 +20,146 @@ namespace BundestagMine.Logic.Services
         private readonly AnnotationService _annotationService;
         private readonly BundestagMineDbContext _db;
 
-        public TextSummarizationService(BundestagMineDbContext db, 
+        public TextSummarizationService(BundestagMineDbContext db,
             AnnotationService annotationService,
             ILogger<TextSummarizationEvaluationScore> logger)
         {
             _logger = logger;
             _annotationService = annotationService;
             _db = db;
+        }
+
+        /// <summary>
+        /// Calls a python script, waits until its finished and read in the output. Return that output
+        /// </summary>
+        /// <param name="scriptName"></param>
+        /// <returns></returns>
+        public dynamic? ExecutePythonScript(string workingDirectory,
+            string scriptName,
+            string scriptInput,
+            out string status)
+        {
+            status = "";
+            // We communicate with the python scripts via input and output files
+            var inputFileName = Path.Combine(workingDirectory, $"{scriptName.Replace(".py", "")}_input.txt");
+            var outputFileName = Path.Combine(workingDirectory, $"{scriptName.Replace(".py", "")}_output.json");
+
+            try
+            {
+                File.WriteAllText(inputFileName, scriptInput);
+                var startInfo = new ProcessStartInfo(ConfigManager.GetPythonExePath())
+                {
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    Arguments = $"\"{scriptName}\"",
+                    WorkingDirectory = workingDirectory,
+                    StandardOutputEncoding = Encoding.UTF8,
+                };
+
+                // Start the script
+                using (var process = Process.Start(startInfo))
+                {
+                    using (var reader = process?.StandardOutput)
+                    {
+                        // Wait until its finished
+                        status = reader?.ReadToEnd();
+                        var result = File.ReadAllText(outputFileName);
+                        dynamic asJson = JsonConvert.DeserializeObject(result);
+                        return asJson;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                status = "BAD";
+                _logger.LogError(ex, "Unknown error when trying to execute python script: " + scriptName);
+                return null;
+            }
+            finally
+            {
+                // Delete the text files at the end
+                if (File.Exists(inputFileName))
+                    File.Delete(inputFileName);
+
+                if (File.Exists(outputFileName))
+                    File.Delete(outputFileName);
+            }
+        }
+
+        /// <summary>
+        /// The summarization pipeline consists of the following steps:
+        /// 1. Translation of the german speech to english
+        /// 2. Summarizing the english text with BART and PEGASUS, summarize the german text with TextRank
+        /// 3. Translating the english summary back to german
+        /// 4. Evaluating the english translation with a score from 0-1 of how good the translation was
+        /// 5. Evaluating the german summary of how good the summary is
+        /// </summary>
+        /// <returns></returns>
+        public (NLPSpeech, List<TextSummarizationEvaluationScore>) RunSpeechThroughSummarizationPipeline(NLPSpeech speech)
+        {
+            // The pipeline calls to python scripts, which use the transformer to calculate the operations
+            // we need.
+
+            // We really dont need to summarize small speeches...
+            if (speech.Text.Length < 400) return (speech, new List<TextSummarizationEvaluationScore>());
+
+            // Step 1: Translate the speech to english
+            if (string.IsNullOrEmpty(speech.EnglishTranslationOfSpeech))
+            {
+                var result = ExecutePythonScript(
+                    ConfigManager.GetPythonScriptPath(), ConfigManager.GetPythonScriptName_Translation(),
+                    speech.Text, out var status);
+                if (result != null && status.Contains("GOOD"))
+                    speech.EnglishTranslationOfSpeech = result?.english_translation;
+            }
+
+            // Step 2: Evalute the translation
+            if(speech.EnglishTranslationScore == 0.0 || speech.EnglishTranslationScore == 0)
+            {
+                var result = ExecutePythonScript(
+                    ConfigManager.GetPythonScriptPath(), ConfigManager.GetPythonScriptName_Translation_Evaluation(),
+                    JsonConvert.SerializeObject(new { german = speech.Text, english = speech.EnglishTranslationOfSpeech}), out var status);
+                if (result != null && status.Contains("GOOD"))
+                    speech.EnglishTranslationScore = result?.similarity;
+            }
+
+            // Step 3: Summarize
+            // TextRank
+            if (string.IsNullOrEmpty(speech.ExtractiveSummary))
+            {
+                var result = ExecutePythonScript(
+                    ConfigManager.GetPythonScriptPath(), ConfigManager.GetPythonScriptName_TextRank_Summary(),
+                    speech.Text, out var status);
+                if (result != null && status.Contains("GOOD"))
+                    speech.ExtractiveSummary = result?.extractive_summary;
+            }
+            // PEGASUS
+            if (string.IsNullOrEmpty(speech.AbstractSummaryPEGASUS))
+            {
+                var result = ExecutePythonScript(
+                    ConfigManager.GetPythonScriptPath(), ConfigManager.GetPythonScriptName_PEGASUS_Summary(),
+                    speech.EnglishTranslationOfSpeech, out var status);
+                if (result != null && status.Contains("GOOD"))
+                    speech.AbstractSummaryPEGASUS = result?.abstract_summary;
+            }
+            // BART
+            if (string.IsNullOrEmpty(speech.AbstractSummary))
+            {
+                var result = ExecutePythonScript(
+                    ConfigManager.GetPythonScriptPath(), ConfigManager.GetPythonScriptName_BART_Summary(),
+                    speech.EnglishTranslationOfSpeech, out var status);
+                if (result != null && status.Contains("GOOD"))
+                    speech.AbstractSummary = result?.abstract_summary;
+            }
+
+            // Last step: Evalute the summaries
+            var evaluations = new List<TextSummarizationEvaluationScore>();
+            evaluations.Add(EvaluateSummaryOfSpeech(speech.ExtractiveSummary, speech.Text, speech.Id, TextSummarizationMethods.TextRank));
+            evaluations.Add(EvaluateSummaryOfSpeech(speech.AbstractSummaryPEGASUS, speech.Text, speech.Id, TextSummarizationMethods.PEGASUSSamSum));
+            evaluations.Add(EvaluateSummaryOfSpeech(speech.AbstractSummary, speech.Text, speech.Id, TextSummarizationMethods.BARTSamSum));
+
+            // Return the results
+            return (speech, evaluations);
         }
 
         public List<TextSummarizationEvaluationScore> GetEvaluationsOfSpeech(Guid speechId) =>
@@ -36,7 +171,7 @@ namespace BundestagMine.Logic.Services
         public void EvaluateSummariesOfAllSpeeches()
         {
             var speeches = _db.NLPSpeeches
-                .Where(s => !string.IsNullOrEmpty(s.EnglishTranslationOfSpeech) 
+                .Where(s => !string.IsNullOrEmpty(s.EnglishTranslationOfSpeech)
                 && (s.ProtocolNumber > 58 || s.ProtocolNumber < 13))
                 .ToList();
 
@@ -53,7 +188,7 @@ namespace BundestagMine.Logic.Services
 
                     _db.SaveChanges();
                 }
-                catch( Exception ex)
+                catch (Exception ex)
                 {
                     _logger.LogError(ex, "Couldn't text summarize evalute the speech: " + speech.Id);
                 }
@@ -63,11 +198,16 @@ namespace BundestagMine.Logic.Services
         /// <summary>
         /// Evaluates the summary of a given speech and returns the score.
         /// </summary>
-        public TextSummarizationEvaluationScore EvaluateSummaryOfSpeech(string summary, 
-            string fullText, 
+        public TextSummarizationEvaluationScore EvaluateSummaryOfSpeech(string summary,
+            string fullText,
             Guid speechId,
             TextSummarizationMethods method)
         {
+            // If we already have an evaluation, dont do it again
+            var existingEvaluation = _db.TextSummarizationEvaluationScores.FirstOrDefault(t => t.SpeechId == speechId
+               && t.TextSummarizationMethod == method);
+            if (existingEvaluation != default) return existingEvaluation;
+
             var evaluation = new TextSummarizationEvaluationScore()
             {
                 SpeechId = speechId,
@@ -102,7 +242,7 @@ namespace BundestagMine.Logic.Services
                     // LV: 8. Its 8 characters apart.
                     double lv = levenshtein.Compute(curSentence, compare);
                     // Calculate the similarity of two sentences on a decimal value like 0.34
-                    levensteinValues.Add(1 - lv/Math.Max(curSentence.Length, compare.Length));
+                    levensteinValues.Add(1 - lv / Math.Max(curSentence.Length, compare.Length));
                 }
             }
 
@@ -130,7 +270,7 @@ namespace BundestagMine.Logic.Services
 
             // Now check the summary for the extracted NES
             var topNesSummary = new List<(string, double)>();
-            foreach(var ne in topNesTextSoftmaxed)
+            foreach (var ne in topNesTextSoftmaxed)
             {
                 var value = ne.Item1;
                 var occurencesInSummary = summary.ToLower().Split(value.ToLower()).Count() - 1;
@@ -194,7 +334,7 @@ namespace BundestagMine.Logic.Services
             evaluation.LevenstheinSimilaritiesOfSentences = String.Join(";", levensteinValues);
 
             // Averga sentence length. Every 30 words per average one point
-            if(avgWordsPerSentence >= 20)
+            if (avgWordsPerSentence >= 20)
             {
                 var value = avgWordsPerSentence / 10;
                 finalScoreValue -= value;
@@ -221,7 +361,7 @@ namespace BundestagMine.Logic.Services
             evaluation.SummaryCompressionRate = summaryCompressionRate;
 
             // 10 is the max final score. It doesnt get any worse.
-            if(finalScoreValue < 0) finalScoreValue = 0;
+            if (finalScoreValue < 0) finalScoreValue = 0;
 
             evaluation.SummaryScore = finalScoreValue;
             return evaluation;

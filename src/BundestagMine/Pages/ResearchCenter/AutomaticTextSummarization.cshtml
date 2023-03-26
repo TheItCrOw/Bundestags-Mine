@@ -159,14 +159,14 @@
                         "data": "textRankEval", "name": "TR-S.", "autoWidth": true,
                         "render": function(data, type, full) {
                             return `
-                                                                                                            <div>
-                                                                                                            <p class='font-weight-bold text-center w-100'>
-                                                                                                                ${data.summaryScore}
-                                                                                                            </p>
-                                                                                                            ${buildSummarizationScoreDetails(data)}
-                                                                                                            <p class='text-underlined text-center w-100'>Erklärung</p>
-                                                                                                            <label style="white-space: pre-line">${data.scoreExplanation}</label>
-                                                                                                            </div>`;
+                                                                                                                            <div>
+                                                                                                                            <p class='font-weight-bold text-center w-100'>
+                                                                                                                                ${data?.summaryScore}
+                                                                                                                            </p>
+                                                                                                                            ${buildSummarizationScoreDetails(data)}
+                                                                                                                            <p class='text-underlined text-center w-100'>Erklärung</p>
+                                                                                                                            <label style="white-space: pre-line">${data?.scoreExplanation}</label>
+                                                                                                                            </div>`;
                         }
                     },
                     { "data": "abstractSummary", "name": "BART", "autoWidth": true },
@@ -174,14 +174,14 @@
                         "data": "bartEval", "name": "B-S.", "autoWidth": true,
                         "render": function(data, type, full) {
                             return `
-                                                                                                            <div>
-                                                                                                            <p class='font-weight-bold text-center w-100'>
-                                                                                                                ${data.summaryScore}
-                                                                                                            </p>
-                                                                                                            ${buildSummarizationScoreDetails(data)}
-                                                                                                            <p class='text-underlined text-center w-100'>Erklärung</p>
-                                                                                                            <label style="white-space: pre-line">${data.scoreExplanation}</label>
-                                                                                                            </div>`;
+                                                                                                                            <div>
+                                                                                                                            <p class='font-weight-bold text-center w-100'>
+                                                                                                                                ${data?.summaryScore}
+                                                                                                                            </p>
+                                                                                                                            ${buildSummarizationScoreDetails(data)}
+                                                                                                                            <p class='text-underlined text-center w-100'>Erklärung</p>
+                                                                                                                            <label style="white-space: pre-line">${data?.scoreExplanation}</label>
+                                                                                                                            </div>`;
                         }
                     },
                     { "data": "abstractSummaryPEGASUS", "name": "PEGASUS", "autoWidth": true },
@@ -189,14 +189,14 @@
                         "data": "pegasusEval", "name": "P-S.", "autoWidth": true,
                         "render": function(data, type, full) {
                             return `
-                                                                                                            <div>
-                                                                                                            <p class='font-weight-bold text-center w-100'>
-                                                                                                                ${data.summaryScore}
-                                                                                                            </p>
-                                                                                                            ${buildSummarizationScoreDetails(data)}
-                                                                                                            <p class='text-underlined text-center w-100'>Erklärung</p>
-                                                                                                            <label style="white-space: pre-line">${data.scoreExplanation}</label>
-                                                                                                            </div>`;
+                                                                                                                            <div>
+                                                                                                                            <p class='font-weight-bold text-center w-100'>
+                                                                                                                                ${data?.summaryScore}
+                                                                                                                            </p>
+                                                                                                                            ${buildSummarizationScoreDetails(data)}
+                                                                                                                            <p class='text-underlined text-center w-100'>Erklärung</p>
+                                                                                                                            <label style="white-space: pre-line">${data?.scoreExplanation}</label>
+                                                                                                                            </div>`;
                         }
                     },
                 ],
@@ -213,28 +213,28 @@
 
         function buildSummarizationScoreDetails(data) {
             return `
-                                                                                                <div>
-                                                                                                    <p class='text-underlined text-center w-100'>Parameter</p>
-                                                                                                    <div class='flexed justify-content-between'>
-                                                                                                        <p class='mb-0'>NE-Distanz:</p>
-                                                                                                        <p class='mb-0 ml-1'>${data.namedEntityDistance.toFixed(2)}</p>
-                                                                                                    </div>
-                                                                                                    <div class='flexed justify-content-between'>
-                                                                                                        <p class='mb-0'>LV:</p>
-                                                                                                        <p class='mb-0 ml-1'>${data.levenstheinSimilaritiesOfSentences?.split(';')
+                                                                                                                <div>
+                                                                                                                    <p class='text-underlined text-center w-100'>Parameter</p>
+                                                                                                                    <div class='flexed justify-content-between'>
+                                                                                                                        <p class='mb-0'>NE-Distanz:</p>
+                                                                                                                        <p class='mb-0 ml-1'>${data?.namedEntityDistance.toFixed(2)}</p>
+                                                                                                                    </div>
+                                                                                                                    <div class='flexed justify-content-between'>
+                                                                                                                        <p class='mb-0'>LV:</p>
+                                                                                                                        <p class='mb-0 ml-1'>${data?.levenstheinSimilaritiesOfSentences?.split(';')
                     .map(l => l.length > 4 ? l.substring(0, 4) : l).join('; ')}</p>
-                                                                                                    </div>
-                                                                                                    <div class='flexed justify-content-between'>
-                                                                                                        <p class='mb-0'>Worte/Satz:</p>
-                                                                                                        <p class='mb-0 ml-1'>${data.averageWordsPerSentence}</p>
-                                                                                                    </div>
-                                                                                                    <div class='flexed justify-content-between'>
-                                                                                                        <p class='mb-0'>Kompression:</p>
-                                                                                                        <p class='mb-0 ml-1'>${data.summaryCompressionRate.toFixed(2)}%</p>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                                <hr />
-                                                                                            `;
+                                                                                                                    </div>
+                                                                                                                    <div class='flexed justify-content-between'>
+                                                                                                                        <p class='mb-0'>Worte/Satz:</p>
+                                                                                                                        <p class='mb-0 ml-1'>${data?.averageWordsPerSentence}</p>
+                                                                                                                    </div>
+                                                                                                                    <div class='flexed justify-content-between'>
+                                                                                                                        <p class='mb-0'>Kompression:</p>
+                                                                                                                        <p class='mb-0 ml-1'>${data?.summaryCompressionRate.toFixed(2)}%</p>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                                <hr />
+                                                                                                            `;
         }
     </script>
 }

@@ -67,7 +67,11 @@ namespace BundestagMine.SqlDatabase
         public static string GetPixabayDefaultParameters() => _config.GetSection("PixabayAPI").GetSection("DefaultParameters").Value;
 
         public static string GetPythonScriptPath() => _config.GetSection("TextSummarizationPython").GetSection("PythonScriptPath").Value;
-        public static string GetPythonScriptName() => _config.GetSection("TextSummarizationPython").GetSection("PythonScriptName").Value;
+        public static string GetPythonScriptName_PEGASUS_Summary() => _config.GetSection("TextSummarizationPython").GetSection("PythonScriptName_PEGASUS_Summary").Value;
+        public static string GetPythonScriptName_BART_Summary() => _config.GetSection("TextSummarizationPython").GetSection("PythonScriptName_BART_Summary").Value;
+        public static string GetPythonScriptName_TextRank_Summary() => _config.GetSection("TextSummarizationPython").GetSection("PythonScriptName_TextRank_Summary").Value;
+        public static string GetPythonScriptName_Translation() => _config.GetSection("TextSummarizationPython").GetSection("PythonScriptName_Translation").Value;
+        public static string GetPythonScriptName_Translation_Evaluation() => _config.GetSection("TextSummarizationPython").GetSection("PythonScriptName_Translation_Evaluation").Value;
         public static string GetPythonExePath() => _config.GetSection("TextSummarizationPython").GetSection("PythonExePath").Value;
 
 
