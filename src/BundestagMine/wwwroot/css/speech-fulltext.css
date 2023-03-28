@@ -152,7 +152,7 @@
 
     .read-more-item:hover {
         transition: 0.15s;
-        background-color: ghostwhite !important;
+        background-color: transparent !important;
         color: black;
     }
 
@@ -186,7 +186,7 @@
 
 .fulltext-analysis-div {
     overflow-y: auto;
-    height: 92.2vh;
+    height: calc(100vh - 32px);
     width: 100%;
     max-width: 1000px;
     position: relative;
@@ -232,6 +232,7 @@
 
     .analysis-wrapper .breadcrumbs {
         height: 30px;
+        font-size: 15px;
         display: flex;
         align-items: center;
         position: absolute;
@@ -251,13 +252,15 @@
 
     .analysis-wrapper .topic-header {
         position: absolute;
-        top: 195px;
-        display: flex;
-        justify-content: space-around;
-        background-color: lightgray !important;
+        display: none; /*Currenlyt not liking the topic header there...*/
+        top: calc(195px + 30px); /*height of the menu-header*/
+        /*display: flex;*/
+        justify-content: stretch;
+        /*background-color: lightgray !important;*/
         align-items: center;
-        border-bottom: gray 1px solid;
+        /*border-bottom: gray 1px solid;*/
         border-left: gray 1px solid;
+        border-top: gray 1px solid;
         border-right: gray 1px solid;
         color: black;
         height: 25px;
@@ -265,6 +268,45 @@
         cursor: default;
         z-index: 2;
     }
+
+    .analysis-wrapper .analysis-menu-header {
+        position: absolute;
+        top: 195px;
+        display: flex;
+        justify-content: stretch;
+        background-color: lightgray !important;
+        align-items: center;
+        border-left: gray 1px solid;
+        box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+        border-right: gray 1px solid;
+        color: black;
+        height: 30px;
+        width: 100%;
+        cursor: default;
+        z-index: 2;
+    }
+
+        .analysis-wrapper .analysis-menu-header button {
+            height: 30px;
+            width: 100%;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            margin: 0px;
+            border-radius: 0;
+            background-color: lightgray;
+            transition: 0.25s;
+        }
+
+            .analysis-wrapper .analysis-menu-header button:hover {
+                color: var(--bg-darkprime);
+                background-color: ghostwhite;
+                transition: 0.25s;
+            }
+
+        .analysis-wrapper .analysis-menu-header .selected-btn {
+            color: var(--bg-darkprime);
+            background-color:ghostwhite;
+        }
 
     .analysis-wrapper .header {
         position: absolute;
@@ -369,7 +411,7 @@
 
     .analysis-wrapper .analysis-content {
         height: calc(100% - 220px);
-        background-color: transparent;
+        background-color: ghostwhite;
         overflow-y: auto;
         /*font-family: Georgia, "Times New Roman", Times, serif !important;*/
         width: 100%;
@@ -378,7 +420,7 @@
         top: 195px;
         bottom: 25px;
         border: 1px gray solid;
-        padding-top: 35px;
+        padding-top: 40px;
         padding-left: 8px;
         padding-right: 8px;
         padding-bottom: 16px;
@@ -387,6 +429,7 @@
         line-height: 40px;
         cursor: default;
     }
+
 
 .fulltext-analysis-div .legend {
     position: absolute;
@@ -419,17 +462,17 @@
     .fulltext-analysis-div .analysis-loading-div .progress {
         border-radius: 0 !important;
         height: 100% !important;
-        position:relative;
-        width:100%;
+        position: relative;
+        width: 100%;
     }
 
     .fulltext-analysis-div .analysis-loading-div p {
-        position:absolute;
-        margin-bottom:0;
-        left:8px;
-        font-size:15px;
-        color:black;
-        transform:translateY(50%);
+        position: absolute;
+        margin-bottom: 0;
+        left: 8px;
+        font-size: 15px;
+        color: var(--bg-darkprime);
+        transform: translateY(50%);
     }
 
 @keyframes gradient {
@@ -499,7 +542,7 @@
 .sentence {
     font-style: normal;
     transition: 0.25s;
-    border-radius: 5px;
+    /*border-radius: 5px;*/
     border: 1px solid transparent;
 }
 
@@ -510,15 +553,15 @@
 }
 
 .neu-sentence {
-    background-color: rgba(0, 152, 255, 0.15);
+    background-color: rgba(0, 152, 255, 0.1);
 }
 
 .neg-sentence {
-    background-color: rgba(255, 0, 0, 0.15);
+    background-color: rgba(255, 0, 0, 0.09);
 }
 
 .pos-sentence {
-    background-color: rgba(9, 160, 21, 0.18);
+    background-color: rgba(9, 160, 21, 0.1);
 }
 
 .sentiment-question {

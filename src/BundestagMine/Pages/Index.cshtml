@@ -227,10 +227,7 @@
                     </div>
 
                     <!--right contetn-->
-                    <div class="w-100 mt-3 pl-3 pr-3">
-                        <hr class="mt-3 fancy-hr bg-lightgray" />
-                        <h2>Rede Volltext Analyse</h2>
-
+                    <div class="w-100 pl-3 pr-3">
                         <div class="flexed justify-content-center align-items-center">
                             <div class="fulltext-analysis-div mt-2">
                                 <!--loader-->
@@ -257,23 +254,23 @@
                                                 <div class="expanded">
                                                     <div class="flexed justify-content-between">
                                                         <label class="m-0 p-0">Name: </label>
-                                                        <label class="m-0 p-0 ml-1 name">Günther Schlierkamp</label>
+                                                        <label class="m-0 p-0 ml-1 name"></label>
                                                     </div>
                                                     <div class="flexed justify-content-between">
                                                         <label class="m-0 p-0">Geschlecht: </label>
-                                                        <label class="m-0 p-0 ml-1 gender">Männlich</label>
+                                                        <label class="m-0 p-0 ml-1 gender"></label>
                                                     </div>
                                                     <div class="flexed justify-content-between">
                                                         <label class="m-0 p-0">Geburtstag: </label>
-                                                        <label class="m-0 p-0 ml-1 bday">05.04.1977</label>
+                                                        <label class="m-0 p-0 ml-1 bday"></label>
                                                     </div>
                                                     <div class="flexed justify-content-between">
                                                         <label class="m-0 p-0">Religion: </label>
-                                                        <label class="m-0 p-0 ml-1 religion">ohne Angaben</label>
+                                                        <label class="m-0 p-0 ml-1 religion"></label>
                                                     </div>
                                                     <div class="flexed justify-content-between">
                                                         <label class="m-0 p-0">Familienstand: </label>
-                                                        <label class="m-0 p-0 ml-1 family">verheiratet, 2 Kinder</label>
+                                                        <label class="m-0 p-0 ml-1 family"></label>
                                                     </div>
                                                 </div>
                                                 <div class="not-expanded">
@@ -321,7 +318,7 @@
                                             <i class="ml-2 mr-2 fas fa-angle-double-right"></i>
                                             <span class="protocol"></span>
                                             <i class="ml-2 mr-2 fas fa-angle-double-right"></i>
-                                            <span class="agenda clickable text-warning read-more-agenda"></span>
+                                            <span class="agenda clickable text-underlined read-more-agenda"></span>
                                         </div>
                                         <!--choose some options-->
                                         <div class="dropdown no-arrow small-options-menu">
@@ -340,24 +337,43 @@
                                             </div>
                                         </div>
                                     </div>
+
                                     <!--topic header-->
                                     <div class="topic-header">
-                                        <div class="flexed align-items-center">
-                                            <h4 class="mb-0 mt-0 mr-1 font-weight-bold">#</h4>
+                                        <div class="flexed align-items-center w-100 justify-content-center">
+                                            <h6 class="mb-0 mt-0 mr-1 font-weight-bold">#</h6>
                                             <h6 class="topic-1 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
                                         </div>
-                                        <div class="flexed align-items-center">
-                                            <h4 class="mb-0 mt-0 mr-1 font-weight-bold">#</h4>
+                                        <div class="flexed align-items-center w-100 justify-content-center">
+                                            <h6 class="mb-0 mt-0 mr-1 font-weight-bold">#</h6>
                                             <h6 class="topic-2 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
                                         </div>
-                                        <div class="flexed align-items-center">
-                                            <h4 class="mb-0 mt-0 mr-1 font-weight-bold">#</h4>
+                                        <div class="flexed align-items-center w-100 justify-content-center">
+                                            <h6 class="mb-0 mt-0 mr-1 font-weight-bold">#</h6>
                                             <h6 class="topic-3 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
                                         </div>
                                     </div>
+
+                                    @*action buttons*@
+                                    <div class="analysis-menu-header">
+                                        <button class="btn selected-btn">
+                                            <i class="fas fa-comments"></i>
+                                        </button>
+                                        <button class="btn">
+                                            <i class="fas fa-globe-americas"></i>
+                                        </button>
+                                        <button class="btn">
+                                            <i class="fas fa-chart-pie"></i>
+                                        </button>
+                                        <button class="btn">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </button>
+                                    </div>
+
                                     <!--analysis content-->
                                     <div class="analysis-content">
                                     </div>
+
                                     <!--legend-->
                                     <div class="legend">
                                         <span class="mr-2">

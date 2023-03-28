@@ -449,6 +449,10 @@ async function startFulltextAnalysis(speech) {
 
     // Set the progress bar to 0
     $('.fulltext-analysis-div .analysis-loading-div .progress-bar').get(0).style.width = '30%';
+    // and to 70 after some time
+    setTimeout(function () {     // Set the progress bar to 65
+        $('.fulltext-analysis-div .analysis-loading-div .progress-bar').get(0).style.width = '70%';
+    }, 4000)
     // Load the annotations for the fulltext analysis
     var annotations = await getNLPAnnotationsOfSpeech(speech.id);
     speech.tokens = annotations.tokens;
@@ -492,6 +496,7 @@ async function buildHtmlOfSpeech(speech) {
 }
 
 // Takes in a nlp speech and parses it into the html we add to the UI
+// Idk what I did here, this looks disgusting...
 async function buildHtmlOfFulltextAnalysis(speech) {
     try {
         // These are the NE, Tokens etc.

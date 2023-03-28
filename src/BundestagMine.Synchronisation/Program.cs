@@ -100,6 +100,10 @@ namespace BundestagMine.Synchronisation
                     .QueryInChunksOf(2)
                     .SelectMany(p => db.NLPSpeeches
                         .Where(s => s.LegislaturePeriod == p.LegislaturePeriod && p.Number == s.ProtocolNumber
+                                && (string.IsNullOrEmpty(s.EnglishTranslationOfSpeech) 
+                                    || string.IsNullOrEmpty(s.AbstractSummaryPEGASUS)
+                                    || string.IsNullOrEmpty(s.AbstractSummary)
+                                    || string.IsNullOrEmpty(s.ExtractiveSummary)) 
                                 && s.Text.Length > 400))
                     .ToList())
                 {
