@@ -198,7 +198,7 @@
             </nav>
 
             @*HOME*@
-            <div id="homeContent" class="h-100 position-relative">
+            <div id="homeContent" class="h-100 position-relative display-none">
                 <partial name="~/Pages/Shared/_Home.cshtml" />
             </div>
 
@@ -208,7 +208,7 @@
             </div>
 
             <!--SPEECHES AND SPEAKER-->
-            <div id="speechContent" class="h-100 display-none position-relative">
+            <div id="speechContent" class="h-100 position-relative">
                 <div class="flexed m-0 p-0 w-100 h-100">
                     <!--protocol tree-->
                     <div class="protocol-tree-content h-100 pl-0 pr-0">
@@ -236,7 +236,7 @@
                                 <!--loader-->
                                 <div class="loader display-none">
                                     <p>
-                                        Analyse wird generiert. Dies kann bis zu mehreren Sekunden dauern. Mehr dazu im FAQ.
+                                        Rede wird geladen...
                                     </p>
                                     <div class="lds-ripple"><div></div><div></div></div>
                                 </div>
@@ -319,9 +319,9 @@
                                         <div class="ml-2 flexed align-items-center">
                                             <span class="period"></span>
                                             <i class="ml-2 mr-2 fas fa-angle-double-right"></i>
-                                            <span class="protocol">P</span>
+                                            <span class="protocol"></span>
                                             <i class="ml-2 mr-2 fas fa-angle-double-right"></i>
-                                            <span class="agenda clickable text-warning font-weight-bold read-more-agenda"></span>
+                                            <span class="agenda clickable text-warning read-more-agenda"></span>
                                         </div>
                                         <!--choose some options-->
                                         <div class="dropdown no-arrow small-options-menu">
@@ -373,11 +373,25 @@
                                             <i class="fas fa-circle" style="color:gray"></i> MISC
                                         </span>
                                     </div>
+                                    @*analysis is being calculated*@
+                                    <div class="analysis-loading-div">
+                                        <div class="progress">
+                                            <div class="progress-bar progress-bar-striped bg-warning progress-bar-animated"
+                                                 role="progressbar" aria-valuenow="75" aria-valuemin="0"
+                                                 aria-valuemax="100" style="width: 0%">
+                                                @*some text*@
+                                                <p>Volltext Analyse lädt...</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                @*template file for the summary popovers*@
+                <partial name="~/Pages/Shared/_SpeechSummaryPopoverView.cshtml" />
             </div>
 
             @*topic analysis*@

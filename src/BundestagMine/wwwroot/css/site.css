@@ -182,6 +182,10 @@ body {
     font-size: small;
 }
 
+.xsmall-font{
+    font-size:x-small;
+}
+
 .medium-font {
     font-size: medium;
 }

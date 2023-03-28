@@ -28,19 +28,12 @@ async function buildProtocolTree(protocols) {
         item.setAttribute('data-expanded', false);
         // Set the tooltip popover stuff
         item.setAttribute('data-toggle', 'popover');
-        // Delete the time of the date
-        var content = `Protokoll vom ${parseToGermanDate(protocol.date)}`;
-        if (protocol.pollsAmount > 0) content += ` mit <b>${protocol.pollsAmount}</b> Abstimmungen.`
-        item.setAttribute('data-content', content);
-        item.setAttribute('data-html', true);
-        item.setAttribute('data-trigger', 'hover');
-        item.setAttribute('data-placement', 'top');
         item.setAttribute('data-id', protocol.id);
         item.setAttribute('data-param', protocol.legislaturePeriod + ',' + protocol.number);
 
         item.innerHTML += `<div class='flexed wrapper position-relative'>
                             <i class="fas fa-clipboard-list mr-2"></i>
-                            <p class='w-100 mb-0'>${protocol.title}</p>
+                            <p class='w-100 mb-0'><b>${protocol.number}</b>. Sitzung vom ${parseToGermanDate(protocol.date)}</p>
                             <div class="flexed align-items-center">
                             <div class="poll-wrapper ${protocol.pollsAmount > 0 ? "flexed" : "display-none"}">
                             <i class="fas fa-poll icon"></i>
@@ -249,6 +242,7 @@ async function loadSpeechesToAgendaItem($agenda) {
 
     // Now do the speeches
     var speeches = await getSpeechesOfAgendaItem(period, protocol, number);
+
     for (var i = 0; i < speeches.length; i++) {
         var speech = speeches[i];
         // Fetch the name of the speaker by the speaker id
@@ -271,6 +265,12 @@ async function loadSpeechesToAgendaItem($agenda) {
         // TODO: This must be the speech id someday
         item.setAttribute('data-id', speech.id);
 
+        // Add the summary popover here
+        item.setAttribute('data-trigger', 'hover');
+        item.setAttribute('data-toggle', 'popover');
+        item.setAttribute('data-placement', 'top');
+        item.setAttribute('data-html', 'true');
+        item.setAttribute('data-content', buildHtmlForSpeechSummaryPopover(speech));
         item.innerHTML += `<div class='flexed wrapper'>
                             <i class="fas fa-comments mr-2"></i>
                             <p class='w-100 mb-0'>Rede von ${speech.speakerName} (${fractionOrParty})</p>
@@ -293,6 +293,8 @@ async function loadSpeechesToAgendaItem($agenda) {
 
     $agenda.data('loaded', true);
     $agenda.find('.loader').fadeOut(250);
+    // Activate potential popovers
+    $('[data-toggle="popover"]').popover();
 }
 
 // Handle the clicking onto the read more item
@@ -415,9 +417,8 @@ async function insertSpeechIntoFulltextAnalysis(speechId) {
     }
 
     // Visualize the nlp speech in the content
-    var html = await buildHtmlOfFulltextAnalysis(speech);
+    var html = await buildHtmlOfSpeech(speech);
     // Add the text to the ui
-    $('.analysis-content').html("Test");
     $('.analysis-content').html(html);
 
     // Activate popovers again.
@@ -434,8 +435,61 @@ async function insertSpeechIntoFulltextAnalysis(speechId) {
 
     // Disable the loading screen
     $('.fulltext-analysis-div').find('.loader').fadeOut(500);
+
+    // Start the analysis in the background
+    startFulltextAnalysis(speech);
 }
 
+// Performs the fulltext analysis of the speech by fetching the annotations and building the html
+async function startFulltextAnalysis(speech) {
+    // Hide the legend
+    $('.fulltext-analysis-div .legend').hide();
+    // show progress bar
+    $('.fulltext-analysis-div .analysis-loading-div').show();
+
+    // Set the progress bar to 0
+    $('.fulltext-analysis-div .analysis-loading-div .progress-bar').get(0).style.width = '30%';
+    // Load the annotations for the fulltext analysis
+    var annotations = await getNLPAnnotationsOfSpeech(speech.id);
+    speech.tokens = annotations.tokens;
+    speech.namedEntities = annotations.namedEntities;
+    speech.sentiments = annotations.sentiments;
+    $('.fulltext-analysis-div .analysis-loading-div .progress-bar').get(0).style.width = '75%';
+
+    var html = await buildHtmlOfFulltextAnalysis(speech);
+    $('.fulltext-analysis-div .analysis-loading-div .progress-bar').get(0).style.width = '90%';
+    // Add the text to the ui
+    $('.analysis-content').html(html);
+    $('.fulltext-analysis-div .analysis-loading-div .progress-bar').get(0).style.width = '100%';
+
+    // Once were done, show the legend instead.
+    // Hide the legend
+    $('.fulltext-analysis-div .legend').fadeIn(300);
+    // show progress bar
+    $('.fulltext-analysis-div .analysis-loading-div').fadeOut(300);
+    // Activate popovers again.
+    $('[data-toggle="popover"]').popover();
+}
+
+// Takes in a nlp speech and returns only the text with its comments - no tokens, sentiments etc.
+async function buildHtmlOfSpeech(speech) {
+    console.log(speech);
+
+    var html = "";
+
+    for (var i = 0; i < speech.segments.length; i++) {
+        var curSegment = speech.segments[i];
+        html += curSegment.text + "<br/>";
+
+        for (var s = 0; s < curSegment.shouts.length; s++) {
+            var curShout = curSegment.shouts[s];
+            var shoutHtml = await buildShoutHtmlFromShout(curShout);
+            html += shoutHtml;
+        }
+    }
+
+    return html;
+}
 
 // Takes in a nlp speech and parses it into the html we add to the UI
 async function buildHtmlOfFulltextAnalysis(speech) {
@@ -491,7 +545,7 @@ async function buildHtmlOfFulltextAnalysis(speech) {
             var sentenceAndTokenStart = speech.sentiments.find(s => s.begin == token.begin || s.begin == token.begin - 1);
             var sentenceAndTokenEnd = speech.sentiments.find(s => s.end == token.end || s.end == token.end + 1);
             if (sentenceAndTokenEnd != undefined) {
-                lastSentimentScore = sentenceAndTokenEnd.sentimentSingleScore; 
+                lastSentimentScore = sentenceAndTokenEnd.sentimentSingleScore;
                 var mode = '<b class=\'text-primary\'>Neutral</b>';
                 if (sentenceAndTokenEnd.sentimentSingleScore > 0) {
                     mode = '<b class=\'text-success\'>Positiv</b>';
@@ -542,26 +596,7 @@ async function buildHtmlOfFulltextAnalysis(speech) {
 
                 for (var k = 0; k < keys.length; k++) {
                     var shout = shouts[keys[k]];
-                    var shoutImage = 'img/Unbekannt.jpg';
-                    var shoutName = 'Unbekannt';
-                    var shoutClass = '';
-
-                    if (shout.speakerId != undefined) {
-                        shoutImage = await getSpeakerPortrait(shout.speakerId);
-                        shoutName = shout.firstName + " " + shout.lastName;
-                        shoutClass = 'open-speaker-inspector';
-                    }
-
-                    var shoutHtml = `<div class="shout">
-                                <span class="m-0 p-0 ${shoutClass}" data-id="${shout.speakerId}">
-                                <img class="shout-img" src=\"${shoutImage}\" onerror="$(this).attr('src', 'img/Unbekannt.jpg')"/>
-                                <i class="ml-2 mr-1 fas fa-comment-dots"></i>
-                                ${shoutName}:
-                                </span>
-                                <span class="text-center">
-                                "${shout.text}"
-                                </span>
-                                </div>`;
+                    var shoutHtml = await buildShoutHtmlFromShout(shout);
                     html = html.insert_at(token.end + addedText, shoutHtml);
                     addedText += shoutHtml.length;
                 }
@@ -578,6 +613,45 @@ async function buildHtmlOfFulltextAnalysis(speech) {
         console.log(ex);
         return "";
     }
+}
+
+// Builds the html for a shout from a shout
+async function buildShoutHtmlFromShout(shout) {
+    var shoutImage = 'img/Unbekannt.jpg';
+    var shoutName = 'Unbekannt';
+    var shoutClass = '';
+
+    if (shout.speakerId != undefined) {
+        shoutImage = await getSpeakerPortrait(shout.speakerId);
+        shoutName = shout.firstName + " " + shout.lastName;
+        shoutClass = 'open-speaker-inspector';
+    }
+
+    var shoutHtml = `<div class="shout">
+                                <span class="m-0 p-0 ${shoutClass}" data-id="${shout.speakerId}">
+                                <img class="shout-img" src=\"${shoutImage}\" onerror="$(this).attr('src', 'img/Unbekannt.jpg')"/>
+                                <i class="ml-2 mr-1 fas fa-comment-dots"></i>
+                                ${shoutName}:
+                                </span>
+                                <span class="text-center">
+                                "${shout.text}"
+                                </span>
+                                </div>`;
+    return shoutHtml;
+}
+
+// Takes in a speech and builds the summary html which we show in a popover
+function buildHtmlForSpeechSummaryPopover(speech) {
+    // We got a template in the html which we fill with the data we need
+    var $template = $('.summary-popover-template').clone();
+
+    var content = speech.abstractSummary;
+    if (content == null || content == '')
+        content = "Keine Zusammenfassung vorhanden. Dies liegt entweder daran, dass die Rede zu kurz ist, "
+            + "um eine Zusammenfassung zu generieren, oder die Pipeline noch kalkuliert.";
+
+    $template.find('.summary-abstract-content').html(content);
+    return $template.html();
 }
 
 // Handles the opening and closing of the side tree

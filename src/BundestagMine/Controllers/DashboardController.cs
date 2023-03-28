@@ -305,13 +305,40 @@ namespace BundestagMine.Controllers
                 var protocol = int.Parse(splited[1]);
                 var number = int.Parse(splited[2]);
                 response.status = "200";
-                response.result = _metadataService.GetSpeechesOfAgendaItem(period, protocol, number);
+                response.result = _metadataService.GetNLPSpeechesOfAgendaItem(period, protocol, number);
             }
             catch (Exception ex)
             {
                 response.status = "400";
-                response.message = "Couldn't fetch agenda items, error in logs";
+                response.message = "Couldn't fetch speeches of agenda item, error in logs";
                 _logger.LogError(ex, "Error fetching speeches of agenda item:");
+            }
+
+            return Json(response);
+        }
+
+        [HttpGet("/api/DashboardController/GetNLPAnnotationsOfSpeech/{idAsString}")]
+        public IActionResult GetNLPAnnotationsOfSpeech(string idAsString)
+        {
+            dynamic response = new ExpandoObject();
+
+            try
+            {
+                var id = Guid.Parse(idAsString);
+                response.status = "200";
+
+                response.result = new
+                {
+                    tokens = _tdb.Token.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList(),
+                    namedEntities = _db.NamedEntity.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList(),
+                    sentiments = _db.Sentiment.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                response.status = "400";
+                response.message = $"Couldn't fetch nlp annotations of speech {idAsString}, error in logs";
+                _logger.LogError(ex, "Error fetching nlp annotations of speech:");
             }
 
             return Json(response);
@@ -328,15 +355,15 @@ namespace BundestagMine.Controllers
                 response.status = "200";
 
                 var speech = await _db.NLPSpeeches.FindAsync(id);
-                speech.Tokens = _tdb.Token.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
-                speech.NamedEntities = _db.NamedEntity.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
-                speech.Sentiments = _db.Sentiment.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
+                //speech.Tokens = _tdb.Token.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
+                //speech.NamedEntities = _db.NamedEntity.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
+                //speech.Sentiments = _db.Sentiment.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
                 speech.Segments = _db.SpeechSegment.Include(s => s.Shouts).Where(s => s.SpeechId == speech.Id).ToList();
                 //speech.CategoryCoveredTags = _db.CategoryCoveredTagged.Where(c => c.NLPSpeechId == speech.Id)
                 //    .OrderByDescending(t => t.Score).ToList();
 
                 // We want the top X named entities which build the topic of this speech.
-                var topics = speech.NamedEntities
+                var topics = _db.NamedEntity.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin)
                     .GroupBy(ne => ne.LemmaValue)
                     .OrderByDescending(g => g.Count())
                     .Select(ne => new
@@ -562,8 +589,8 @@ namespace BundestagMine.Controllers
                 searchString = searchString.ToCleanRequestString();
                 response.status = "200";
                 response.result = _db.NamedEntity
-                    .Where(ne => !TopicHelper.TopicBlackList.Contains(ne.LemmaValue) && 
-                            ne.LemmaValue.ToLower().Trim().Contains(searchString.ToLower().Trim()) 
+                    .Where(ne => !TopicHelper.TopicBlackList.Contains(ne.LemmaValue) &&
+                            ne.LemmaValue.ToLower().Trim().Contains(searchString.ToLower().Trim())
                             && ne.ShoutId == Guid.Empty)
                     .GroupBy(ne => ne.LemmaValue)
                     .OrderByDescending(kv => kv.Count())

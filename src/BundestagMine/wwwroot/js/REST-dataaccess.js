@@ -234,6 +234,23 @@ async function getNLPSpeechById(id) {
     }
 }
 
+// Gets the nlp annotations of a speech by the speechid
+async function getNLPAnnotationsOfSpeech(id) {
+    try {
+        const result = await $.ajax({
+            url: "/api/DashboardController/GetNLPAnnotationsOfSpeech/" + id,
+            type: "GET",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result.result;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 //============================================== Networks ===============================================
 async function getCommentNetworkData() {
     // Else fetch it from api

@@ -47,7 +47,7 @@ namespace BundestagMine.Logic.Services
         /// <param name="protocolNumber"></param>
         /// <param name="agendaNumber"></param>
         /// <returns></returns>
-        public List<Speech> GetSpeechesOfAgendaItem(int period, int protocolNumber, int agendaNumber) => _db.Speeches
+        public List<NLPSpeech> GetNLPSpeechesOfAgendaItem(int period, int protocolNumber, int agendaNumber) => _db.NLPSpeeches
                     .Where(s => s.LegislaturePeriod == period && s.ProtocolNumber == protocolNumber && s.AgendaItemNumber == agendaNumber)
                     .ToList();
 
