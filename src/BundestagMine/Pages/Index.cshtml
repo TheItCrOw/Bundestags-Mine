@@ -338,28 +338,12 @@
                                         </div>
                                     </div>
 
-                                    <!--topic header-->
-                                    <div class="topic-header">
-                                        <div class="flexed align-items-center w-100 justify-content-center">
-                                            <h6 class="mb-0 mt-0 mr-1 font-weight-bold">#</h6>
-                                            <h6 class="topic-1 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
-                                        </div>
-                                        <div class="flexed align-items-center w-100 justify-content-center">
-                                            <h6 class="mb-0 mt-0 mr-1 font-weight-bold">#</h6>
-                                            <h6 class="topic-2 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
-                                        </div>
-                                        <div class="flexed align-items-center w-100 justify-content-center">
-                                            <h6 class="mb-0 mt-0 mr-1 font-weight-bold">#</h6>
-                                            <h6 class="topic-3 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
-                                        </div>
-                                    </div>
-
                                     @*action buttons*@
                                     <div class="analysis-menu-header">
-                                        <button class="btn selected-btn">
+                                        <button class="btn selected-btn" data-tab="speech-view">
                                             <i class="fas fa-comments"></i>
                                         </button>
-                                        <button class="btn">
+                                        <button class="btn" data-tab="english-speech-view">
                                             <i class="fas fa-globe-americas"></i>
                                         </button>
                                         <button class="btn">
@@ -370,25 +354,59 @@
                                         </button>
                                     </div>
 
-                                    <!--analysis content-->
-                                    <div class="analysis-content">
+                                    @*english speech tab view*@
+                                    <div class="english-speech-view display-none tab-view">
+                                        <h4 class="mb-1 text-center text-black mb-0">Englische Übersetzung der Rede</h4>
+                                        <p class="text-center mb-0 text-dark">
+                                            generiert durch OPUS-MT. Die Übersetzung hat eine Genauigkeit von <span class="score font-weight-bold"></span> nach LaBSE.
+                                            <i class="far fa-question-circle" data-toggle="popover" data-trigger="hover" data-html='true'
+                                            data-content='OPUS-MT ist ein state-of-the-art transformer-based neural machine translation (NMT) Modell, welches für die Übersetzungen genutzt wurde. LaBSE ist ein Language-agnostic BERT Sentence Embedding Modell, welches auf das Erkennen von semantischen Ähnlichkeiten zwischen bilingualen Texten trainiert wurde.<br/><br/> Mehr dazu im Research Center <i class="fas fa-university"></i>.'></i>
+                                        </p>
+                                        <hr class="mt-1 mb-3 bg-secondary" />
+                                        <p class="english-speech text-dark">
+
+                                        </p>
                                     </div>
 
-                                    <!--legend-->
-                                    <div class="legend">
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle" style="color:orange"></i> Person
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle" style="color:steelblue"></i> Organisation
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle" style="color:green"></i> Ort
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle" style="color:gray"></i> MISC
-                                        </span>
+                                    <!--speech tab view-->
+                                    <div class="speech-view tab-view">
+                                        <!--topic header-->
+                                        <div class="topic-header">
+                                            <div class="flexed align-items-center w-100 justify-content-center">
+                                                <h6 class="mb-0 mt-0 mr-1 font-weight-bold">#</h6>
+                                                <h6 class="topic-1 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
+                                            </div>
+                                            <div class="flexed align-items-center w-100 justify-content-center">
+                                                <h6 class="mb-0 mt-0 mr-1 font-weight-bold">#</h6>
+                                                <h6 class="topic-2 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
+                                            </div>
+                                            <div class="flexed align-items-center w-100 justify-content-center">
+                                                <h6 class="mb-0 mt-0 mr-1 font-weight-bold">#</h6>
+                                                <h6 class="topic-3 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
+                                            </div>
+                                        </div>
+
+                                        @*analysis content*@
+                                        <div class="analysis-content">
+                                        </div>
+
+                                        <!--legend-->
+                                        <div class="legend">
+                                            <span class="mr-2">
+                                                <i class="fas fa-circle" style="color:orange"></i> Person
+                                            </span>
+                                            <span class="mr-2">
+                                                <i class="fas fa-circle" style="color:steelblue"></i> Organisation
+                                            </span>
+                                            <span class="mr-2">
+                                                <i class="fas fa-circle" style="color:green"></i> Ort
+                                            </span>
+                                            <span class="mr-2">
+                                                <i class="fas fa-circle" style="color:gray"></i> MISC
+                                            </span>
+                                        </div>
                                     </div>
+
                                     @*analysis is being calculated*@
                                     <div class="analysis-loading-div">
                                         <div class="progress">

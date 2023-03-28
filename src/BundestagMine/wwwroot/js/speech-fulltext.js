@@ -420,6 +420,11 @@ async function insertSpeechIntoFulltextAnalysis(speechId) {
     var html = await buildHtmlOfSpeech(speech);
     // Add the text to the ui
     $('.analysis-content').html(html);
+    // Alread add the english translation to the english tab
+    var englishSpeech = speech.englishTranslationOfSpeech;
+    if (englishSpeech == null || englishSpeech == '') englishSpeech = 'Übersetzung nicht vorhanden. Diese sollte demnächst durch die Pipeline generiert werden.';
+    $('.english-speech-view .english-speech').html(englishSpeech);
+    $('.english-speech-view .score').html(speech.englishTranslationScore);
 
     // Activate popovers again.
     $('[data-toggle="popover"]').popover();
@@ -697,4 +702,19 @@ $('body').on('click', '.small-options-menu .sentiment-color-cb', function () {
         $('.sentence').removeClass('bg-transparent');
     }
     showSentimentColors = !showSentimentColors;
+})
+
+// Handles the switching of the tabs in the fulltext speech view
+$('body').on('click', '.fulltext-analysis-div .analysis-menu-header button', function () {
+    var targetTab = $(this).data('tab');
+    $('.fulltext-analysis-div .analysis-menu-header button').each(function () {
+        $(this).removeClass('selected-btn');
+    });
+    $(this).addClass('selected-btn');
+
+    // Show the right view
+    $('.fulltext-analysis-div .tab-view').each(function () {
+        if ($(this).hasClass(targetTab)) $(this).fadeIn(150);
+        else $(this).fadeOut(150);
+    });
 })
