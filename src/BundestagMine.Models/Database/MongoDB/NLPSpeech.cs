@@ -20,6 +20,11 @@ namespace BundestagMine.Models.Database.MongoDB
         /// This is the abstract summary of the <see cref="Text"/> done by PEGASUS
         /// </summary>
         public string AbstractSummaryPEGASUS { get; set; }
+        private string _summaryDoesntExist => "Zusammenfassung nicht vorhanden. Dies liegt entweder daran, dass " +
+            "die Rede zu kurz ist oder noch nicht von der Pipeline kalkuliert wurde.";
+        public string GetAbstractSummaryPEGASUS => string.IsNullOrEmpty(AbstractSummaryPEGASUS) ? _summaryDoesntExist : AbstractSummaryPEGASUS;
+        public string GetAbstractSummary => string.IsNullOrEmpty(AbstractSummary) ? _summaryDoesntExist : AbstractSummary;
+        public string GetExtractiveSummary=> string.IsNullOrEmpty(ExtractiveSummary) ? _summaryDoesntExist : ExtractiveSummary;
         public string ExtractiveSummary { get; set; }
         public string EnglishTranslationOfSpeech { get; set; }
         public double EnglishTranslationScore { get; set; }

@@ -2,6 +2,8 @@
 // In here we store whether we have already added a divider for a new period
 var periodToAdded = {};
 var showSentimentColors = true;
+var runningFulltextAnalysisRequest = undefined;
+var runningNLPSpeechStatisticsRequest = undefined;
 
 // Takes in a list of protocols and builds the protocol tree
 async function buildProtocolTree(protocols) {
@@ -365,14 +367,13 @@ $('body').on('click', '.open-agenda-item-btn', async function () {
 // Handles the preparing of a speech for the fulltext analysis
 async function insertSpeechIntoFulltextAnalysis(speechId) {
     // Enable the loading screen
-    $('.fulltext-analysis-div').find('.loader').fadeIn(500);
+    $('.fulltext-analysis-div ').find('.fulltext-loader').fadeIn(500);
     $('.empty-message').hide();
 
     var result = await getNLPSpeechById(speechId);
     if (!result) return;
     var speech = result.speech;
     var agendaItem = result.agendaItem;
-    var topics = result.topics;
 
     var imgSrc = await getSpeakerPortrait(speech.speakerId);
     var speaker = await getSpeakerById(speech.speakerId);
@@ -401,21 +402,6 @@ async function insertSpeechIntoFulltextAnalysis(speechId) {
     $('.breadcrumbs').find('.agenda').html(agendaItem?.title);
     $('.breadcrumbs').find('.agenda').data('text', agendaItem?.description);
 
-    // Set the topic of the speech
-    if (topics != undefined && topics.length >= 3) {
-        $('.fulltext-analysis-div').find('.topic-header .topic-1').html(topics[0]?.value);
-        $('.fulltext-analysis-div').find('.topic-header .topic-1').attr('data-content',
-            'Thema mit ' + topics[0].count + ' Erwähnungen');
-
-        $('.fulltext-analysis-div').find('.topic-header .topic-2').html(topics[1]?.value);
-        $('.fulltext-analysis-div').find('.topic-header .topic-2').attr('data-content',
-            'Thema mit ' + topics[1].count + ' Erwähnungen');
-
-        $('.fulltext-analysis-div').find('.topic-header .topic-3').html(topics[2]?.value);
-        $('.fulltext-analysis-div').find('.topic-header .topic-3').attr('data-content',
-            'Thema mit ' + topics[2].count + ' Erwähnungen');
-    }
-
     // Visualize the nlp speech in the content
     var html = await buildHtmlOfSpeech(speech);
     // Add the text to the ui
@@ -439,14 +425,66 @@ async function insertSpeechIntoFulltextAnalysis(speechId) {
     }
 
     // Disable the loading screen
-    $('.fulltext-analysis-div').find('.loader').fadeOut(500);
+    $('.fulltext-analysis-div').find('.fulltext-loader').fadeOut(500);
 
     // Start the analysis in the background
     startFulltextAnalysis(speech);
+    // Start the statistics in the background
+    startNLPSpeechStatistics(speech);
+}
+
+// Fetches and sets the statistics view in the fulltext analysis tab
+async function startNLPSpeechStatistics(speech) {
+
+    function finish() {
+        // Activate popovers again.
+        $('[data-toggle="popover"]').popover();
+        $('.fulltext-analysis-div .statistics-loader').fadeOut(150);
+    }
+
+    // abort any running requests
+    if (runningNLPSpeechStatisticsRequest != undefined) {
+        runningNLPSpeechStatisticsRequest.abort();
+        finish();
+    }
+
+    // show loader
+    $('.fulltext-analysis-div .statistics-loader').fadeIn(150);
+
+    runningNLPSpeechStatisticsRequest = $.ajax({
+        url: "/api/DashboardController/GetNLPSpeechStatisticsView/" + speech.id,
+        type: "GET",
+        dataType: "json",
+        accepts: {
+            text: "application/json"
+        },
+        success: async function (result) {
+            var statisticsView = result.result;
+            $('.fulltext-analysis-div .speech-statistics-view .content').html(statisticsView);
+            finish();
+        }
+    });
 }
 
 // Performs the fulltext analysis of the speech by fetching the annotations and building the html
 async function startFulltextAnalysis(speech) {
+
+    function finish() {
+        // Once were done, show the legend instead.
+        // Hide the legend
+        $('.fulltext-analysis-div .legend').show();
+        // show progress bar
+        $('.fulltext-analysis-div .analysis-loading-div').hide();
+        // Activate popovers again.
+        $('[data-toggle="popover"]').popover();
+    }
+
+    // Stop any running requests
+    if (runningFulltextAnalysisRequest != undefined) {
+        runningFulltextAnalysisRequest.abort();
+        finish();
+    }
+
     // Hide the legend
     $('.fulltext-analysis-div .legend').hide();
     // show progress bar
@@ -454,30 +492,31 @@ async function startFulltextAnalysis(speech) {
 
     // Set the progress bar to 0
     $('.fulltext-analysis-div .analysis-loading-div .progress-bar').get(0).style.width = '30%';
-    // and to 70 after some time
-    setTimeout(function () {     // Set the progress bar to 65
-        $('.fulltext-analysis-div .analysis-loading-div .progress-bar').get(0).style.width = '70%';
-    }, 4000)
-    // Load the annotations for the fulltext analysis
-    var annotations = await getNLPAnnotationsOfSpeech(speech.id);
-    speech.tokens = annotations.tokens;
-    speech.namedEntities = annotations.namedEntities;
-    speech.sentiments = annotations.sentiments;
-    $('.fulltext-analysis-div .analysis-loading-div .progress-bar').get(0).style.width = '75%';
 
-    var html = await buildHtmlOfFulltextAnalysis(speech);
-    $('.fulltext-analysis-div .analysis-loading-div .progress-bar').get(0).style.width = '90%';
-    // Add the text to the ui
-    $('.analysis-content').html(html);
-    $('.fulltext-analysis-div .analysis-loading-div .progress-bar').get(0).style.width = '100%';
+    // Load the annotations for the fulltext analysis. We do this here because we need to store the request to abort it maybe.
+    runningFulltextAnalysisRequest = $.ajax({
+        url: "/api/DashboardController/GetNLPAnnotationsOfSpeech/" + speech.id,
+        type: "GET",
+        dataType: "json",
+        accepts: {
+            text: "application/json"
+        },
+        success: async function (result) {
+            var annotations = result.result;
+            speech.tokens = annotations.tokens;
+            speech.namedEntities = annotations.namedEntities;
+            speech.sentiments = annotations.sentiments;
+            $('.fulltext-analysis-div .analysis-loading-div .progress-bar').get(0).style.width = '75%';
 
-    // Once were done, show the legend instead.
-    // Hide the legend
-    $('.fulltext-analysis-div .legend').fadeIn(300);
-    // show progress bar
-    $('.fulltext-analysis-div .analysis-loading-div').fadeOut(300);
-    // Activate popovers again.
-    $('[data-toggle="popover"]').popover();
+            var html = await buildHtmlOfFulltextAnalysis(speech);
+            $('.fulltext-analysis-div .analysis-loading-div .progress-bar').get(0).style.width = '90%';
+            // Add the text to the ui
+            $('.analysis-content').html(html);
+            $('.fulltext-analysis-div .analysis-loading-div .progress-bar').get(0).style.width = '100%';
+
+            finish();
+        }
+    });
 }
 
 // Takes in a nlp speech and returns only the text with its comments - no tokens, sentiments etc.
@@ -717,4 +756,22 @@ $('body').on('click', '.fulltext-analysis-div .analysis-menu-header button', fun
         if ($(this).hasClass(targetTab)) $(this).fadeIn(150);
         else $(this).fadeOut(150);
     });
+})
+
+// Handles the switching of the cards in the statitics view of the nlp speech
+$('body').on('click', '.fulltext-analysis-div .speech-statistics-view .expander-btn', function () {
+    var targetTab = $(this).data('tab');
+    var $card = $(`.fulltext-analysis-div .speech-statistics-view .${targetTab}`);
+    var expanded = $card.data('expanded');
+    if (expanded) {
+        $card.fadeOut(0);
+        // Rotate the expander arrow
+        $(this).get(0).style.transform = 'rotate(0deg)';
+    }
+    else {
+        $card.fadeIn(0);
+        // Rotate the expander arrow
+        $(this).get(0).style.transform = 'rotate(180deg)';
+    }
+    $card.data('expanded', !expanded);
 })

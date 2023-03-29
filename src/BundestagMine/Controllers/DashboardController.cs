@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using BundestagMine.Logic.Services;
 using BundestagMine.Services;
 using BundestagMine.Logic.ViewModels;
+using BundestagMine.Logic.ViewModels.FulltextAnalysis;
 
 namespace BundestagMine.Controllers
 {
@@ -344,6 +345,41 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        [HttpGet("/api/DashboardController/GetNLPSpeechStatisticsView/{idAsString}")]
+        public async Task<IActionResult> GetNLPSpeechStatisticsView(string idAsString)
+        {
+            dynamic response = new ExpandoObject();
+
+            try
+            {
+                var id = Guid.Parse(idAsString);
+                response.status = "200";
+
+                var speech = await _db.NLPSpeeches.FindAsync(id);
+                var speechVm = new NLPSpeechStatisticsViewModel()
+                {
+                    Speech = speech,
+                    StackedNamedEntityWithSentimentChartData =
+                    _annotationService.GetNamedEntityWithSentimentOfSpeechForStackedBarChart(speech),
+                    SentimentRadarChartData = _annotationService.GetSentimentsForGraphs(
+                        DateTime.Now, DateTime.Now, "", "", "", speech.Id.ToString()),
+                    AverageSentiment = _annotationService.GetSentimentsOfNLPSpeechWithoutShouts(speech.Id)
+                                        .Average(s => s.SentimentSingleScore)
+                };
+
+                response.result = await _viewRenderService.RenderToStringAsync("FulltextAnalysis/_NLPSpeechStatisticsView",
+                    speechVm);
+            }
+            catch (Exception ex)
+            {
+                response.status = "400";
+                response.message = "Couldn't fetch statistisc view for the nlp speech, error in logs";
+                _logger.LogError(ex, "Error fetching statistisc view  for nlp speech:");
+            }
+
+            return Json(response);
+        }
+
         [HttpGet("/api/DashboardController/GetNLPSpeechById/{idAsString}")]
         public async Task<IActionResult> GetNLPSpeechById(string idAsString)
         {
@@ -355,12 +391,7 @@ namespace BundestagMine.Controllers
                 response.status = "200";
 
                 var speech = await _db.NLPSpeeches.FindAsync(id);
-                //speech.Tokens = _tdb.Token.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
-                //speech.NamedEntities = _db.NamedEntity.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
-                //speech.Sentiments = _db.Sentiment.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
                 speech.Segments = _db.SpeechSegment.Include(s => s.Shouts).Where(s => s.SpeechId == speech.Id).ToList();
-                //speech.CategoryCoveredTags = _db.CategoryCoveredTagged.Where(c => c.NLPSpeechId == speech.Id)
-                //    .OrderByDescending(t => t.Score).ToList();
 
                 // We want the top X named entities which build the topic of this speech.
                 var topics = _db.NamedEntity.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin)

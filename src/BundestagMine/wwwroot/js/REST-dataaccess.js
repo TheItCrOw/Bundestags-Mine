@@ -251,6 +251,23 @@ async function getNLPAnnotationsOfSpeech(id) {
     }
 }
 
+// Gets the nlp speech statitics view
+async function getNLPSpeechStatisticsView(id) {
+    try {
+        const result = await $.ajax({
+            url: "/api/DashboardController/GetNLPSpeechStatisticsView/" + id,
+            type: "GET",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result.result;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 //============================================== Networks ===============================================
 async function getCommentNetworkData() {
     // Else fetch it from api

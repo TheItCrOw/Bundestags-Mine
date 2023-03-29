@@ -1,0 +1,107 @@
+﻿@using BundestagMine.Logic.ViewModels.FulltextAnalysis
+@model NLPSpeechStatisticsViewModel
+
+<div>
+    <h6 class="pb-1 card-shadow-light text-center bg-dark text-light mb-0 pt-2 pb-2">Auswertungen und Statistiken</h6>
+    <div>
+
+        @*lets show the summaries*@
+        <div class="bg-light card-shadow-light">
+            @*expander*@
+            <div class="flexed justify-content-between align-items-center pl-3 pt-3 pr-3 pb-2">
+                <h6 class="mb-0 text-dark font-weight-bold">Zusammenfassung der Rede</h6>
+                <i class="fas fa-chevron-up clickable expander-btn" data-toggle="popover"
+                   data-content="Weitere Zusammenfassungen." data-trigger="hover" data-tab="summaries-tab"></i>
+            </div>
+            <p class="small-font pl-3 pr-3 pb-2 mb-0"><b>Nach BART:</b> @Model.Speech.GetAbstractSummary</p>
+            <div class="summaries-tab display-none" data-expanded="false">
+                <div class="row m-0 p-0 border-top border-bottom">
+                    <div class="col-4 m-0 p-3 border-right">
+                        <p class="text-dark mb-0 text-center w-100 text-underlined">TextRank</p>
+                        <p class="small-font text-justify mb-0">@Model.Speech.GetExtractiveSummary</p>
+                    </div>
+                    <div class="col-4 m-0 p-3 border-right">
+                        <p class="text-dark mb-0 text-center w-100 text-underlined">BART</p>
+                        <p class="small-font text-justify mb-0">@Model.Speech.GetAbstractSummary</p>
+                    </div>
+                    <div class="col-4 m-0 p-3">
+                        <p class="text-dark mb-0 text-center w-100 text-underlined">PEGASUS</p>
+                        <p class="small-font text-justify mb-0">@Model.Speech.GetAbstractSummaryPEGASUS</p>
+                    </div>
+                </div>
+                <p class="ml-2 mt-1 mr-2 pb-2 mb-0 small-font text-center">
+                    Fragen zu automatisch erstellten Zusammenfassungen? Mehr dazu im <b>Research Center</b> <i class="fas fa-university"></i>.
+                </p>
+            </div>
+        </div>
+
+        @*lets show the named entities*@
+        <div class="bg-light card-shadow-light">
+            @*expander*@
+            <div class="flexed justify-content-between align-items-center pl-3 pt-3 pr-3 pb-2">
+                <h6 class="mb-0 text-dark font-weight-bold">Named-Entity Analyse</h6>
+                <i class="fas fa-chevron-down clickable expander-btn display-none" data-toggle="popover"
+                   data-content="Named-Entity Chart anzeigen." data-trigger="hover" data-tab="ne-tab"></i>
+            </div>
+            <p class="small-font pl-3 pr-3 pb-2 mb-0">
+                Häufigsten Named-Entities: <b>@Model.FirstTopic, @Model.SecondTopic, @Model.ThirdTopic</b>
+            </p>
+            <div class="ne-tab" data-expanded="true">
+                @*the stacked bar chart*@
+                <div class="m-2">
+                    <canvas id="nlpSpeechStatisticStackedBarChart"></canvas>
+                    <div class="display-none">
+                        @(Html.Raw(Json.Serialize(Model.StackedNamedEntityWithSentimentChartData)))
+                    </div>
+                </div>
+                <p class="ml-2 mt-1 mr-2 pb-2 mb-0 small-font text-center">
+                    Alle Named-Entities nach Häufigkeit und verteilt nach deren Sentiment in der Rede.
+                </p>
+            </div>
+        </div>
+
+        @*lets show some sentiments*@
+        <div class="bg-light card-shadow-light">
+            @*expander*@
+            <div class="flexed justify-content-between align-items-center pl-3 pt-3 pr-3 pb-2">
+                <h6 class="mb-0 text-dark font-weight-bold">Sentiment Analyse</h6>
+                <i class="fas fa-chevron-down clickable expander-btn display-none" data-toggle="popover"
+                   data-content="Sentiment-Chart anzeigen." data-trigger="hover" data-tab="sentiment-tab"></i>
+            </div>
+            <p class="small-font pl-3 pr-3 pb-2 mb-0">
+                Durchschnitts-Sentiment: <b>@Model.AverageSentiment.ToString("F")</b>
+            </p>
+            <div class="sentiment-tab" data-expanded="true">
+                @*the stacked bar chart*@
+                <div class="m-2">
+                    <canvas id="nlpSpeechStatisticSentimentChart" style="max-height:400px"></canvas>
+                </div>
+                <p class="ml-2 mt-1 mr-2 pb-2 mb-0 small-font text-center">
+                    Sentiment-Verteilung auf Satzbasis.
+                </p>
+            </div>
+
+            <p class="ml-2 mt-3 mr-2 pb-2 mb-0 small-font text-center text-dark">
+                Sie haben Fragen zu Sentiment, Named-Entity und mehr? Besuchen Sie das <b>Research Center</b> <i class="fas fa-university"></i>.
+            </p>
+        </div>
+
+    </div>
+</div>
+<script>
+    // Build the charts.
+    $(document).ready(function() {
+
+        // Builds the sentiment chart. We pass in the data and the id of the chart canvas
+        var sentimentChartData = JSON.parse('@(Html.Raw(Json.Serialize(Model.SentimentRadarChartData)))');
+        // Build and fill the chart.
+        var sentimentChart = buildEmptySentimentRadarChart('nlpSpeechStatisticSentimentChart');
+        updateSentimentRadarChart(sentimentChart, buildSentimentDataForChart(sentimentChartData));
+
+        // Builds the ne stacked chart. We pass in the data and the id of the chart canvas
+        var neBarChartData = JSON.parse($('#nlpSpeechStatisticStackedBarChart').next().html());
+        buildTopicSentimentStackedBarChart(neBarChartData, 'nlpSpeechStatisticStackedBarChart');
+
+        $('[data-toggle="popover"]').popover();
+    })
+</script>

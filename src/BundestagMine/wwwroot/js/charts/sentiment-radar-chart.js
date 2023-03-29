@@ -37,11 +37,11 @@ function updateSentimentRadarChart(chart, dataDist) {
 }
 
 // Takes in the sentiments data from an API fetch and prepares the dictionary for it.
-async function buildSentimentDataForChart(sentiments) {
+function buildSentimentDataForChart(sentiments) {
     return distribution = {
-        "neg": sentiments.find(s => s.value == 'neg').count,
-        "neu": sentiments.find(s => s.value == 'neu').count,
-        "pos": sentiments.find(s => s.value == 'pos').count
+        "neg": sentiments.find(s => s.value == 'neg')?.count,
+        "neu": sentiments.find(s => s.value == 'neu')?.count,
+        "pos": sentiments.find(s => s.value == 'pos')?.count
     };
 
     var i;

@@ -9,6 +9,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using BundestagMine.Logic.HelperModels.DailyPaper;
+using System.Collections;
 
 namespace BundestagMine.Logic.Services
 {
@@ -193,7 +194,8 @@ namespace BundestagMine.Logic.Services
             DateTime to,
             string fraction,
             string party,
-            string speakerId)
+            string speakerId,
+            string speechId = "")
         {
             if (fraction != string.Empty)
                 return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
@@ -220,6 +222,13 @@ namespace BundestagMine.Logic.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                             && s.SpeakerId == speakerId))
+                .SelectMany(s => _db.Sentiment.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
+                .AsEnumerable()
+                .GroupBy(t => SentimentScoreToString(t.SentimentSingleScore))
+                .Select(t => new SentimentChartData { Value = t.Key, Count = t.Count() })
+                .ToList();
+            else if (speechId != string.Empty)
+                return _db.Speeches.Where(s => s.Id.ToString() == speechId)
                 .SelectMany(s => _db.Sentiment.Where(t => s.Id == t.NLPSpeechId && t.ShoutId == Guid.Empty))
                 .AsEnumerable()
                 .GroupBy(t => SentimentScoreToString(t.SentimentSingleScore))
@@ -336,6 +345,59 @@ namespace BundestagMine.Logic.Services
                 })
                 .Take(limit)
                 .ToList();
+        }
+
+        /// <summary>
+        /// Gets all nes of a speech
+        /// </summary>
+        /// <param name="speechId"></param>
+        /// <returns></returns>
+        public List<NamedEntity> GetNamedEntitiesOfNLPSpeechWithoutShouts(Guid speechId) => 
+            _db.NamedEntity.Where(ne => ne.NLPSpeechId == speechId && ne.ShoutId == Guid.Empty).ToList();
+
+        /// <summary>
+        /// Gets all nes of a speech
+        /// </summary>
+        /// <param name="speechId"></param>
+        /// <returns></returns>
+        public List<Sentiment> GetSentimentsOfNLPSpeechWithoutShouts(Guid speechId) =>
+            _db.Sentiment.Where(ne => ne.NLPSpeechId == speechId && ne.ShoutId == Guid.Empty).ToList();
+
+        /// <summary>
+        /// Gets nes with their sentiment of a given speech for a stacked bar chart.
+        /// </summary>
+        /// <param name="speechId"></param>
+        /// <returns></returns>
+        public List<NamedEntityChartData> GetNamedEntityWithSentimentOfSpeechForStackedBarChart(NLPSpeech speech)
+        {
+            var data = new List<NamedEntityChartData>();
+            var nes = GetNamedEntitiesOfNLPSpeechWithoutShouts(speech.Id);
+            var protocolOfSpeech = _db.Protocols.FirstOrDefault(
+                p => p.LegislaturePeriod == speech.LegislaturePeriod && p.Number == speech.ProtocolNumber);
+            if (protocolOfSpeech == null) return new List<NamedEntityChartData>();
+
+            foreach (var ne in nes.DistinctBy(n => n.LemmaValue))
+            {
+                // object like: 
+                //  { Count = e.Count(), // This is the amount of occcurences
+                //  Value = e.Key } // This is neg, neu or pos
+                // This is shit with all the dynamics, but its old code...
+                var sentimentOfNe =GetNamedEntityWithCorrespondingSentiment(
+                    ne.LemmaValue, protocolOfSpeech.Date, protocolOfSpeech.Date, "", "", "", speech.Id.ToString());
+                var iterable = ((IEnumerable)sentimentOfNe).Cast<dynamic>();
+                var sentimentData = iterable.Select(i => new SentimentChartData()
+                {
+                    Count = i.Count,
+                    Value = i.Value,
+                }).ToList();
+
+                data.Add(new NamedEntityChartData()
+                {
+                    NamedEntity = ne.LemmaValue,
+                    Sentiments = sentimentData
+                });
+            }
+            return data.OrderByDescending(ne => ne.Sentiments.Sum(s => s.Count)).ToList();
         }
 
         /// <summary>
@@ -647,7 +709,8 @@ namespace BundestagMine.Logic.Services
             DateTime to,
             string fraction,
             string party,
-            string speakerId)
+            string speakerId, 
+            string speechId="")
         {
             if (fraction != string.Empty)
                 return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
@@ -708,6 +771,32 @@ namespace BundestagMine.Logic.Services
                 .SelectMany(p => _db.Speeches
                     .Where(s => s.ProtocolNumber == p.Number && s.LegislaturePeriod == p.LegislaturePeriod
                         && s.SpeakerId == speakerId))
+                .SelectMany(s => _db.NamedEntity
+                    .Where(n => s.Id == n.NLPSpeechId && n.LemmaValue == searchTerm && n.ShoutId == Guid.Empty))
+                .AsEnumerable()
+                .Select(ne =>
+                {
+                    var sentiment = _db.Sentiment.SingleOrDefault(s => s.NLPSpeechId == ne.NLPSpeechId && s.ShoutId == Guid.Empty && s.Begin <= ne.Begin && s.End >= ne.End);
+                    if (sentiment == null) return null;
+                    var value = "neu";
+                    if (sentiment.SentimentSingleScore > 0) value = "pos";
+                    else if (sentiment.SentimentSingleScore < 0) value = "neg";
+                    return new
+                    {
+                        SentimentStringScore = value
+                    };
+                })
+                .GroupBy(e => e?.SentimentStringScore)
+                .Select(e => new
+                {
+                    Count = e.Count(),
+                    Value = e.Key
+                })
+                .ToList();
+            else if (speechId != string.Empty)
+                return _db.Protocols.Where(p => p.Date >= from && p.Date <= to)
+                .SelectMany(p => _db.Speeches
+                    .Where(s => s.Id.ToString() == speechId))
                 .SelectMany(s => _db.NamedEntity
                     .Where(n => s.Id == n.NLPSpeechId && n.LemmaValue == searchTerm && n.ShoutId == Guid.Empty))
                 .AsEnumerable()
