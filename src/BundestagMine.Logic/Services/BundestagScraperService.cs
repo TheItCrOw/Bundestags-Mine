@@ -89,7 +89,7 @@ namespace BundestagMine.Logic.Services
             {
                 // We check if we have fetched the image already onto our harddrive. If yes, then fetch it from there
                 // and return it as a base64 string. Else fetch it from the bundestag website and in parallel cache it.
-                var filename = ConfigManager.GetCachedPortraitPath() + deputy.SpeakerId + ".jpg";
+                var filename = GetDeputyPortraitFilePath(deputy.SpeakerId);
                 if (File.Exists(filename))
                 {
                     var imageArray = File.ReadAllBytes(filename);
@@ -127,6 +127,8 @@ namespace BundestagMine.Logic.Services
             return string.Empty;
         }
 
+        public string GetDeputyPortraitFilePath(string speakerId) =>
+            ConfigManager.GetCachedPortraitPath() + speakerId + ".jpg";
 
         /// <summary>
         /// Takes in a img url and the speaker id and stores the img on our harddrive with less resolution

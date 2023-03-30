@@ -61,6 +61,7 @@ namespace BundestagMine.Synchronisation
                 services.AddTransient<DailyPaperService>();
                 services.AddTransient<PixabayApiService>();
                 services.AddTransient<TextSummarizationService>();
+                services.AddTransient<LaTeXService>();
                 // Add the default db context
                 services.AddDbContext<BundestagMineDbContext>(
                     option => option.UseSqlServer(ConfigManager.GetConnectionString(), o => o.CommandTimeout(600)));
@@ -93,6 +94,12 @@ namespace BundestagMine.Synchronisation
             //    $"Der Entity-Import startet jetzt.",
             //    ConfigManager.GetImportReportRecipients());
 
+            // Testing latex to pdf
+            var latex = serviceProvider.GetService<LaTeXService>().ProtocolToLaTeX(20, 80);
+            serviceProvider.GetService<LaTeXService>().LaTeXToPDF(latex);
+
+            return;
+            // Text summarization cleanup
             using (var db = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
             {
                 foreach (var speech in db.Protocols

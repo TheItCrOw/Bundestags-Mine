@@ -74,7 +74,12 @@ namespace BundestagMine.SqlDatabase
         public static string GetPythonScriptName_Translation_Evaluation() => _config.GetSection("TextSummarizationPython").GetSection("PythonScriptName_Translation_Evaluation").Value;
         public static string GetPythonExePath() => _config.GetSection("TextSummarizationPython").GetSection("PythonExePath").Value;
 
-
+        public static string GetLaTeXProtocolTemplatePath() => _config.GetSection("LaTeX").GetSection("ProtocolTemplatePath").Value;
+        public static string GetBuildPDFCommand() => _config.GetSection("LaTeX").GetSection("BuildPDFCommand").Value;
+        public static string GetProtocolWorkingDirectoryPath() => _config.GetSection("LaTeX").GetSection("ProtocolWorkingDirectoryPath").Value;
+        public static string GetProtocolLaTeXLogo() => _config.GetSection("LaTeX").GetSection("Logo").Value;
+        public static string GetUnknownImage() => _config.GetSection("LaTeX").GetSection("UnknownImage").Value;
+        
         /// <summary>
         /// Returns the db options we need to pass into each new db context.
         /// </summary>

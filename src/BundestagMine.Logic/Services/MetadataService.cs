@@ -21,6 +21,14 @@ namespace BundestagMine.Logic.Services
         }
 
         /// <summary>
+        /// Gets all agendaitems of a given protocol
+        /// </summary>
+        /// <param name="protocol"></param>
+        /// <returns></returns>
+        public IEnumerable<AgendaItem> GetAgendaItemsOfProtocol(Protocol protocol) => _db.AgendaItems
+            .Where(a => a.ProtocolId == protocol.Id);
+
+        /// <summary>
         /// Gets all the speecehs of a protocol
         /// </summary>
         /// <param name="period"></param>
@@ -40,12 +48,14 @@ namespace BundestagMine.Logic.Services
                     .Where(s => s.LegislaturePeriod == period && s.ProtocolNumber == protocolNumber && s.AgendaItemNumber == agendaNumber)
                     .Count();
 
+        public Deputy GetSpeakerOfSpeech(Speech speech) => _db.Deputies.FirstOrDefault(d => d.SpeakerId == speech.SpeakerId);
+
         /// <summary>
         /// Gets all speeches of an agenda items
         /// </summary>
         /// <param name="period"></param>
         /// <param name="protocolNumber"></param>
-        /// <param name="agendaNumber"></param>
+        /// <param name="agendaNumber">This is the order!</param>
         /// <returns></returns>
         public List<NLPSpeech> GetNLPSpeechesOfAgendaItem(int period, int protocolNumber, int agendaNumber) => _db.NLPSpeeches
                     .Where(s => s.LegislaturePeriod == period && s.ProtocolNumber == protocolNumber && s.AgendaItemNumber == agendaNumber)
