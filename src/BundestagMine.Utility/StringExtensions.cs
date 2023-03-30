@@ -22,6 +22,8 @@ namespace BundestagMine.Utility
 
         public static string StripHTML(this string? str)
         {
+            str = str.Replace("<br>", ". ");
+            str = str.Replace("<br/>", ". ");
             return Regex.Replace(str, "<.*?>", string.Empty);
         }
 

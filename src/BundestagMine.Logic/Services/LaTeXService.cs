@@ -95,10 +95,12 @@ namespace BundestagMine.Logic.Services
                 // Descriptions have hyperlinks to drucksachen. We dont want that in the pdf
                 agendaLatex = agendaLatex.Replace("**AGENDA-ITEM-DESCRIPTION**", agenda.Description.StripHTML());
                 latex.AppendLine(agendaLatex);
+                // We want the speeches to be in 2 cols.
+                latex.AppendLine(@"\begin{multicols}{2}");
 
                 // Now add all speeches of that agenda
                 foreach (var speech in _metadataService.GetNLPSpeechesOfAgendaItem(
-                    protocol.LegislaturePeriod, protocol.Number, agenda.Order).Take(1))
+                    protocol.LegislaturePeriod, protocol.Number, agenda.Order))
                 {
                     var speaker = _metadataService.GetSpeakerOfSpeech(speech);
 
@@ -144,6 +146,9 @@ namespace BundestagMine.Logic.Services
                     speechLatex = speechLatex.Replace("**SPEECH-TEXT**", speechTextLatex.ToString());
                     latex.AppendLine(speechLatex.ToString());
                 }
+                // End the multicols and start a new page
+                latex.AppendLine(@"\end{multicols}");
+                latex.AppendLine(@"\newpage"); // After an top ends, we want to start a new page.
             }
 
             return latex.ToString();
@@ -198,6 +203,7 @@ namespace BundestagMine.Logic.Services
             // Create it and write
             Directory.CreateDirectory(workingDir);
             File.WriteAllText(Path.Combine(workingDir, "main.tex"), latex);
+
             try
             {
                 var startInfo = new ProcessStartInfo(@"C:\Windows\System32\cmd.exe")
@@ -208,25 +214,32 @@ namespace BundestagMine.Logic.Services
                     WorkingDirectory = workingDir
                 };
 
-                // Start the script
-                using (var process = Process.Start(startInfo))
+                string StartConverting()
                 {
-                    using (var reader = process?.StandardOutput)
+                    // Start the script
+                    using (var process = Process.Start(startInfo))
                     {
-                        // Wait until its finished
-                        var result = reader?.ReadToEnd();
-                        return "path";
+                        using (var reader = process?.StandardOutput)
+                        {
+                            // Wait until its finished
+                            var result = reader?.ReadToEnd();
+                            return "GOOD";
+                        }
                     }
                 }
+
+                // Alright, what the hell is going on here? LaTeX is full of suprises. So, appearntly the 
+                // table of contents cannot be calculted the first time the tex file is being compiled. The 
+                // solution: Let it compile twice. Thats not a hack, thats how it is... So we run it once and
+                // then again!
+                var firstRun = StartConverting();
+                var secondRun = StartConverting();
+                return Path.Combine(workingDir, @"out\main.pdf");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unknown error when trying to execute python script: ");
+                _logger.LogError(ex, "Unknown error when trying to generate the pdf from latex: ");
                 return null;
-            }
-            finally
-            {
-
             }
         }
     }

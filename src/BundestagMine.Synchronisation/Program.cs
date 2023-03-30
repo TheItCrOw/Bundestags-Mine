@@ -95,7 +95,7 @@ namespace BundestagMine.Synchronisation
             //    ConfigManager.GetImportReportRecipients());
 
             // Testing latex to pdf
-            var latex = serviceProvider.GetService<LaTeXService>().ProtocolToLaTeX(20, 80);
+            var latex = serviceProvider.GetService<LaTeXService>().ProtocolToLaTeX(20, 83);
             serviceProvider.GetService<LaTeXService>().LaTeXToPDF(latex);
 
             return;

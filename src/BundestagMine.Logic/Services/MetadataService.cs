@@ -152,6 +152,8 @@ namespace BundestagMine.Logic.Services
         public List<Deputy?> GetAllSpeakersOfProtocol(int meeting, int period) => _db.Speeches
             .Where(s => s.LegislaturePeriod == period && s.ProtocolNumber == meeting)
             .Select(s => _db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId))
+            .AsEnumerable()
+            .DistinctBy(s => s.SpeakerId)
             .ToList();
 
         /// <summary>
