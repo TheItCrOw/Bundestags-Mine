@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\Shared\_HomeNew.cshtml" />
     <_ContentIncludedByDefault Remove="wwwroot\js\global-search.js" />
   </ItemGroup>
 
@@ -46,6 +47,7 @@
     <Folder Include="wwwroot\data\" />
     <Folder Include="wwwroot\files\" />
     <Folder Include="wwwroot\fonts\" />
+    <Folder Include="wwwroot\videos\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,6 +62,10 @@
     <Content Update="nlog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Shared\_HomeNew.cshtml" />
   </ItemGroup>
 
 </Project>

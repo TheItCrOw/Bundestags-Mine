@@ -1,4 +1,7 @@
-﻿using BundestagMine.Models.Database.MongoDB;
+﻿using BundestagMine.Logic.HelperModels;
+using BundestagMine.Logic.ViewModels.DailyPaper;
+using BundestagMine.Models.Database;
+using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.SqlDatabase;
 using BundestagMine.Utility;
 using Microsoft.Extensions.Logging;
@@ -13,6 +16,8 @@ namespace BundestagMine.Logic.Services
 {
     public class LaTeXService
     {
+        private readonly DailyPaperService _dailyPaperService;
+        private readonly AnnotationService _annotationService;
         private readonly BundestagScraperService _bundestagScraperService;
         private readonly MetadataService _metadataService;
         private readonly ILogger<LaTeXService> _logger;
@@ -21,17 +26,21 @@ namespace BundestagMine.Logic.Services
         public LaTeXService(BundestagMineDbContext db,
             ILogger<LaTeXService> logger,
             MetadataService metadataService,
-            BundestagScraperService bundestagScraperService)
+            BundestagScraperService bundestagScraperService,
+            AnnotationService annotationService,
+            DailyPaperService dailyPaperService)
         {
+            _dailyPaperService = dailyPaperService;
+            _annotationService = annotationService;
             _bundestagScraperService = bundestagScraperService;
             _metadataService = metadataService;
             _logger = logger;
             _db = db;
         }
 
-        public string ProtocolToLaTeX(int lp, int number)
+        public LaTeXProtocol ProtocolToLaTeX(int lp, int number)
         {
-            return ProtocolToLaTeX(_db.Protocols.First(p => p.LegislaturePeriod == lp && p.Number == number));
+            return ProtocolToLaTeX(_db.Protocols.FirstOrDefault(p => p.LegislaturePeriod == lp && p.Number == number));
         }
 
         /// <summary>
@@ -41,10 +50,17 @@ namespace BundestagMine.Logic.Services
         /// <param name="lp"></param>
         /// <param name="number"></param>
         /// <returns></returns>
-        public string ProtocolToLaTeX(Protocol protocol)
+        public LaTeXProtocol ProtocolToLaTeX(Protocol protocol)
         {
             try
             {
+                if (protocol == null) return null;
+
+                var latexProtocol = new LaTeXProtocol() { Id = Guid.NewGuid() };
+                // We need a tmp folder to store images and such
+                latexProtocol.TmpFolderPath = Path.Combine(ConfigManager.GetLaTeXTmpsPath(), latexProtocol.Id.ToString());
+                Directory.CreateDirectory(latexProtocol.TmpFolderPath);
+
                 // we dont check for null references here. If we dont have the config chunk in the database,
                 // this wont work anyways. Just go into the exception handler then...
                 // we always need the config chunk. No need to change that. 
@@ -68,14 +84,19 @@ namespace BundestagMine.Logic.Services
                 main = main.Replace("**SPEAKERS**", BuildLaTeXSpeakersList(_metadataService
                     .GetAllSpeakersOfProtocol(protocol.Number, protocol.LegislaturePeriod)));
 
+                // Add the schuerfer summary here
+                main = main.Replace("**SUMMARY-SCHUERFER**", BuildSchuerferSummary(protocol));
+
                 // Now build the actual content, which means the top and speeches etc.
                 main = main.Replace("**CONTENT-HERE**", BuildLaTeXContent(protocol));
 
-                return main;
+                latexProtocol.LaTeX = main;
+                return latexProtocol;
             }
             catch (Exception ex)
             {
-                return string.Empty;
+                _logger.LogError(ex, "error creating the latex for a protocol!");
+                return null;
             }
         }
 
@@ -91,7 +112,7 @@ namespace BundestagMine.Logic.Services
             {
                 // Add the current agendaitem
                 var agendaLatex = _db.LaTeXChunks.First(c => c.ChunkType == Models.Database.LaTeXChunkType.AgendaItem).LaTeX;
-                agendaLatex = agendaLatex.Replace("**AGENDA-ITEM-NAME**", agenda.Title);
+                agendaLatex = agendaLatex.Replace("**AGENDA-ITEM-NAME**", agenda.Title.Replace("\"", "``"));
                 // Descriptions have hyperlinks to drucksachen. We dont want that in the pdf
                 agendaLatex = agendaLatex.Replace("**AGENDA-ITEM-DESCRIPTION**", agenda.Description.StripHTML());
                 latex.AppendLine(agendaLatex);
@@ -122,28 +143,13 @@ namespace BundestagMine.Logic.Services
                         // Are there any shouts? If so, add them!
                         foreach (var shout in _db.Shouts.Where(sh => sh.SpeechSegmentId == segment.Id))
                         {
-                            var shouterName = string.IsNullOrEmpty(shout.SpeakerId)
-                                ? ""
-                                : shout.FirstName + " " + shout.LastName;
-                            var shouterOrg = string.IsNullOrEmpty(shout.SpeakerId)
-                                ? "/"
-                                : shout.Fraction;
-                            var commentLatex = _db.LaTeXChunks.First(c => c.ChunkType == Models.Database.LaTeXChunkType.Comment).LaTeX;
-                            commentLatex = commentLatex.Replace("**COMMENTATOR-NAME**", shouterName);
-                            commentLatex = commentLatex.Replace("**COMMENTATOR-ORG**", shouterOrg);
-                            commentLatex = commentLatex.Replace("**COMMENT-TEXT**", shout.Text.StripTabs());
-                            // Image of the potential shouter
-                            var imgPath = _bundestagScraperService.GetDeputyPortraitFilePath(shout.SpeakerId);
-                            if (File.Exists(imgPath))
-                                commentLatex = commentLatex.Replace("**IMAGE-PATH**", imgPath.Replace(@"\", "/"));
-                            else
-                                commentLatex = commentLatex.Replace("**IMAGE-PATH**",
-                                    ConfigManager.GetUnknownImage().Replace(@"\", "/"));
-
+                            var commentLatex = BuildCommentChunkFromShout(shout);
                             speechTextLatex.AppendLine(commentLatex);
                         }
                     }
                     speechLatex = speechLatex.Replace("**SPEECH-TEXT**", speechTextLatex.ToString());
+                    // Also add the evaluation box
+                    speechLatex = speechLatex.Replace("**EVALUATION-BOX**", BuildSpeechEvaluationBox(speech));
                     latex.AppendLine(speechLatex.ToString());
                 }
                 // End the multicols and start a new page
@@ -152,6 +158,183 @@ namespace BundestagMine.Logic.Services
             }
 
             return latex.ToString();
+        }
+
+        /// <summary>
+        /// Builds the comment chunk from a shout
+        /// </summary>
+        /// <param name="shout"></param>
+        /// <returns></returns>
+        private string BuildCommentChunkFromShout(Shout shout)
+        {
+            var shouterName = string.IsNullOrEmpty(shout.SpeakerId)
+                ? ""
+                : shout.FirstName + " " + shout.LastName;
+            var shouterOrg = string.IsNullOrEmpty(shout.SpeakerId)
+                ? "/"
+                : shout.Fraction;
+
+            var commentLatex = _db.LaTeXChunks.First(c => c.ChunkType == Models.Database.LaTeXChunkType.Comment).LaTeX;
+            commentLatex = commentLatex.Replace("**COMMENTATOR-NAME**", shouterName);
+            commentLatex = commentLatex.Replace("**COMMENTATOR-ORG**", shouterOrg);
+            commentLatex = commentLatex.Replace("**COMMENT-TEXT**", shout.Text.StripTabs());
+            // Image of the potential shouter.
+            // Update: I dont think I want shouter images. So cut them out for now
+            /*
+            var imgPath = _bundestagScraperService.GetDeputyPortraitFilePath(shout.SpeakerId);
+            if (File.Exists(imgPath))
+                commentLatex = commentLatex.Replace("**IMAGE-PATH**", imgPath.Replace(@"\", "/"));
+            else
+                commentLatex = commentLatex.Replace("**IMAGE-PATH**",
+                    ConfigManager.GetUnknownImage().Replace(@"\", "/"));
+            */
+
+            return commentLatex;
+        }
+
+        /// <summary>
+        /// We build a short summary of the protocol by using the dailypapers of the schuerfer
+        /// </summary>
+        /// <param name="protocol"></param>
+        /// <returns></returns>
+        private string BuildSchuerferSummary(Protocol protocol)
+        {
+            var schuerferLaTeX = _db.LaTeXChunks.FirstOrDefault(c => c.ChunkType == Models.Database.LaTeXChunkType.SummarySchuerfer)?.LaTeX;
+            var dailyPaper = _dailyPaperService.GetDailyPaperAsViewModel(protocol.LegislaturePeriod, protocol.Number);
+            if (dailyPaper == default) return "Keine Übersicht vom Schürfer vorhanden.";
+            // NE stuff
+            schuerferLaTeX = schuerferLaTeX.Replace("**TOPIC**", dailyPaper.FirstSpecialTopicOfTheDay);
+            schuerferLaTeX = schuerferLaTeX.Replace("**TOPIC-1**", dailyPaper.FirstSpecialTopicOfTheDay);
+            schuerferLaTeX = schuerferLaTeX.Replace("**TOPIC-2**", dailyPaper.SecondSpecialTopicOfTheDay);
+            schuerferLaTeX = schuerferLaTeX.Replace("**TOPIC-3**", dailyPaper.ThirdSpecialTopicOfTheDay);
+
+            // Now the speech segments
+            // Most commented
+            schuerferLaTeX = schuerferLaTeX.Replace("**SEGMENT-MOST-COMMENTED**", 
+                BuildSpeechSegment(dailyPaper.MostCommentedSpeech, "Meistkommentierte Rede"));
+            // Most positive
+            schuerferLaTeX = schuerferLaTeX.Replace("**SEGMENT-MOST-POSITIVE**",
+                BuildSpeechSegment(dailyPaper.MostPositiveSpeech, @"\faCogs \hspace{1mm} Positivste Rede"));
+            // Most negative
+            schuerferLaTeX = schuerferLaTeX.Replace("**SEGMENT-MOST-NEGATIVE**",
+                BuildSpeechSegment(dailyPaper.MostNegativeSpeech, @"\faCogs \hspace{1mm} Negativste Rede"));
+
+            // Polls
+            var pollsLatex = new StringBuilder();
+            foreach (var poll in _metadataService.GetPollsOfProtocol(protocol))
+            {
+                pollsLatex.AppendLine(BuildPoll(poll));
+                //pollsLatex.AppendLine(@"\newline");
+                //pollsLatex.AppendLine(@"\newline");
+            }
+            if (pollsLatex.Length == 0) pollsLatex.AppendLine("Keine Abstimmungen in dieser Sitzung.");
+            schuerferLaTeX = schuerferLaTeX.Replace("**POLLS**", pollsLatex.ToString());
+
+            return schuerferLaTeX;
+        }
+
+        /// <summary>
+        /// Builds the poll latex for a given poll
+        /// </summary>
+        /// <param name="poll"></param>
+        /// <returns></returns>
+        private string BuildPoll(Poll poll)
+        {
+            var pollLatex = _db.LaTeXChunks.FirstOrDefault(c => c.ChunkType == Models.Database.LaTeXChunkType.Poll)?.LaTeX;
+
+            var totalVotes = poll.Entries.Count;
+            var yes = 100 / (double)totalVotes * (double)poll.Entries.Where(e => e.Yes).Count();
+            var no = 100 / (double)totalVotes * (double)poll.Entries.Where(e => e.No).Count();
+            var abstention = 100 / (double)totalVotes * (double)poll.Entries.Where(e => e.Abstention).Count();
+            var rest = 100 / (double)totalVotes * (double)poll.Entries.Where(e => !e.Yes && !e.No && !e.Abstention).Count();
+
+            pollLatex = pollLatex.Replace("**YES**", yes.ToString("F").Replace(",", "."));
+            pollLatex = pollLatex.Replace("**NO**", no.ToString("F").Replace(",", "."));
+            pollLatex = pollLatex.Replace("**ENTHALTEN**", abstention.ToString("F").Replace(",", "."));
+            pollLatex = pollLatex.Replace("**OTHER**", rest.ToString("F").Replace(",", "."));
+            pollLatex = pollLatex.Replace("**POLL-TITLE**", poll.Title);
+
+            return pollLatex;
+        }
+
+        /// <summary>
+        /// Builds a speech segment chunk from a SpeechPartViewModel of the dailypaper
+        /// </summary>
+        /// <param name="speechPartViewModel"></param>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        private string BuildSpeechSegment(SpeechPartViewModel speechPartViewModel, string title)
+        {
+            var segmentLatex = _db.LaTeXChunks.FirstOrDefault(c => c.ChunkType == Models.Database.LaTeXChunkType.SpeechSegment)?.LaTeX;
+            segmentLatex = segmentLatex.Replace("**TITLE**", title);
+            segmentLatex = segmentLatex.Replace("**SPEAKER-NAME**", speechPartViewModel.Speaker?.GetFullName());
+            segmentLatex = segmentLatex.Replace("**SPEAKER-ORG**", speechPartViewModel.Speaker?.GetOrga());
+            segmentLatex = segmentLatex.Replace("**TOP**", speechPartViewModel.AgendaItem?.Title);
+            var nlp = _db.NLPSpeeches.FirstOrDefault(s => s.Id == speechPartViewModel.Speech.Id);
+            segmentLatex = segmentLatex.Replace("**SPEECH-SUMMARY**", nlp.GetAbstractSummary);
+
+            // We show one segment and their comments
+            var speechSegmentText = new StringBuilder();
+            var segment = speechPartViewModel.Speech.Segments.OrderByDescending(ss => ss.Shouts.Where(sh => !sh.Text.ToLower().Contains("befaill")).Count()).First();
+            speechSegmentText.AppendLine(segment.Text);
+            foreach (var shout in segment.Shouts)
+            {
+                var commentLatex = BuildCommentChunkFromShout(shout);
+                speechSegmentText.AppendLine(commentLatex);
+            }
+            segmentLatex = segmentLatex.Replace("**SPEECH-SEGMENT**", speechSegmentText.ToString());
+            // Get the eval and add it
+            segmentLatex = segmentLatex.Replace("**SPEECH-EVALUATION**", BuildSpeechEvaluationBox(nlp));
+
+            return segmentLatex;
+        }
+
+        /// <summary>
+        /// Builds the evaluation box latex code
+        /// </summary>
+        /// <returns></returns>
+        private string BuildSpeechEvaluationBox(Speech speech)
+        {
+            var speechEvaluationBox = _db.LaTeXChunks.FirstOrDefault(c => c.ChunkType == Models.Database.LaTeXChunkType.EvaluationBox)?.LaTeX;
+
+            // Get the top 3 named entities
+            var nes = _annotationService.GetMostUsedNamedEntitiesOfSpeech(speech, 3);
+            speechEvaluationBox = speechEvaluationBox.Replace("**NE-1**", nes.Count > 0 ? nes[0] : "/");
+            speechEvaluationBox = speechEvaluationBox.Replace("**NE-2**", nes.Count > 1 ? nes[1] : "/");
+            speechEvaluationBox = speechEvaluationBox.Replace("**NE-3**", nes.Count > 2 ? nes[2] : "/");
+
+            // comments count
+            speechEvaluationBox = speechEvaluationBox.Replace("**COMMENTS-COUNT**",
+                _metadataService.GetActualCommentsAmountOfSpeech(speech).ToString());
+
+            // applause count
+            speechEvaluationBox = speechEvaluationBox.Replace("**APPLAUSE-COUNT**",
+                _metadataService.GetApplaudCommentsAmountOfSpeech(speech).ToString());
+
+            // avg sentiment
+            var avg = _annotationService.GetAverageSentimentOfSpeech(speech);
+            var avgLaTex = @"\textcolor{**COLOR**}{" + avg.ToString("F") + "}";
+            if (avg > 0) avgLaTex = avgLaTex.Replace("**COLOR**", "light-green");
+            else if (avg == 0) avgLaTex = avgLaTex.Replace("**COLOR**", "light-blue");
+            else if (avg < 0) avgLaTex = avgLaTex.Replace("**COLOR**", "light-red");
+            speechEvaluationBox = speechEvaluationBox.Replace("**AVG-SENTIMENT**", avgLaTex);
+
+            // Draw the pie chart
+            var sentiments = _annotationService.GetSentimentsForGraphs(DateTime.Now, DateTime.Now, "", "", "",
+                speech.Id.ToString());
+            var pos = sentiments.FirstOrDefault(s => s.Value == "pos")?.Count;
+            var neg = sentiments.FirstOrDefault(s => s.Value == "neg")?.Count;
+            var neu = sentiments.FirstOrDefault(s => s.Value == "neu")?.Count;
+            // for the pie chart, we need percentages
+            var total = (pos == null ? 0 : pos) + (neg == null ? 0 : neg) + (neu == null ? 0 : neu);
+            speechEvaluationBox = speechEvaluationBox.Replace("**POS**", pos == null ? "0"
+                : (100.0 / (double)total * (double)pos).ToString("F").Replace(",", ".")); // Latex works with . not with ,
+            speechEvaluationBox = speechEvaluationBox.Replace("**NEG**", neg == null ? "0"
+                : (100.0 / (double)total * (double)neg).ToString("F").Replace(",", "."));
+            speechEvaluationBox = speechEvaluationBox.Replace("**NEU**", neu == null ? "0"
+                : (100.0 / (double)total * (double)neu).ToString("F").Replace(",", "."));
+
+            return speechEvaluationBox;
         }
 
         /// <summary>
@@ -193,16 +376,15 @@ namespace BundestagMine.Logic.Services
         /// </summary>
         /// <param name="status"></param>
         /// <returns></returns>
-        public string LaTeXToPDF(string latex)
+        public string LaTeXToPDF(LaTeXProtocol latexProtocol)
         {
             // We write the latex code to disc for now and then call the cmd to compile it.
             var baseDir = ConfigManager.GetProtocolWorkingDirectoryPath();
-            var pdfId = Guid.NewGuid();
             // This is the dir we copy the complete tex code in and then build the pdf from
-            var workingDir = Path.Combine(baseDir, pdfId.ToString());
+            var workingDir = Path.Combine(baseDir, latexProtocol.Id.ToString());
             // Create it and write
             Directory.CreateDirectory(workingDir);
-            File.WriteAllText(Path.Combine(workingDir, "main.tex"), latex);
+            File.WriteAllText(Path.Combine(workingDir, "main.tex"), latexProtocol.LaTeX);
 
             try
             {

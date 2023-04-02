@@ -19,8 +19,16 @@ body {
     font-family: railway;
 }
 
+.text-shadow {
+    text-shadow: 2px 2px black;
+}
+
 .font-italic {
     font-style: italic;
+}
+
+.text-line-through {
+    text-decoration:line-through;
 }
 
 .overflow {
@@ -637,3 +645,47 @@ body {
         width: 350px;
     }
 }
+
+/*Color fade animation*/
+@-webkit-keyframes bgAnimation {
+    0% {
+        background-position: 0% 76%
+    }
+
+    50% {
+        background-position: 100% 25%
+    }
+
+    100% {
+        background-position: 0% 76%
+    }
+}
+
+@-moz-keyframes AnimationName {
+    0% {
+        background-position: 0% 76%
+    }
+
+    50% {
+        background-position: 100% 25%
+    }
+
+    100% {
+        background-position: 0% 76%
+    }
+}
+
+@keyframes AnimationName {
+    0% {
+        background-position: 0% 76%
+    }
+
+    50% {
+        background-position: 100% 25%
+    }
+
+    100% {
+        background-position: 0% 76%
+    }
+}
+

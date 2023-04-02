@@ -356,7 +356,7 @@ namespace BundestagMine.Logic.Services
             _db.NamedEntity.Where(ne => ne.NLPSpeechId == speechId && ne.ShoutId == Guid.Empty).ToList();
 
         /// <summary>
-        /// Gets all nes of a speech
+        /// Gets all sentiment of a speech
         /// </summary>
         /// <param name="speechId"></param>
         /// <returns></returns>

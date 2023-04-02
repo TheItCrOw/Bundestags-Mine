@@ -95,10 +95,25 @@ namespace BundestagMine.Synchronisation
             //    ConfigManager.GetImportReportRecipients());
 
             // Testing latex to pdf
-            var latex = serviceProvider.GetService<LaTeXService>().ProtocolToLaTeX(20, 83);
-            serviceProvider.GetService<LaTeXService>().LaTeXToPDF(latex);
-
+            for (int i = 20; i > 18; i--)
+            {
+                for (int j = 239; j > 0; j--)
+                {
+                    var latex = serviceProvider.GetService<LaTeXService>().ProtocolToLaTeX(i, j);
+                    if (latex == null) continue;
+                    // This is the path in the working dir. From there, copy the pdf somewhere elsee
+                    var outputPath = serviceProvider.GetService<LaTeXService>().LaTeXToPDF(latex);
+                    if (File.Exists(outputPath))
+                    {
+                        File.Copy(outputPath, Path.Combine(ConfigManager.GetLaTeXCachePath(),
+                            $"Protocols\\{i}_{j}.pdf"), true);
+                    }
+                    Console.WriteLine($"Done with {i}/{j}");
+                }
+            }
             return;
+
+
             // Text summarization cleanup
             using (var db = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
             {
@@ -262,6 +277,7 @@ namespace BundestagMine.Synchronisation
             //    $"Stati:<br/>Entity-Import: {entityResult}<br/>Agenda-Scrape: {agendaItemResult}<br/>Polls-Scrape: {exportPollsResult}<br/><br/>Log im Anhang.",
             //    ConfigManager.GetImportReportRecipients(),
             //    new List<Attachment> { new Attachment(_fullLogFileName) });
+
         }
 
         /// <summary>

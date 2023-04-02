@@ -25,6 +25,10 @@ namespace BundestagMine.Models.Database
         SpeakerList,
         AgendaItem,
         Speech,
-        Comment
+        Comment,
+        EvaluationBox,
+        SummarySchuerfer,
+        SpeechSegment,
+        Poll
     }
 }

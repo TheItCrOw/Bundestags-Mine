@@ -87,6 +87,15 @@ namespace BundestagMine.Logic.Services
             .Distinct()
             .ToList();
 
+        /// <summary>
+        /// Gets all polls with their entries of a protocol
+        /// </summary>
+        /// <param name="protocol"></param>
+        /// <returns></returns>
+        public List<Poll> GetPollsOfProtocol(Protocol protocol) =>
+            _db.Polls.Where(p => p.LegislaturePeriod == protocol.LegislaturePeriod && p.ProtocolNumber == protocol.Number)
+            .Include(p => p.Entries)
+            .ToList();
 
         // Old method, it sucks, I know.
         // =============================================================
@@ -144,6 +153,17 @@ namespace BundestagMine.Logic.Services
                 .ToList();
 
         /// <summary>
+        /// Gets all applaud comments of a speech
+        /// </summary>
+        /// <param name="speech"></param>
+        /// <returns></returns>
+        public int GetApplaudCommentsAmountOfSpeech(Speech speech) => _db.SpeechSegment
+                .Where(ss => ss.SpeechId == speech.Id)
+                .Include(ss => ss.Shouts)
+                .SelectMany(ss => ss.Shouts.Where(sh => sh.Text.ToLower().Contains("beifall")))
+                .Count();
+
+        /// <summary>
         /// Gets all speakers of a protocol meeting
         /// </summary>
         /// <param name="meeting"></param>
@@ -153,6 +173,7 @@ namespace BundestagMine.Logic.Services
             .Where(s => s.LegislaturePeriod == period && s.ProtocolNumber == meeting)
             .Select(s => _db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId))
             .AsEnumerable()
+            .Where(s => s != default)
             .DistinctBy(s => s.SpeakerId)
             .ToList();
 
