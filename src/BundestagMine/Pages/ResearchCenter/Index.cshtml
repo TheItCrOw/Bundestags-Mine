@@ -29,59 +29,67 @@
 </nav>
 
 <div class="page-wrapper">
+    <div class="bg-anim"></div>
     <div class="container mt-5">
 
-        @*Annotations*@
-        <div class="research-topic">
-            <h5 class="font-weight-bold">Text Technology Lab und spaCy (Named-Entities, Sentiment etc.)</h5>
-            <p class="text-black-50">
-                spaCy ist eine Library, welche NLP Werkzeuge und Methoden bereitstellt. Das Text Technology Lab
-                der Goethe-Universität Frankfurt nutzt diese, um NLP Pipelines zu erstellen.
-                Dies werden von der Bundestags-Mine genutzt, um die Reden der Abgeordneten im Deutschen Bundestag
-                zu analysieren und annotieren.
-            </p>
-            <a class="read-more-btn btn btn-warning float-right" asp-page="BasicAnnotations/">
-                Mehr erfahren
-            </a>
-        </div>
+        <div class="row m-0 p-0">
+            <div class="col-md-5 m-0 p-0 align-self-center">
+                <img src="./img/ARTLAS/Atlas_transparent_klein.png" class="atlas"/>
+            </div>
 
-        @*text summarization*@
-        <div class="research-topic">
-            <h5 class="font-weight-bold">Automatic Text Summarization (+ Übersetzungen und Sprach-Modelle)</h5>
-            <p class="text-black-50">
-                Die Kunst, Dokumente und Texte maschinell zusammenzufassen. Dies wird in der Bundestags-Mine genutzt,
-                um die Reden der Abgeordneten im Deutschen Bundestag automatisch zusammenzufassen.
-            </p>
-            <a class="read-more-btn btn btn-warning float-right" asp-page="AutomaticTextSummarization/">
-                Mehr erfahren
-            </a>
-        </div>
+            <div class="col-md-7 m-0 p-0">
+                @*Annotations*@
+                <div class="research-topic">
+                    <h5 class="font-weight-bold">Text Technology Lab und spaCy (Named-Entities, Sentiment etc.)</h5>
+                    <p class="text-black-50">
+                        spaCy ist eine Library, welche NLP Werkzeuge und Methoden bereitstellt. Das Text Technology Lab
+                        der Goethe-Universität Frankfurt nutzt diese, um NLP Pipelines zu erstellen.
+                        Dies werden von der Bundestags-Mine genutzt, um die Reden der Abgeordneten im Deutschen Bundestag
+                        zu analysieren und annotieren.
+                    </p>
+                    <a class="read-more-btn btn btn-warning float-right" asp-page="BasicAnnotations/">
+                        Mehr erfahren
+                    </a>
+                </div>
 
-        @*Web scraper*@
-        <div class="research-topic">
-            <h5 class="font-weight-bold">Web Scraper</h5>
-            <p class="text-black-50">
-                Die Daten (Reden, Protokolle, Drucksachen, etc.), die hier in der Bundestags-Mine verarbeitet und benutzt werden, sind alle von der 
-                Seite des deutschen Bundestags ge-webscraped worden.
-            </p>
-            <a class="read-more-btn btn btn-warning float-right" asp-page="WebScraper/">
-                Mehr erfahren
-            </a>
-        </div>
+                @*text summarization*@
+                <div class="research-topic">
+                    <h5 class="font-weight-bold">Automatic Text Summarization (+ Übersetzungen und Sprach-Modelle)</h5>
+                    <p class="text-black-50">
+                        Die Kunst, Dokumente und Texte maschinell zusammenzufassen. Dies wird in der Bundestags-Mine genutzt,
+                        um die Reden der Abgeordneten im Deutschen Bundestag automatisch zusammenzufassen.
+                    </p>
+                    <a class="read-more-btn btn btn-warning float-right" asp-page="AutomaticTextSummarization/">
+                        Mehr erfahren
+                    </a>
+                </div>
 
-        @*GitHub Repo*@
-        <div class="research-topic">
-            <h5 class="font-weight-bold">Source Code</h5>
-            <p class="text-black-50">
-                Sowohl die Webapplikation "Bundestags-Mine", als auch die in Java genutzte NLP Pipeline und alle
-                anderen Services sind öffentlich auf GitHub einzusehen. Dazu gibt es die zwei Repositories "NLP-Service"
-                und "Bundestags-Mine".
-            </p>
-            <a class="read-more-btn btn btn-warning float-right" href="https://github.com/TheItCrOw" target="_blank">
-                GitHub
-            </a>
-        </div>
+                @*Web scraper*@
+                <div class="research-topic">
+                    <h5 class="font-weight-bold">Web Scraper</h5>
+                    <p class="text-black-50">
+                        Die Daten (Reden, Protokolle, Drucksachen, etc.), die hier in der Bundestags-Mine verarbeitet und benutzt werden, sind alle von der
+                        Seite des deutschen Bundestags ge-webscraped worden.
+                    </p>
+                    <a class="read-more-btn btn btn-warning float-right" asp-page="WebScraper/">
+                        Mehr erfahren
+                    </a>
+                </div>
 
+                @*GitHub Repo*@
+                <div class="research-topic">
+                    <h5 class="font-weight-bold">Source Code</h5>
+                    <p class="text-black-50">
+                        Sowohl die Webapplikation "Bundestags-Mine", als auch die in Java genutzte NLP Pipeline und alle
+                        anderen Services sind öffentlich auf GitHub einzusehen. Dazu gibt es die zwei Repositories "NLP-Service"
+                        und "Bundestags-Mine".
+                    </p>
+                    <a class="read-more-btn btn btn-warning float-right" href="https://github.com/TheItCrOw" target="_blank">
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
 
     </div>
 </div>
