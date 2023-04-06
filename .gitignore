@@ -350,3 +350,6 @@ MigrationBackup/
 .ionide/
 /src/*.claudiaideconfig
 
+# Explanation video
+/src/BundestagMine/wwwroot/videos/Bundestags-Mine-Explanation.mp4
+
