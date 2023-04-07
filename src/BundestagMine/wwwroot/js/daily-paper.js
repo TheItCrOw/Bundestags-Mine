@@ -358,14 +358,14 @@ var dailyPaperHandler = new DailyPaperHandler();
 // Handle the exapnding of the paper to fullscreen
 $('body').on('click', '#dailyPaperContent .fullscreen-btn', function () {
     // For that, we just disable the sidemenu for now
-    var menu = $('.sidebar');
-    if (menu.hasClass('toggled')) {
-        menu.removeClass('toggled');
-        menu.show();
+    var $menu = $('.sidebar');
+    var expanded = $menu.data('expanded'); 
+    if (expanded == true) {
+        $menu.hide();
     } else {
-        menu.addClass('toggled');
-        menu.hide();
+        $menu.show();
     }
+    $menu.data('expanded', !expanded);
 })
 
 // Handle the opening of the mailing list

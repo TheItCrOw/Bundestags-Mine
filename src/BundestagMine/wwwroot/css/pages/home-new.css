@@ -6,16 +6,11 @@
     position: absolute;
     left: 0;
     top: 0 !important;
-    height: 40vh;
+    height: 45vh;
     z-index: -1;
     width: 100%;
     border-radius: 0% 0% 0% 0%;
-    background: linear-gradient(245deg, #ffffff, #818181, #000000);
-    background-size: 600% 600%;
-    -webkit-animation: bgAnimation 2s ease infinite;
-    -moz-animation: bgAnimation 2s ease infinite;
     box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
-    animation: bgAnimation 0s ease infinite;
 }
 
 .home-header {
@@ -33,7 +28,6 @@
 
     .home-header .main-content {
         width: 100%;
-        box-shadow: 10px -10px ghostwhite;
         margin-top: 50px;
         background-color: white;
         position: relative;
@@ -92,7 +86,8 @@
     .home-header .free-div {
         text-align: center;
         color: black;
-        margin-top: 25%;
+        margin-top: 50px;
+        margin-bottom: 50px;
         padding: 12px;
         box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
         margin-left: 50%;

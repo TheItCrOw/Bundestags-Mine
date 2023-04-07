@@ -8,7 +8,7 @@
     <link href="./css/pages/research-center.css" rel="stylesheet">
 </head>
 
-<nav class="bg-dark card-shadow">
+<nav class="bg-darkprime-gradient card-shadow">
     <div class="container flexed justify-content-between align-items-center">
         <a class="btn rounded-0" asp-page="/Index">
             <div>
@@ -32,9 +32,28 @@
     <div class="bg-anim"></div>
     <div class="container mt-5">
 
+        @*Annotations*@
+        <div class="research-topic bg-darkprime-gradient">
+            <h5 class="font-weight-bold text-light">Was ist Natural Language Processing (NLP)?</h5>
+            <p class="text-white-50">
+                Das "Natural Language Processing" ist ein Bereich der Computerlinguistik.
+                Mithilfe von künstlicher Intelligenz wird versucht, dass ein Computer den Inhalt
+                eines Textes "versteht". Der Computer kann den Text dann sortieren und
+                kategorisieren, Verbindungen herstellen und auf verschiedenste Weise auswerten.
+                Genaueres zu diesen Auswertungen finden Sie in den unten gelisteten Punkten.
+            </p>
+        </div>
+
         <div class="row m-0 p-0">
-            <div class="col-md-5 m-0 p-0 align-self-center">
-                <img src="./img/ARTLAS/Atlas_transparent_klein.png" class="atlas"/>
+            <div class="col-md-5 m-0 p-0 justify-content-center">
+                <p class="font-italic w-100 text-center mb-0 pr-2">"Standing on the shoulders of giants"</p>
+                <p class="text-center w-100 mb-0 pr-2">
+                    von
+                    <a class="text-black text-underlined" href="https://www.artlas.design/" target="_blank">
+                        ARTLAS Designs
+                    </a>
+                </p>
+                <img src="./img/ARTLAS/Atlas_transparent_klein.png" class="atlas pl-2 pt-2 pb-2 pr-4" />
             </div>
 
             <div class="col-md-7 m-0 p-0">
@@ -93,3 +112,10 @@
 
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        // Activate popovers
+        $('[data-toggle="popover"]').popover();
+    }
+</script>

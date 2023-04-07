@@ -34,16 +34,16 @@
 </head>
 
 <body id="page-top">
-    <div id="testDiv1" class="display-none"></div>
     <!--start loader-->
-    <div class="start-loader bg-gradient-light">
-        <h3 class="text-black-50" id="startLoaderStatusMessage">Lädt</h3>
+    <div class="start-loader">
+        <div class="bg-anim"></div>
+        <img src="~/img/logo/Logo_weiß_transparent_RGB_1069x1024.png" class="bg-img"/>
+        <h3 id="startLoaderStatusMessage">Lädt</h3>
         <div class="lds-ripple"><div></div><div></div></div>
-        <div class="progress rounded-0" style="height: 20px;">
-            <div class="progress-bar bg-gradient-dark" id="startProgress" role="progressbar" style="width: 0%;"></div>
+        <div class="progress rounded-0 bg-darkprime-gradient" style="height: 20px;">
+            <div class="progress-bar bg-warning" id="startProgress" role="progressbar" style="width: 0%;"></div>
         </div>
         <div class="copyright">
-            <img src="~/img/logo/Logo mit Schriftzug_schwarz_transparent_RGB_1024x473.png" /><br />
             Copyright &copy; Kevin Bönisch 2022
         </div>
     </div>
@@ -51,7 +51,7 @@
     <!-- Page Wrapper -->
     <div id="wrapper">
         <!-- Sidebar -->
-        <ul class="navbar-nav sidebar side-bar-shadow bg-darkprime accordion" id="accordionSidebar" data-expanded="true">
+        <ul class="navbar-nav sidebar side-bar-shadow bg-darkprime accordion toggled" id="accordionSidebar" data-expanded="true">
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand p-2 d-flex mt-2 align-items-center selected-nav-item justify-content-center nav-item nav-item-switcher" data-id="homeContent">
                 <img src="~/img/logo/Logo_weiß_transparent_RGB_534x512.png" class="menu-icon" />
@@ -118,22 +118,30 @@
                 </a>
             </li>
 
-            <!-- Nav Item - Utilities Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link nav-item" data-toggle="collapse" data-target="#collapseUtilities"
-                   aria-expanded="true" aria-controls="collapseUtilities">
+            <!-- Nav Item - comment network -->
+            <li class="nav-item active nav-item-switcher" data-id="networkContent">
+                <a class="nav-link">
                     <i class="fas fa-network-wired"></i>
-                    <span>Netzwerke</span>
+                    <span>Kommentar-Netzwerk</span>
                 </a>
-                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" style="z-index:99 !important"
-                     data-parent="#accordionSidebar">
-                    <div class="bg-transparent py-2 collapse-inner rounded">
-                        <a class="collapse-item nav-item-switcher bg-transparent text-white-50" data-id="networkContent">
-                            <i class="fas fa-comments mr-1"></i> Kommentare
-                        </a>
-                    </div>
-                </div>
             </li>
+
+            <!-- Nav Item - Utilities Collapse Menu -->
+            @*            <li class="nav-item">
+            <a class="nav-link nav-item" data-toggle="collapse" data-target="#collapseUtilities"
+            aria-expanded="true" aria-controls="collapseUtilities">
+            <i class="fas fa-network-wired"></i>
+            <span>Netzwerke</span>
+            </a>
+            <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" style="z-index:99 !important"
+            data-parent="#accordionSidebar">
+            <div class="bg-transparent py-2 collapse-inner rounded">
+            <a class="collapse-item nav-item-switcher bg-transparent text-white-50" data-id="networkContent">
+            <i class="fas fa-comments mr-1"></i> Kommentare
+            </a>
+            </div>
+            </div>
+            </li>*@
 
             <!-- Nav Item - Download Center -->
             <li class="nav-item active nav-item-switcher" data-id="downloadCenterContent">
@@ -185,7 +193,6 @@
 
         <!--main content-->
         <div class="d-flex flex-column w-100 main-content-shadow">
-
             @*nav burger*@
             <nav class="navbar navbar-expand bg-warning static-top justify-content-between">
                 <!-- Sidebar Toggle (Topbar) -->
@@ -225,9 +232,10 @@
                     </div>
 
                     <!--right contetn-->
-                    <div class="w-100 pl-3 pr-3">
+                    <div class="position-relative w-100 pl-3 pr-3">
                         <div class="flexed justify-content-center align-items-center">
                             <div class="fulltext-analysis-div mt-2">
+
                                 <!--loader-->
                                 <div class="loader fulltext-loader display-none">
                                     <p>
@@ -237,7 +245,7 @@
                                 </div>
                                 <!--empty message-->
                                 <div class="empty-message">
-                                    <h5>Wählen Sie eine Rede aus, damit diese analysiert werden kann.</h5>
+                                    <h5>Wählen Sie eine Rede aus, um diese zu untersuchen.</h5>
                                 </div>
                                 <!--the actual content-->
                                 <div class="analysis-wrapper display-none">
@@ -348,7 +356,7 @@
                                             <i class="fas fa-chart-pie"></i>
                                         </button>
                                         <button class="btn" data-toggle="popover" data-trigger="hover" data-html='true'
-                                                   data-content="Der PDF-Export ist noch im Aufbau und momentan nicht funktionsfähig.">
+                                                data-content="Der PDF-Export ist noch im Aufbau und momentan nicht funktionsfähig.">
                                             <i class="fas fa-file-pdf"></i>
                                         </button>
                                     </div>
@@ -373,7 +381,6 @@
                                         @*loader*@
                                         <div class="loader statistics-loader display-none"><div class="lds-ripple"><div></div><div></div></div></div>
                                         <div class="content">
-
                                         </div>
                                     </div>
 
@@ -418,7 +425,9 @@
                 </div>
 
                 @*template file for the summary popovers*@
-                <partial name="~/Pages/Shared/_SpeechSummaryPopoverView.cshtml" />
+                <div class="display-none">
+                    <partial name="~/Pages/Shared/_SpeechSummaryPopoverView.cshtml" />
+                </div>
             </div>
 
             @*topic analysis*@
@@ -891,7 +900,7 @@
     <div class="left-layer left-layer--4"></div>
 
     <!-- Information toast-->
-    <div class="position-fixed bottom-0 right-0 p-3" style="z-index: 999; right: 0; bottom: 0;">
+    <div class="position-fixed bottom-0 right-0 pointer-events-none p-3" style="z-index: 999; right: 0; bottom: 0;">
         <div class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="12000">
             <div class="toast-header">
                 <strong class="mr-auto title">Titel</strong>
@@ -1018,7 +1027,7 @@
 
     @*show this when the speak inspector is not opened*@
     <div id="speakerInspectorButton" data-expanded="true" data-toggle="popover" data-content="Redner(innen) öffnen" data-trigger="hover">
-        <i class="fas fa-users"></i>
+        <i class="fas fa-users pointer-events-none"></i>
     </div>
 
     @section scripts{

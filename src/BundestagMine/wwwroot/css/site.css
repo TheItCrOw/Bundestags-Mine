@@ -28,7 +28,7 @@ body {
 }
 
 .text-line-through {
-    text-decoration:line-through;
+    text-decoration: line-through;
 }
 
 .overflow {
@@ -190,8 +190,8 @@ body {
     font-size: small;
 }
 
-.xsmall-font{
-    font-size:x-small;
+.xsmall-font {
+    font-size: x-small;
 }
 
 .medium-font {
@@ -273,12 +273,25 @@ body {
 
 .start-loader {
     position: fixed;
+    background-image: url(/img/logo/Logo_schwarz_transparent_RGB_1069x1024.png);
     width: 100%;
     height: 100%;
     top: 0;
     left: 0;
     z-index: 100;
 }
+
+    .start-loader .bg-img {
+        position: absolute;
+        z-index: -1;
+        left: 50%;
+        top: 50%;
+        opacity:0.5;
+        width:100%;
+        max-width:700px;
+        transform: translate(-50%, -50%);
+        -webkit-filter: drop-shadow(0px 0px 1px lightgray) drop-shadow(0px 0px 1px lightgray) drop-shadow(0px 0px 1px lightgray) drop-shadow(0px 0px 1px lightgray);
+    }
 
     .start-loader .lds-ripple {
         position: absolute;
@@ -296,6 +309,7 @@ body {
 
     .start-loader #startLoaderStatusMessage {
         position: absolute;
+        color:var(--bg-darkprime);
         width: 100%;
         text-align: center;
         top: 55%;
@@ -611,7 +625,7 @@ body {
     z-index: 98;
     border-radius: 50% 0% 0% 50%;
     text-align: center;
-    box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+    border: gray 1px solid;
     transition: 0.25s;
 }
 
@@ -689,6 +703,16 @@ body {
     }
 }
 
+/*bg darkprime gradient*/
+.bg-darkprime-gradient {
+    background: linear-gradient(245deg, #ffffff, #818181, #000000);
+    background-size: 600% 600%;
+    -webkit-animation: bgAnimation 2s ease infinite;
+    -moz-animation: bgAnimation 2s ease infinite;
+    animation: bgAnimation 0s ease infinite;
+}
+/*end darkprime gradient*/
+
 /* bg animation*/
 /* Cool infinite background scrolling animation.
  * Twitter: @kootoopas
@@ -750,20 +774,20 @@ body {
     z-index: -2;
     left: 0;
     top: 0;
-    pointer-events: none;
+    pointer-events: none !important;
     height: 100%;
     width: 100%;
     color: #999;
     text-align: center;
     /* img size is 50x50 */
     background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABnSURBVHja7M5RDYAwDEXRDgmvEocnlrQS2SwUFST9uEfBGWs9c97nbGtDcquqiKhOImLs/UpuzVzWEi1atGjRokWLFi1atGjRokWLFi1atGjRokWLFi1af7Ukz8xWp8z8AAAA//8DAJ4LoEAAlL1nAAAAAElFTkSuQmCC") repeat 0 0;
-    -webkit-animation: bg-scrolling-reverse 3.92s infinite;
+    -webkit-animation: bg-scrolling-reverse 7.92s infinite;
     /* Safari 4+ */
-    -moz-animation: bg-scrolling-reverse 3.92s infinite;
+    -moz-animation: bg-scrolling-reverse 7.92s infinite;
     /* Fx 5+ */
-    -o-animation: bg-scrolling-reverse 3.92s infinite;
+    -o-animation: bg-scrolling-reverse 7.92s infinite;
     /* Opera 12+ */
-    animation: bg-scrolling-reverse 3.92s infinite;
+    animation: bg-scrolling-reverse 7.92s infinite;
     /* IE 10+ */
     -webkit-animation-timing-function: linear;
     -moz-animation-timing-function: linear;
