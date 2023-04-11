@@ -1,7 +1,8 @@
 # Bundestags-Mine
 The repository for the Bundestags-Mine Webapplication and services. [Live](https://bundestag-mine.de/)
 
-![image](https://user-images.githubusercontent.com/49918134/226877358-edc9b160-fdf5-4312-a04d-9efe3ee2285d.png)
+![image](https://user-images.githubusercontent.com/49918134/231186539-69e5bbe4-f0b1-4e1f-a1d3-fd399d509e2e.png)
+![image](https://user-images.githubusercontent.com/49918134/231186376-33b21bfc-b5eb-4555-acfe-b4bacd6d0a4e.png)
 
 ## About
 Reads and visualizes the speech-protocols of the german parliament, which have been run through a NLP (Natural-Language-Processing) Algorithm made by the [Text-Techology-Lab](https://www.texttechnologylab.org/) of the Goethe-Univerisität Frankfurt. This data is used for various analysis and visualizations.
