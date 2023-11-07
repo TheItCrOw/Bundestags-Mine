@@ -35,7 +35,7 @@ namespace BundestagMine.Logic.Services
         /// <param name="meetingNumber"></param>
         /// <returns></returns>
         public IEnumerable<Speech> GetSpeechesOfProtocol(int period, int meetingNumber) => _db.Speeches
-            .Where(s => s.LegislaturePeriod == period && s.ProtocolNumber == meetingNumber);            
+            .Where(s => s.LegislaturePeriod == period && s.ProtocolNumber == meetingNumber);
 
         /// <summary>
         /// Gets the count of speeches in an agendaitem
@@ -51,15 +51,63 @@ namespace BundestagMine.Logic.Services
         public Deputy GetSpeakerOfSpeech(Speech speech) => _db.Deputies.FirstOrDefault(d => d.SpeakerId == speech.SpeakerId);
 
         /// <summary>
+        /// We have speeches that are not assignable to an agendaitem because of the xml issue. 
+        /// Fetch these speeches.
+        /// </summary>
+        /// <param name="period"></param>
+        /// <param name="protocolNumber"></param>
+        /// <returns></returns>
+        public IEnumerable<NLPSpeech> GetUnassignableNLPSpeeches(Protocol protocol)
+        {
+            if (protocol == default) return new List<NLPSpeech>();
+
+            return _db.NLPSpeeches
+                .Where(s => s.LegislaturePeriod == protocol.LegislaturePeriod
+                        && s.ProtocolNumber == protocol.Number
+                        && !_db.AgendaItems.Any(a => a.ProtocolId == protocol.Id && a.Order == s.AgendaItemNumber));
+        }
+        public async Task<IEnumerable<NLPSpeech>> GetUnassignableNLPSpeechesAsync(Guid protocolId)
+            => GetUnassignableNLPSpeeches(await _db.Protocols.FirstOrDefaultAsync(p => p.Id == protocolId));
+
+        /// <summary>
+        /// We have speeches that are not assignable to an agendaitem because of the xml issue. 
+        /// Fetch these speeches count.
+        /// </summary>
+        /// <param name="period"></param>
+        /// <param name="protocolNumber"></param>
+        /// <returns></returns>
+        public async Task<int> GetUnassignableNLPSpeechesCountAsync(Guid protocolId) =>
+            (await GetUnassignableNLPSpeechesAsync(protocolId)).Count();
+
+        /// <summary>
         /// Gets all speeches of an agenda items
         /// </summary>
         /// <param name="period"></param>
         /// <param name="protocolNumber"></param>
         /// <param name="agendaNumber">This is the order!</param>
         /// <returns></returns>
-        public List<NLPSpeech> GetNLPSpeechesOfAgendaItem(int period, int protocolNumber, int agendaNumber) => _db.NLPSpeeches
-                    .Where(s => s.LegislaturePeriod == period && s.ProtocolNumber == protocolNumber && s.AgendaItemNumber == agendaNumber)
-                    .ToList();
+        public List<NLPSpeech> GetNLPSpeechesOfAgendaItem(int period, int protocolNumber, int agendaNumber)
+        {
+            return _db.NLPSpeeches
+                .Where(s => s.LegislaturePeriod == period && s.ProtocolNumber == protocolNumber
+                        && s.AgendaItemNumber == agendaNumber)
+                .ToList();
+            // THIS BELOW DOESNT WORK RIGHT NOW. We need a better fix...
+            // This is tricky. The xml protocols we parse have different agenda item structure than the 
+            // bundestag website. Thus, there are sometimes more or less agenda items in the xml, than on the page.
+            // This causes wrong assignment of speeches and sometimes hides speeches because they belong
+            // to an agenda item, that does not exist on the page.
+            // That is why we only go after the order for now.
+            var test = _db.NLPSpeeches
+                        .Where(s => s.LegislaturePeriod == period && s.ProtocolNumber == protocolNumber)
+                        .OrderBy(s => s.AgendaItemNumber)
+                        .AsEnumerable()
+                        .GroupBy(s => s.AgendaItemNumber)
+                        .Where((g, i) => i == agendaNumber - 1)
+                        .SelectMany(g => g.Select(s => s))
+                        .ToList();
+            return test;
+        }
 
         /// <summary>
         /// Gets all parties
@@ -185,6 +233,6 @@ namespace BundestagMine.Logic.Services
         public AgendaItem? GetAgendaItemOfSpeech(Speech speech) => _db.AgendaItems.FirstOrDefault(a =>
                         a.ProtocolId == _db.Protocols.SingleOrDefault(p =>
                             p.Number == speech.ProtocolNumber && p.LegislaturePeriod == speech.LegislaturePeriod).Id
-                        && a.Order == speech.AgendaItemNumber);        
+                        && a.Order == speech.AgendaItemNumber);
     }
 }

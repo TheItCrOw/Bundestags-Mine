@@ -177,13 +177,13 @@ async function loadAgendaItemsToProtocol($protocol) {
     var period = param[0];
     var protocol = param[1];
 
-    var agendaItems = await getAgendaItemsOfProtocol(protocolId);
+    var result = await getAgendaItemsOfProtocol(protocolId);
+    console.log(result);
     var polls = await getPollsOfProtocol(period, protocol);
-    agendaItems = agendaItems.reverse();
+    agendaItems = result.agendaItems.reverse();
 
-    // First agendaitems.
-    for (var i = 0; i < agendaItems.length; i++) {
-        var agendaItem = agendaItems[i];
+    // Builds the html for an agenda item
+    function buildAgendaItemHtml(agendaItem) {
         var number = agendaItem.order;
 
         var aItem = document.createElement('div');
@@ -198,11 +198,39 @@ async function loadAgendaItemsToProtocol($protocol) {
         aItem.setAttribute('data-id', agendaItem.id);
         aItem.setAttribute('data-description', agendaItem.description);
 
+        // If we have a fake agendaitem, change the icon
+        var icon = 'fas fa-exclamation';
+        if (number == -1) icon = 'fas fa-exclamation-circle';
         aItem.innerHTML += `<div class='flexed wrapper position-relative'>
-                            <i class="fas fa-exclamation mr-2"></i>
+                            <i class="${icon} mr-2"></i>
                             <p class='w-100 mb-0'>${agendaItem.title}</p>
                             <i class="arrow fas fa-angle-up"></i>
                             <div class="loader">Reden werden geladen...</div></div>`;
+        return aItem;
+    }
+
+    // Check if there are unassigned speeches to an agenda item in this protocol
+    if (result.unassingableSpeechesCount > 0) {
+        var fakeItem = {
+            order: -1,
+            id: "00000000-0000-0000-0000-000000000000",
+            description: "Die Reden werden aus den XML-Protokollen des Bundestags entzogen. In den Protokollen sind jedoch nicht "
+                + "die vollständigen Tagesordnungspunkte hinterlegt, wie man sie auf der Website des Bundestags findet. Deshalb "
+                + "muss die Bundestags-Mine die TOP von der Website akquerieren, um diese dann auf die Reden der XML-Protokolle zu matchen. "
+                + "Leider gibt es Unterschiede zwischen den XML-Protokollen und der Website, weshalb dieses Matching nicht immer korrekt "
+                + "stattfinden kann. Dies kann zu falsch eingeordneten Reden in den TOPs oder sogar dem nicht Anzeigen von diesen führen. "
+                + "In dieser Auflistung werden die Reden angezeigt, bei denen das der Fall ist, damit diese trotzdem zur Verfügung stehen. "
+                + "Es handelt sich hierbei also um Reden, die von der Bundestags-Mine einfach nicht richtig zugeordnet werden können.",
+            title: "Nicht zuweisbare Reden"
+        }
+        var aItem = buildAgendaItemHtml(fakeItem);
+        $protocol.after(aItem);
+    }
+
+    // First agendaitems.
+    for (var i = 0; i < agendaItems.length; i++) {
+        var agendaItem = agendaItems[i];
+        var aItem = buildAgendaItemHtml(agendaItem);
         // Add the agenda to the protocol
         $protocol.after(aItem);
     }

@@ -52,12 +52,12 @@
     padding-right: 8px;
     cursor: pointer;
     transition: 0.15s;
-    border-bottom:rgba(125, 125, 125, 0.2) 1px dashed;
+    border-bottom: rgba(125, 125, 125, 0.2) 1px dashed;
 }
 
     .tree-item:hover {
         background-color: white;
-        color: black;
+        color: black !important;
         border-left: gold 8px solid;
         color: black;
         transition: 0.15s;
@@ -125,6 +125,14 @@
 .agenda-item {
     margin-left: 15px;
 }
+
+    .agenda-item[data-id="00000000-0000-0000-0000-000000000000"] {
+        font-weight:bold;
+    }
+
+        .agenda-item[data-id="00000000-0000-0000-0000-000000000000"] i {
+            color:black;
+        }
 
 .poll-item {
     margin-left: 15px;
@@ -200,7 +208,7 @@
 
     .fulltext-analysis-div .statistics-loader {
         z-index: 3;
-        position:absolute !important;
+        position: absolute !important;
     }
 
     .fulltext-analysis-div .loader {

@@ -145,7 +145,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DashboardController/GetAgendaItemsOfProtocol/{protocolIdAsString}")]
-        public IActionResult GetAgendaItemsOfProtocol(string protocolIdAsString)
+        public async Task<IActionResult> GetAgendaItemsOfProtocol(string protocolIdAsString)
         {
             dynamic response = new ExpandoObject();
 
@@ -153,7 +153,11 @@ namespace BundestagMine.Controllers
             {
                 var id = Guid.Parse(protocolIdAsString);
                 response.status = "200";
-                response.result = _db.AgendaItems.Where(a => a.ProtocolId == id).OrderBy(a => a.Order).ToList();
+                response.result = new
+                {
+                    agendaItems = _db.AgendaItems.Where(a => a.ProtocolId == id).OrderBy(a => a.Order).ToList(),
+                    unassingableSpeechesCount = await _metadataService.GetUnassignableNLPSpeechesCountAsync(id)
+                };
             }
             catch (Exception ex)
             {
@@ -295,7 +299,7 @@ namespace BundestagMine.Controllers
 
 
         [HttpGet("/api/DashboardController/GetSpeechesOfAgendaItem/{param}")]
-        public IActionResult GetSpeechesOfAgendaItem(string param)
+        public async Task<IActionResult> GetSpeechesOfAgendaItem(string param)
         {
             dynamic response = new ExpandoObject();
 
@@ -306,7 +310,11 @@ namespace BundestagMine.Controllers
                 var protocol = int.Parse(splited[1]);
                 var number = int.Parse(splited[2]);
                 response.status = "200";
-                response.result = _metadataService.GetNLPSpeechesOfAgendaItem(period, protocol, number);
+                if (number == -1)
+                    response.result = _metadataService.GetUnassignableNLPSpeeches(
+                        _db.Protocols.FirstOrDefault(p => p.LegislaturePeriod == period && p.Number == protocol));
+                else
+                    response.result = _metadataService.GetNLPSpeechesOfAgendaItem(period, protocol, number);
             }
             catch (Exception ex)
             {

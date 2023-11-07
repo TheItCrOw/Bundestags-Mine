@@ -46,5 +46,6 @@ namespace BundestagMine.SqlDatabase
         public DbSet<DailyPaperSubscription> DailyPaperSubscriptions { get; set; }
         public DbSet<TextSummarizationEvaluationScore> TextSummarizationEvaluationScores { get; set; }
         public DbSet<LaTeXChunk> LaTeXChunks { get; set; }
+        public DbSet<Category> Categories { get; set; }
     }
 }

@@ -62,6 +62,7 @@ namespace BundestagMine.Synchronisation
                 services.AddTransient<PixabayApiService>();
                 services.AddTransient<TextSummarizationService>();
                 services.AddTransient<LaTeXService>();
+                services.AddTransient<VecTopService>();
                 // Add the default db context
                 services.AddDbContext<BundestagMineDbContext>(
                     option => option.UseSqlServer(ConfigManager.GetConnectionString(), o => o.CommandTimeout(600)));
@@ -87,13 +88,11 @@ namespace BundestagMine.Synchronisation
             }
         }
 
-        private static async Task MainAsync()
+        /// <summary>
+        /// Just testing a pdf export for the speeches with latex.
+        /// </summary>
+        private static void TestLatexToPdf()
         {
-            var curDate = DateTime.Now;
-            //MailManager.SendMail($"Import-Start um {curDate}",
-            //    $"Der Entity-Import startet jetzt.",
-            //    ConfigManager.GetImportReportRecipients());
-
             // Testing latex to pdf
             for (int i = 20; i > 18; i--)
             {
@@ -112,8 +111,14 @@ namespace BundestagMine.Synchronisation
                 }
             }
             return;
+        }
 
-
+        /// <summary>
+        /// A cleanup method for summarizing the speeches
+        /// </summary>
+        /// <returns></returns>
+        private async static Task CleanupTextSummarization()
+        {
             // Text summarization cleanup
             using (var db = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
             {
@@ -122,10 +127,10 @@ namespace BundestagMine.Synchronisation
                     .QueryInChunksOf(2)
                     .SelectMany(p => db.NLPSpeeches
                         .Where(s => s.LegislaturePeriod == p.LegislaturePeriod && p.Number == s.ProtocolNumber
-                                && (string.IsNullOrEmpty(s.EnglishTranslationOfSpeech) 
+                                && (string.IsNullOrEmpty(s.EnglishTranslationOfSpeech)
                                     || string.IsNullOrEmpty(s.AbstractSummaryPEGASUS)
                                     || string.IsNullOrEmpty(s.AbstractSummary)
-                                    || string.IsNullOrEmpty(s.ExtractiveSummary)) 
+                                    || string.IsNullOrEmpty(s.ExtractiveSummary))
                                 && s.Text.Length > 400))
                     .ToList())
                 {
@@ -154,13 +159,25 @@ namespace BundestagMine.Synchronisation
                         await db.SaveChangesAsync();
                         Console.WriteLine($"==== Done speech {speech.Id} of {speech.LegislaturePeriod}|{speech.ProtocolNumber}! ====");
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         Console.WriteLine("Something was wrong with this speech... Error. Check the logs");
                         Log.Error(ex, "Error with speech " + speech.Id);
                     }
                 }
             }
+            return;
+        }
+
+        private static async Task MainAsync()
+        {
+            var curDate = DateTime.Now;
+            //MailManager.SendMail($"Import-Start um {curDate}",
+            //    $"Der Entity-Import startet jetzt.",
+            //    ConfigManager.GetImportReportRecipients());
+
+            // JUST TESTING
+            await serviceProvider.GetService<VecTopService>().ExtractCategoryOfAllSpeeches();
             return;
 
             Log.Information("Starting a new import run now at " + curDate);
@@ -190,6 +207,12 @@ namespace BundestagMine.Synchronisation
             importer.ImportXLSXPolls();
             Log.Information("XLS  ======================================");
             importer.ImportXLSPolls();
+
+            Log.Information("============================================================================");
+            Log.Information("Building the VecTop Categories");
+            Log.Information("============================================================================");
+            Log.Information("This operation looks at all speeches without a category. It therefore also cleansup");
+            await serviceProvider.GetService<VecTopService>().ExtractCategoryOfAllSpeeches();
 
             Log.Information("============================================================================");
             Log.Information("Building the new Daily Papers");

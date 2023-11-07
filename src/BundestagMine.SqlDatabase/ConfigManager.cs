@@ -82,6 +82,10 @@ namespace BundestagMine.SqlDatabase
         public static string GetLaTeXTmpsPath() => _config.GetSection("LaTeX").GetSection("TmpsPath").Value;
         public static string GetLaTeXCachePath() => _config.GetSection("LaTeX").GetSection("CachePath").Value;
 
+        public static string GetVecTopBaseUrl() => _config.GetSection("VecTopAPI").GetSection("BaseUrl").Value;
+        public static string GetVecTopExtractEndpoint() => _config.GetSection("VecTopAPI").GetSection("ExtractEndpoint").Value;
+
+
         /// <summary>
         /// Returns the db options we need to pass into each new db context.
         /// </summary>

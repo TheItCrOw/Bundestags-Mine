@@ -179,7 +179,7 @@ $('body').on('click', '.view-helper-tooltip', function () {
         $('.view-helper-video-box iframe').attr('src', 'https://www.youtube.com/embed/5g5UIJLaBzE');
         $('.view-helper-video-box').fadeIn(250);
     } else if (currentView == 'speechContent') {
-        $('.view-helper-video-box iframe').attr('src', 'https://www.youtube.com/embed/g0jCdSWTPjQ');
+        $('.view-helper-video-box iframe').attr('src', 'https://www.youtube.com/embed/btkIGegQEdA');
         $('.view-helper-video-box').fadeIn(250);
     } else if (currentView == 'topicAnalysis') {
         $('.view-helper-video-box iframe').attr('src', 'https://www.youtube.com/embed/W78jl_P9rD0');
