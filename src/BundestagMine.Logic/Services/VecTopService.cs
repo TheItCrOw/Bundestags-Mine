@@ -83,7 +83,8 @@ namespace BundestagMine.Logic.Services
                     {
                         { "text", speech.Text },
                         { "lang", "de-DE" },
-                        { "corpus", "spiegel_sum_1"} // Since we have german speeches, we take the spiegel corpus
+                        { "corpus", "spiegel_sum_1"},// Since we have german speeches, we take the spiegel corpus
+                        { "confidence", "5"}
                     };
                     var content = new StringContent(JsonConvert.SerializeObject(postData), Encoding.UTF8, "application/json");
                     var response = await client.PostAsync(_vecTopExtractEndpoint, content);

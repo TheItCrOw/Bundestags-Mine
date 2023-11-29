@@ -176,10 +176,6 @@ namespace BundestagMine.Synchronisation
             //    $"Der Entity-Import startet jetzt.",
             //    ConfigManager.GetImportReportRecipients());
 
-            // JUST TESTING
-            await serviceProvider.GetService<VecTopService>().ExtractCategoryOfAllSpeeches();
-            return;
-
             Log.Information("Starting a new import run now at " + curDate);
             Log.Information("\n");
 
@@ -211,7 +207,7 @@ namespace BundestagMine.Synchronisation
             Log.Information("============================================================================");
             Log.Information("Building the VecTop Categories");
             Log.Information("============================================================================");
-            Log.Information("This operation looks at all speeches without a category. It therefore also cleansup");
+            Log.Information("This operation looks at all speeches without a category. It therefore also cleanup");
             await serviceProvider.GetService<VecTopService>().ExtractCategoryOfAllSpeeches();
 
             Log.Information("============================================================================");
