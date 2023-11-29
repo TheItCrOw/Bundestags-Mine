@@ -1,11 +1,30 @@
-# Bundestags-Mine
-The repository for the Bundestags-Mine Webapplication and services. [Live](https://bundestag-mine.de/)
+<div align="center">
+  <h1><b>Bundestags-Mine</b></h1>
+  <img src="https://github.com/TheItCrOw/Bundestags-Mine/assets/49918134/5c9b92df-4b05-4129-81ea-685430c10c19" width="250"/>
+  <h3>Natural Language Processing for Extracting Key Information from Government Documents</h3>
+  <hr/>
+</div>
 
-![image](https://user-images.githubusercontent.com/49918134/231186539-69e5bbe4-f0b1-4e1f-a1d3-fd399d509e2e.png)
-![image](https://user-images.githubusercontent.com/49918134/231186376-33b21bfc-b5eb-4555-acfe-b4bacd6d0a4e.png)
+<i>As governments worldwide continue to release vast amounts of textual information, the need for efficient and insightful tools to extract, interpret and present this data has become increasingly critical. Towards solving this issue, we present the \Mine: an environment that periodically retrieves pertinent data from the German parliament, parses and analyzes it using pipelines for natural language processing, and then displays the results in a web application that is publicly accessible. Bundestags-Mine helps to extract key information from parliamentary documents in a visually appealing matter for many use cases. For instance, the tool can be leveraged by journalists for news detection, lawyers for compliance checking, linguists for discourse analysis, and the broad public to inform themselves about the positions of political party members on a topic.</i>
+<hr/>
+<div align="center">
+  <a href="https://bundestag-mine.de/"><img src="https://img.shields.io/static/v1?label=Live%3A&message=Website&color=2ea44f&style=for-the-badge" alt="Live: - Website"></a>
+  <a href="https://bundestag-mine.de/"><img src="https://img.shields.io/static/v1?label=Languages%3A&message=German&color=informational&style=for-the-badge" alt="Languages: - German"></a><a href="https://www.paypal.com/donate/?hosted_button_id=3HC4L477XZRXU">
+  <img src="https://img.shields.io/static/v1?label=Paper%3A&message=Coming+soon&color=important&style=for-the-badge&logo=researchgate" alt="Paper: - Coming soon">
+  <a href="https://www.paypal.com/donate/?hosted_button_id=3HC4L477XZRXU"><img src="https://img.shields.io/static/v1?label=Support%3A&message=Donate&color=green&style=for-the-badge&logo=paypal" alt="Support: - Donate"></a>
+  <br/>
+  <br/>
+</div>
+
 
 ## About
-Reads and visualizes the speech-protocols of the german parliament, which have been run through a NLP (Natural-Language-Processing) Algorithm made by the [Text-Techology-Lab](https://www.texttechnologylab.org/) of the Goethe-Univerisität Frankfurt. This data is used for various analysis and visualizations.
+Bundestags-Mine is an environment for evaluating German government documents by means of various Natural Language Processing techniques and visualizing them via a publicly accessable and intuitive web application as well as providing the resulting data for download.
+Within this environment, we processes the following types of government data, which are then visualized within the web application for a platform-independent and responsive interface: 
+- Minutes of plenary proceedings
+- Agenda Items
+- Polls
+
+We gather this data from the offical Bundestag Data Service, apply various NLP/AI techniques onto it and make these results available on the website.
 
 ![image](https://user-images.githubusercontent.com/49918134/226877498-9f773b30-3ad9-4e3b-b2cd-383cc3533575.png)
 ![image](https://user-images.githubusercontent.com/49918134/182587206-f30e256c-2bc3-490b-9dbf-8d9ebdcd3801.png)
