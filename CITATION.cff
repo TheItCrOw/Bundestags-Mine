@@ -1,0 +1,57 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  Bundestags-Mine: Natural Language Processing for
+  Extracting Key Information from Government Documents.
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Kevin
+    email: k.boenisch@outlook.com
+    family-names: Bönisch
+    affiliation: Goethe University Frankfurt
+    orcid: 'https://orcid.org/0009-0005-6962-2646'
+  - given-names: Giuseppe
+    family-names: Abrami
+    email: abrami@em.uni-frankfurt.de
+    affiliation: ' Goethe University Frankfurt'
+    orcid: 'https://orcid.org/0000-0002-7084-4909'
+  - given-names: Sabine
+    family-names: Wehnert
+    email: sabine.wehnert@gei.de
+    affiliation: Otto von Guericke University Magdeburg
+    orcid: 'https://orcid.org/0000-0002-5290-0321'
+  - given-names: Alexander
+    family-names: Mehler
+    orcid: 'https://orcid.org/0000-0003-2567-7539'
+    affiliation: Goethe University Frankfurt
+    email: mehler@em.uni-frankfurt.de
+repository-code: 'https://github.com/TheItCrOw/Bundestags-Mine'
+url: 'https://bundestag-mine.de/'
+abstract: >-
+  As governments worldwide continue to release vast amounts
+  of textual information, the need for efficient and
+  insightful tools to extract, interpret and present this
+  data has become increasingly critical. Towards solving
+  this issue, we present the Bundestag-Mine: an environment
+  that periodically retrieves pertinent data from the German
+  parliament, parses and analyzes it using pipelines for
+  natural language processing, and then displays the results
+  in a web application that is publicly accessible.
+  Bundestag-Mine helps to extract key information from
+  parliamentary documents in a visually appealing matter for
+  many use cases. For instance, the tool can be leveraged by
+  journalists for news detection, lawyers for compliance
+  checking, linguists for discourse analysis, and the broad
+  public to inform themselves about the positions of
+  political party members on a topic.
+keywords:
+  - political debate analysis
+  - discourse visualization
+  - sentiment analysis
+  - named entity recognition
+  - information retrieval
