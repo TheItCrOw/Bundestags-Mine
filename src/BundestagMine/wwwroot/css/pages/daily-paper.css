@@ -229,6 +229,6 @@ Otherwise, it will be 4vw.*/
 #dailyPaperContent .selector {
     position: sticky;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-    z-index: 11;
+    z-index: 4;
     top: 0;
 }

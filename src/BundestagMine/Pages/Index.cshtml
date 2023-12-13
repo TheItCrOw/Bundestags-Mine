@@ -31,13 +31,14 @@
     <link href="~/css/pages/home-new.css" rel="stylesheet">
     <link href="~/css/pages/support.css" rel="stylesheet">
     <link href="~/css/pages/daily-paper.css" rel="stylesheet">
+    <link href="~/css/pages/parliament-panorama.css" rel="stylesheet">
 </head>
 
 <body id="page-top">
     <!--start loader-->
-    <div class="start-loader">
+    <div class="start-loader display-none">
         <div class="bg-anim"></div>
-        <img src="~/img/logo/Logo_weiß_transparent_RGB_1069x1024.png" class="bg-img"/>
+        <img src="~/img/logo/Logo_weiss_transparent_RGB_1069x1024.png" class="bg-img" />
         <h3 id="startLoaderStatusMessage">Lädt</h3>
         <div class="lds-ripple"><div></div><div></div></div>
         <div class="progress rounded-0 bg-darkprime-gradient" style="height: 20px;">
@@ -49,137 +50,160 @@
     </div>
 
     <!-- Page Wrapper -->
-    <div id="wrapper">
+    <div id="wrapper position-relative">
         <!-- Sidebar -->
-        <ul class="navbar-nav sidebar side-bar-shadow bg-darkprime accordion toggled" id="accordionSidebar" data-expanded="true">
-            <!-- Sidebar - Brand -->
-            <a class="sidebar-brand p-2 d-flex mt-2 align-items-center selected-nav-item justify-content-center nav-item nav-item-switcher" data-id="homeContent">
-                <img src="~/img/logo/Logo_weiß_transparent_RGB_534x512.png" class="menu-icon" />
-            </a>
+        <div class="navbar-nav sidebar side-bar-shadow accordion" id="accordionSidebar" data-expanded="false">
 
-            <!-- Heading -->
-            <div class="text-center mb-0 sidebar-heading mt-3 text-light">
-                Funktionen
-            </div>
+            <div class="navbar-content">
+                <div class="bg-anim" style="position:absolute !important; width:33vw; height:100vh"></div>
 
-            <!-- Nav Item - Daily Paper -->
-            <li class="nav-item active nav-item-switcher" data-id="dailyPaperContent">
-                <a class="nav-link">
-                    <i class="fas fa-newspaper"></i>
-                    <span>Neues vom Schürfer</span>
-                </a>
-            </li>
+                <div class="link-container">
+                    <!-- Sidebar - Brand -->
+                    <a class="sidebar-brand p-2 d-flex align-items-center selected-nav-item justify-content-center nav-item nav-item-switcher" data-id="homeContent">
+                        <img src="~/img/logo/Logo_schwarz_transparent_RGB_534x512.png" class="menu-icon" />
+                        <span class="display-none">Bundestags-Mine</span>
+                    </a>
+                </div>
 
-            <!-- Nav Item - Global Search -->
-            <li class="nav-item active nav-item-switcher" data-id="globalSearchContent">
-                <a class="nav-link">
-                    <i class="fas fa-search"></i>
-                    <span>Suche</span>
-                </a>
-            </li>
+                <!-- Heading -->
+                <div class="text-center mb-0 sidebar-heading mt-3 text-dark">
+                    Funktionen
+                </div>
 
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item active nav-item-switcher" data-id="dashboardsContent">
-                <a class="nav-link">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboards</span>
-                </a>
-            </li>
+                <div class="link-container">
 
-            <!-- Nav Item - text analysis -->
-            <li class="nav-item active nav-item-switcher" data-id="speechContent">
-                <a class="nav-link">
-                    <i class="fas fa-comments"></i>
-                    <span>Text Analyse</span>
-                </a>
-            </li>
+                    <!-- Nav Item - Daily Paper -->
+                    <li class="nav-item active nav-item-switcher" data-id="dailyPaperContent">
+                        <a class="nav-link">
+                            <i class="fas fa-newspaper"></i>
+                            <span>Neues vom Schürfer</span>
+                        </a>
+                    </li>
 
-            <!-- Nav Item - topic analysis-->
-            <li class="nav-item active nav-item-switcher" data-id="topicAnalysis">
-                <a class="nav-link">
-                    <i class="fas fa-chart-pie"></i>
-                    <span>Themen Analyse</span>
-                </a>
-            </li>
+                    <!-- Nav Item - Global Search -->
+                    <li class="nav-item active nav-item-switcher" data-id="globalSearchContent">
+                        <a class="nav-link">
+                            <i class="fas fa-search"></i>
+                            <span>Suche</span>
+                        </a>
+                    </li>
 
-            <!-- Nav Item - topic map -->
-            <li class="nav-item active nav-item-switcher" data-id="topicMapContent">
-                <a class="nav-link">
-                    <i class="fas fa-globe"></i>
-                    <span>Themen Landkarte</span>
-                </a>
-            </li>
+                    <!-- Nav Item - Dashboard -->
+                    <li class="nav-item active nav-item-switcher" data-id="dashboardsContent">
+                        <a class="nav-link">
+                            <i class="fas fa-fw fa-tachometer-alt"></i>
+                            <span>Dashboards</span>
+                        </a>
+                    </li>
 
-            <!-- Nav Item - topic bar race -->
-            <li class="nav-item active nav-item-switcher" data-id="topicRaceContent">
-                <a class="nav-link">
-                    <i class="fas fa-flag-checkered"></i>
-                    <span>Themen Rennen</span>
-                </a>
-            </li>
+                    <!-- Nav Item - text analysis -->
+                    <li class="nav-item active nav-item-switcher" data-id="speechContent">
+                        <a class="nav-link">
+                            <i class="fas fa-comments"></i>
+                            <span>Text Analyse</span>
+                        </a>
+                    </li>
 
-            <!-- Nav Item - comment network -->
-            <li class="nav-item active nav-item-switcher" data-id="networkContent">
-                <a class="nav-link">
+                    <!-- Nav Item - topic analysis-->
+                    <li class="nav-item active nav-item-switcher" data-id="topicAnalysis">
+                        <a class="nav-link">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>Themen Analyse</span>
+                        </a>
+                    </li>
+
+                    <!-- Nav Item - parliament panorama-->
+                    <li class="nav-item active nav-item-switcher" data-id="parliamentPanorama">
+                        <a class="nav-link">
+                            <i class="fas fa-mountain"></i>
+                            <span>Parlaments-Panorama</span>
+                        </a>
+                    </li>
+
+                    <!-- Nav Item - topic map -->
+                    <li class="nav-item active nav-item-switcher" data-id="topicMapContent">
+                        <a class="nav-link">
+                            <i class="fas fa-globe"></i>
+                            <span>Themen Landkarte</span>
+                        </a>
+                    </li>
+
+                    <!-- Nav Item - topic bar race -->
+                    <li class="nav-item active nav-item-switcher" data-id="topicRaceContent">
+                        <a class="nav-link">
+                            <i class="fas fa-flag-checkered"></i>
+                            <span>Themen Rennen</span>
+                        </a>
+                    </li>
+
+                    <!-- Nav Item - comment network -->
+                    <li class="nav-item active nav-item-switcher" data-id="networkContent">
+                        <a class="nav-link">
+                            <i class="fas fa-network-wired"></i>
+                            <span>Kommentar-Netzwerk</span>
+                        </a>
+                    </li>
+
+                    <!-- Nav Item - Utilities Collapse Menu -->
+                    @*            <li class="nav-item">
+                    <a class="nav-link nav-item" data-toggle="collapse" data-target="#collapseUtilities"
+                    aria-expanded="true" aria-controls="collapseUtilities">
                     <i class="fas fa-network-wired"></i>
-                    <span>Kommentar-Netzwerk</span>
-                </a>
-            </li>
+                    <span>Netzwerke</span>
+                    </a>
+                    <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" style="z-index:99 !important"
+                    data-parent="#accordionSidebar">
+                    <div class="bg-transparent py-2 collapse-inner rounded">
+                    <a class="collapse-item nav-item-switcher bg-transparent text-white-50" data-id="networkContent">
+                    <i class="fas fa-comments mr-1"></i> Kommentare
+                    </a>
+                    </div>
+                    </div>
+                    </li>*@
 
-            <!-- Nav Item - Utilities Collapse Menu -->
-            @*            <li class="nav-item">
-            <a class="nav-link nav-item" data-toggle="collapse" data-target="#collapseUtilities"
-            aria-expanded="true" aria-controls="collapseUtilities">
-            <i class="fas fa-network-wired"></i>
-            <span>Netzwerke</span>
-            </a>
-            <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" style="z-index:99 !important"
-            data-parent="#accordionSidebar">
-            <div class="bg-transparent py-2 collapse-inner rounded">
-            <a class="collapse-item nav-item-switcher bg-transparent text-white-50" data-id="networkContent">
-            <i class="fas fa-comments mr-1"></i> Kommentare
-            </a>
+                    <!-- Nav Item - Download Center -->
+                    <li class="nav-item active nav-item-switcher" data-id="downloadCenterContent">
+                        <a class="nav-link">
+                            <i class="fas fa-cloud-download-alt"></i>
+                            <span>Download Center</span>
+                        </a>
+                    </li>
+
+                    <!-- Nav Item - Info -->
+                    <li class="nav-item active nav-item-switcher" data-id="faqContent">
+                        <a class="nav-link">
+                            <i class="fas fa-question"></i>
+                            <span>FAQ</span>
+                        </a>
+                    </li>
+
+                    <!-- Nav Item - Support -->
+                    <li class="nav-item active nav-item-switcher" data-id="supportContent">
+                        <a class="nav-link">
+                            <i class="fab fa-paypal"></i>
+                            <span>Support</span>
+                        </a>
+                    </li>
+                </div>
+
+
+                <!-- Heading -->
+                <div class="text-center mb-0 mt-2 sidebar-heading text-dark">
+                    Seiten
+                </div>
+
+                <div class="link-container">
+                    <!-- Nav Item - Research Center -->
+                    <li class="nav-item active">
+                        <a class="nav-link" asp-page="/ResearchCenter/Index" target="_blank">
+                            <i class="fas fa-university"></i>
+                            <span>Research Center</span>
+                        </a>
+                    </li>
+                </div>
+
             </div>
-            </div>
-            </li>*@
-
-            <!-- Nav Item - Download Center -->
-            <li class="nav-item active nav-item-switcher" data-id="downloadCenterContent">
-                <a class="nav-link">
-                    <i class="fas fa-cloud-download-alt"></i>
-                    <span>Download Center</span>
-                </a>
-            </li>
-
-            <!-- Nav Item - Info -->
-            <li class="nav-item active nav-item-switcher" data-id="faqContent">
-                <a class="nav-link">
-                    <i class="fas fa-question"></i>
-                    <span>FAQ</span>
-                </a>
-            </li>
-
-            <!-- Nav Item - Support -->
-            <li class="nav-item active nav-item-switcher" data-id="supportContent">
-                <a class="nav-link">
-                    <i class="fab fa-paypal"></i>
-                    <span>Support</span>
-                </a>
-            </li>
-
-            <!-- Heading -->
-            <div class="text-center mb-0 mt-2 sidebar-heading text-light">
-                Seiten
-            </div>
-
-            <!-- Nav Item - Research Center -->
-            <li class="nav-item active">
-                <a class="nav-link text-white-50" asp-page="/ResearchCenter/Index" target="_blank">
-                    <i class="fas fa-university"></i>
-                    <span>Research Center</span>
-                </a>
-            </li>
-        </ul>
+        </div>
 
         @*helper for the current view*@
         <a class="view-helper-tooltip" data-expanded="true" data-toggle="popover" data-content="Erklärung zur jetzigen Ansicht" data-trigger="hover">
@@ -192,18 +216,28 @@
         </div>
 
         <!--main content-->
-        <div class="d-flex flex-column w-100 main-content-shadow">
+        <div class="d-flex flex-column w-100 main-content-shadow min-vh-100">
             @*nav burger*@
-            <nav class="navbar navbar-expand bg-warning static-top justify-content-between">
-                <!-- Sidebar Toggle (Topbar) -->
-                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3"
-                        onclick="if ($('#accordionSidebar').hasClass('toggled')){ $('#accordionSidebar').removeClass('toggled'); $('#accordionSidebar').show(); } else { $('#accordionSidebar').addClass('toggled'); }">
-                    <i class="fa fa-bars"></i>
-                </button>
-            </nav>
+            <div class="w-100 bg-darkprime-gradient flexed justify-content-center main-content-header">
+                <nav class="navbar row m-0 p-0 container">
+
+                    <div class="col-4">
+                        <button id="sidebarToggleTop" class="nav-button btn" data-toggle="popover" data-content="Navigation öffnen" data-trigger="hover"
+                                onclick="openOrCloseNavigation()">
+                            <i class="fas fa-compass large-font mb-0 text-light"></i>
+                        </button>
+                    </div>
+
+                    <h5 class="mb-0 text-light col-4 text-center" id="currentViewTitle">Bundestags-Mine</h5>
+
+                    <div class="flexed text-light align-items-center col-4 justify-content-end text-right right">
+                        <a href="#" class="text-light"><span>Login</span> <i class="ml-1 fas fa-user"></i>  </a>
+                    </div>
+                </nav>
+            </div>
 
             @*HOME*@
-            <div id="homeContent" class="h-100 position-relative">
+            <div id="homeContent" class="h-100 position-relative display-none">
                 <partial name="~/Pages/Shared/_HomeNew.cshtml" />
             </div>
 
@@ -434,6 +468,11 @@
             <div id="topicAnalysis" class="h-100 position-relative display-none">
                 <partial name="~/Pages/Shared/TopicAnalysis/_TopicAnalysisView.cshtml" />
                 <partial name="~/Pages/Shared/TopicAnalysis/_TopicAnalysisConfiguratorModal.cshtml" />
+            </div>
+
+            @*parliament panorama*@
+            <div id="parliamentPanorama" class="h-100 position-relative">
+                <partial name="~/Pages/Shared/ParliamentPanorama/_ParliamentPanoramaView.cshtml" />
             </div>
 
             <!-- DASHBOARDS -->
@@ -1063,6 +1102,7 @@
         <script src="./js/speaker-inspector.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/download-center.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/daily-paper.js" charset="utf-8" type="text/javascript"></script>
+        <script src="./js/parliament-panorama.js" charset="utf-8" type="text/javascript"></script>
         <!--charts-->
         <script src="./js/charts/token-chart.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/charts/pos-chart.js" charset="utf-8" type="text/javascript"></script>

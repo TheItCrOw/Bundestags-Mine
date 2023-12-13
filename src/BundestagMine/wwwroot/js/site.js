@@ -44,6 +44,10 @@ $(document).ready(async function () {
     // Init the daily paper
     dailyPaperHandler.init();
 
+    // Hide the navigation menu
+    var $navbar = $('.navbar-nav');
+    $navbar.hide()
+
     // Activate popovers
     $('[data-toggle="popover"]').popover();
     $('.start-loader').fadeOut(500);
@@ -171,6 +175,10 @@ $('body').on('click', '.nav-item-switcher', async function () {
     $(`#${$(this).data("id")}`).fadeIn(500);
     // soter the current view.
     currentView = $(this).data('id');
+
+    // Set the correct name
+    var viewName = $(this).find('span').html();
+    $('#currentViewTitle').html(viewName);
 })
 
 // Open the helper video box
@@ -205,3 +213,23 @@ $(function () {
         $('#collapseUtilities').collapse('hide');
     });
 });
+
+// Close the navigation menu when the dropback is clicked 
+$('body').on('click', '.navbar-nav', function () {
+    openOrCloseNavigation();
+})
+
+// Handles the correct opening and closing of the navigation
+function openOrCloseNavigation() {
+    var expanded = $('.navbar-nav').data('expanded');
+    var $navbar = $('.navbar-nav');
+    if (expanded) {
+        setTimeout(function () { $navbar.hide(); }, 250)
+        $navbar.animate({ left: '-100%' }, 250);
+    } else {
+        $navbar.show();
+        $navbar.animate({ left: 0 }, 250);
+    }
+
+    $('.navbar-nav').data('expanded', !expanded);
+}

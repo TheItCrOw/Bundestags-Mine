@@ -84,6 +84,7 @@ namespace BundestagMine.SqlDatabase
 
         public static string GetVecTopBaseUrl() => _config.GetSection("VecTopAPI").GetSection("BaseUrl").Value;
         public static string GetVecTopExtractEndpoint() => _config.GetSection("VecTopAPI").GetSection("ExtractEndpoint").Value;
+        public static string[] GetBlacklistedCategories() => _config.GetSection("VecTopAPI").GetSection("CategoryBlacklist").Value.Split(',');
 
 
         /// <summary>

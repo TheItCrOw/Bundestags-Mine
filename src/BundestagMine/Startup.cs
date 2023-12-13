@@ -98,6 +98,7 @@ namespace BundestagMine
             services.AddTransient<TextSummarizationService>();
             services.AddTransient<LaTeXService>();
             services.AddTransient<VecTopService>();
+            services.AddTransient<CategoryService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

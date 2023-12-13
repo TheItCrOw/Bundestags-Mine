@@ -866,3 +866,41 @@ async function postDailyPaperSubscription(mail) {
         return undefined;
     }
 }
+
+
+// ============================================== Parliament Panorama ======================================
+// Gets the main category panorama view
+async function getCategoriesPanoramaView() {
+    try {
+        const result = await $.ajax({
+            url: "/api/ParliamentPanoramaController/GetCategoriesPanoramaView/",
+            type: "GET",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result.result;
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+}
+
+// Gets the data required for the category line chart
+async function getCategoryLineChartData(categoryName) {
+    try {
+        const result = await $.ajax({
+            url: "/api/ParliamentPanoramaController/GetCategoryLineChartData/" + cleanParameter(categoryName),
+            type: "GET",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result.result;
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+}

@@ -1,0 +1,48 @@
+﻿@using BundestagMine.Logic.ViewModels.ParliamentPanorama
+@using System.Text
+@model List<CategoryViewModel>
+
+<div class="position-relative">
+
+    <img class="bg-image" src="~/img/ARTLAS/Atlas_transparent.png" />
+
+    <div class="row m-0 p-0 w-100 categories-div">
+        @foreach (var category in Model)
+        {
+            var categoryAsBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(category.Name));
+            <div class="col-md-4 m-0 p-2 transition category-container" data-id="@Guid.NewGuid().ToString()">
+                <div class="category-card p-2" data-id="@categoryAsBase64">
+                    <h5 class="mb-0 clickable card-t">@category.Name</h5>
+                    @*expanded content from here*@
+                    <div class="mt-1 display-none expanded-content">
+                        <p class="mb-1 small-font text-center font-italic">Reden im Bundestag innerhalb der Kategorie <b>@category.Name</b> nach Jahren.</p>
+                        <div class="w-100 mb-2" style="height:150px">
+                            <canvas class="line-chart w-100"></canvas>
+                        </div>
+                        <h6 class="mb-0 text-center text-dark font-weight-bold clickable-category" data-id="@categoryAsBase64">
+                            @category.Name
+                        </h6>
+                        @*listing subcategories*@
+                        @if (category.SubCategories.Count > 0)
+                        {
+                            <div class="subcategory-container">
+                                <div class="flexed flex-wrap justify-content-around m-0 p-0">
+                                    @foreach (var subcategory in category.SubCategories)
+                                    {
+                                        <div class="p-2 m-0 subcategory clickable-category" data-id="@Convert.ToBase64String(Encoding.UTF8.GetBytes(subcategory))">
+                                            <p class="mb-0 mt-1">@subcategory</p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="small-font font-italic text-center mb-1 mt-1">Diese Kategorie hat keine Unterkategorien.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
