@@ -1,4 +1,5 @@
 ﻿using BundestagMine.Logic.HelperModels;
+using BundestagMine.Logic.ViewModels;
 using BundestagMine.Logic.ViewModels.ParliamentPanorama;
 using BundestagMine.SqlDatabase;
 using Microsoft.Extensions.Logging;
@@ -12,16 +13,46 @@ namespace BundestagMine.Logic.Services
 {
     public class CategoryService
     {
+        private readonly MetadataService _metadataService;
         private readonly BundestagMineDbContext _db;
         private readonly ILogger<CategoryService> _logger;
         private readonly string[] _blacklistedCategories;
 
         public CategoryService(BundestagMineDbContext db,
-            ILogger<CategoryService> logger)
+            ILogger<CategoryService> logger, MetadataService metadataService)
         {
+            _metadataService = metadataService;
             _db = db;
             _logger = logger;
             _blacklistedCategories = ConfigManager.GetBlacklistedCategories();
+        }
+
+        /// <summary>
+        /// Gets a list of speeches that belong to the given category
+        /// </summary>
+        /// <param name="category"></param>
+        /// <param name="subcategory"></param>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        public List<SpeechViewModel> GetSpeechViewModelsOfCategory(string category, 
+            string subcategory, 
+            int skip,
+            int take)
+        {
+            return _db.Categories
+                .Where(c => c.Name == category && (c.SubCategory == subcategory || string.IsNullOrEmpty(subcategory)))
+                .OrderByDescending(c => c.Created)
+                // Only interested here in speeches which arent just "Ich nehme die Wahl an!" or something.
+                .SelectMany(c => _db.NLPSpeeches.Where(s => s.Id == c.NLPSpeechId && s.Text.Length > 150))
+                .Skip(skip)
+                .Take(take)
+                .Select(s => new SpeechViewModel()
+                {
+                    Speech = s,
+                    Agenda = _metadataService.GetAgendaItemOfSpeech(s),
+                    Topics = _metadataService.GetTopicsOfSpeech(s)
+                })
+                .ToList();
         }
 
         /// <summary>
@@ -30,9 +61,10 @@ namespace BundestagMine.Logic.Services
         /// <param name="categoryName"></param>
         /// <returns></returns>
         public List<DefaultChartModel> GetAmountOfSpeechesByYearOfCategory(
-            string categoryName)
+            string categoryName,
+            string subcategoryName)
         {
-            return _db.Categories.Where(c => c.Name == categoryName || c.SubCategory == categoryName)
+            return _db.Categories.Where(c => c.Name == categoryName && (c.SubCategory == subcategoryName || string.IsNullOrEmpty(subcategoryName)))
                 // Only interested here in speeches which arent just "Ich nehme die Wahl an!" or something.
                 .SelectMany(c => _db.Speeches.Where(s => s.Id == c.NLPSpeechId && s.Text.Length > 150))
                 .Select(s => new

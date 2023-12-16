@@ -37,14 +37,7 @@ namespace BundestagMine.Logic.Services
                 {
                     Speech = s,
                     Agenda = _metadataService.GetAgendaItemOfSpeech(s),
-                    // Topics are the 3 most used NE in the speech
-                    Topics = _db.NamedEntity
-                        .Where(ne => ne.ShoutId == Guid.Empty && ne.NLPSpeechId == s.Id)
-                        .GroupBy(ne => ne.LemmaValue)
-                        .OrderByDescending(ne => ne.Count())
-                        .Take(3)
-                        .Select(ne => ne.Key)
-                        .ToList()
+                    Topics = _metadataService.GetTopicsOfSpeech(s)
                 })
                 .ToList();
         }

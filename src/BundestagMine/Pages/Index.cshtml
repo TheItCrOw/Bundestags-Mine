@@ -36,7 +36,7 @@
 
 <body id="page-top">
     <!--start loader-->
-    <div class="start-loader display-none">
+    <div class="start-loader">
         <div class="bg-anim"></div>
         <img src="~/img/logo/Logo_weiss_transparent_RGB_1069x1024.png" class="bg-img" />
         <h3 id="startLoaderStatusMessage">Lädt</h3>
@@ -231,13 +231,20 @@
                     <h5 class="mb-0 text-light col-4 text-center" id="currentViewTitle">Bundestags-Mine</h5>
 
                     <div class="flexed text-light align-items-center col-4 justify-content-end text-right right">
-                        <a href="#" class="text-light"><span>Login</span> <i class="ml-1 fas fa-user"></i>  </a>
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <a asp-page="/AdminCockpit/Index" target="_blank" class="text-light"><span>Login</span> <i class="ml-1 fas fa-user"></i>  </a>
+                        }
+                        else
+                        {
+                            <p class="mb-0 text-light">Hi @(User.Identity.Name)!</p>
+                        }
                     </div>
                 </nav>
             </div>
 
             @*HOME*@
-            <div id="homeContent" class="h-100 position-relative display-none">
+            <div id="homeContent" class="h-100 position-relative">
                 <partial name="~/Pages/Shared/_HomeNew.cshtml" />
             </div>
 
@@ -471,7 +478,7 @@
             </div>
 
             @*parliament panorama*@
-            <div id="parliamentPanorama" class="h-100 position-relative">
+            <div id="parliamentPanorama" class="h-100 position-relative display-none">
                 <partial name="~/Pages/Shared/ParliamentPanorama/_ParliamentPanoramaView.cshtml" />
             </div>
 
@@ -917,7 +924,7 @@
             @*a modal that shows the details of an agenda item when clicked*@
             <div class="agenda-item-inspector">
                 <div class="flexed justify-content-between align-items-center">
-                    <p class="mr-5 mb-0 text-dark">Detailansicht</p>
+                    <p class="mr-5 mb-0 text-dark title">Detailansicht</p>
                     <i class="fas fa-times mr-1 close small-font" onclick="$('.agenda-item-inspector').hide(100);"></i>
                 </div>
                 <div class="content">

@@ -538,6 +538,9 @@ body {
 
     .speechviewmodel-list .speech .text {
         font-size: small;
+        border-left: 1px lightgray solid;
+        padding-left: 6px;
+        padding-top: 4px;
     }
 
     .speechviewmodel-list .speech .open-speech-btn {

@@ -300,7 +300,7 @@ async function loadSpeechesToAgendaItem($agenda) {
         item.setAttribute('data-toggle', 'popover');
         item.setAttribute('data-placement', 'top');
         item.setAttribute('data-html', 'true');
-        item.setAttribute('data-content', buildHtmlForSpeechSummaryPopover(speech));
+        item.setAttribute('data-content', buildHtmlForSpeechSummaryPopover(speech.abstractSummary));
         item.innerHTML += `<div class='flexed wrapper'>
                             <i class="fas fa-comments mr-2"></i>
                             <p class='w-100 mb-0'>Rede von ${speech.speakerName} (${fractionOrParty})</p>
@@ -718,11 +718,11 @@ async function buildShoutHtmlFromShout(shout) {
 }
 
 // Takes in a speech and builds the summary html which we show in a popover
-function buildHtmlForSpeechSummaryPopover(speech) {
+function buildHtmlForSpeechSummaryPopover(summary) {
     // We got a template in the html which we fill with the data we need
     var $template = $('.summary-popover-template').clone();
 
-    var content = speech.abstractSummary;
+    var content = summary;
     if (content == null || content == '')
         content = "Keine Zusammenfassung vorhanden. Dies liegt entweder daran, dass die Rede zu kurz ist, "
             + "um eine Zusammenfassung zu generieren, oder die Pipeline noch kalkuliert.";

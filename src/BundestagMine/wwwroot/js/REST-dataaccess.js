@@ -888,10 +888,30 @@ async function getCategoriesPanoramaView() {
 }
 
 // Gets the data required for the category line chart
-async function getCategoryLineChartData(categoryName) {
+async function getCategoryLineChartData(categoryName, subcategoryName) {
     try {
+        var params = cleanParameter(categoryName + ',' + subcategoryName);
         const result = await $.ajax({
-            url: "/api/ParliamentPanoramaController/GetCategoryLineChartData/" + cleanParameter(categoryName),
+            url: "/api/ParliamentPanoramaController/GetCategoryLineChartData/" + params,
+            type: "GET",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result.result;
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+}
+
+// Gets speeches fitting to a category!
+async function getSpeechesViewForCategory(categoryName, subcategoryName, skip) {
+    try {
+        var params = cleanParameter(categoryName + ',' + subcategoryName + ',' + skip);
+        const result = await $.ajax({
+            url: "/api/ParliamentPanoramaController/GetSpeechesViewForCategory/" + params,
             type: "GET",
             dataType: "json",
             accepts: {

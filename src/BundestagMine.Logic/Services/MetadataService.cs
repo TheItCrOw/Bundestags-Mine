@@ -226,6 +226,20 @@ namespace BundestagMine.Logic.Services
             .ToList();
 
         /// <summary>
+        /// Gets the topics of a speech which are the three most frequent NEs in it.
+        /// </summary>
+        /// <param name="speech"></param>
+        /// <returns></returns>
+        public List<string> GetTopicsOfSpeech(Speech speech) =>
+            _db.NamedEntity
+                        .Where(ne => ne.ShoutId == Guid.Empty && ne.NLPSpeechId == speech.Id)
+                        .GroupBy(ne => ne.LemmaValue)
+                        .OrderByDescending(ne => ne.Count())
+                        .Take(3)
+                        .Select(ne => ne.Key)
+                        .ToList();
+
+        /// <summary>
         /// Gets the agendaitem of a speech
         /// </summary>
         /// <param name="speech"></param>

@@ -33,34 +33,70 @@
         $card.addClass('selected-category-card');
         $card.find('.expanded-content').show(150);
 
-        // We want to render a line chart once when the categfory is clicked for the first time.  
-        var cardId = $card.data('id');
+        // Scroll to the top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
 
-        var chartData = await getCategoryLineChartData(cardId);
-        var chart = await panoramaHandler.buildCategoryLineChart(chartData, $card.find('.line-chart'));
-        // Store all the instancens of charts for future work.
-        lineChartsToCategoryContainer[$card.closest('.category-container').data('id')] = chart;
+        // We want to render a line chart once when the categfory is clicked for the first time.
+        if (alreadyOpenedCategoryCards.includes($card.data('id'))) return;
+
+        await panoramaHandler.handleCategoryClicked($card);
 
         // Store that we handled this card at least once
-        alreadyOpenedCategoryCards.push(cardId);
+        alreadyOpenedCategoryCards.push($card.data('id'));
     }
 
     // Handles the clicking onto a category itself instead of the card
     PanoramaHandler.prototype.handleCategoryClicked = async function ($category) {
+        // We need the card container as we need to store the drawn chart instance of each category card.
+        var $container = $category.closest('.category-container');
+
+        // Enable the loader
+        $container.find('.loader').fadeIn(50);
+        // Enable the speeches loader as well.
+        $container.find('.speeches-loader').fadeIn(50);
+
         // We need to switch the line-chart of this category container here.
         var categoryId = $category.data('id');
-        var $container = $category.closest('.category-container');
+        var subcategoryId = "";
+
+        // Lets check whether we clicked a subcategory or the category.
+        var isSubcategory = $category.hasClass('subcategory');
+        if (isSubcategory) {
+            subcategoryId = categoryId;
+            categoryId = $category.closest('.category-card').data('id');
+        }
         var containerId = $container.data('id');
 
         // Before drawing the new chart, delete the old one
         var oldChart = lineChartsToCategoryContainer[containerId];
-        oldChart.destroy();
+        if (oldChart != undefined)
+            oldChart.destroy();
 
-        var chartData = await getCategoryLineChartData(categoryId);
+        var chartData = await getCategoryLineChartData(categoryId, subcategoryId);
         var chart = await panoramaHandler.buildCategoryLineChart(chartData, $container.find('.line-chart'));
+
+        // We need to indicate in the UI which category is currently selected, unless we just clicked the whole card.
+        if ($category.hasClass('clickable-category')) {
+            $category.closest('.expanded-content').find('.clickable-category').each(function () {
+                $(this).removeClass('selected-category');
+            });
+            $category.addClass('selected-category');
+            // Change the title
+            $category.closest('.expanded-content').find('p .title').html($category.html());
+        }
 
         // Store all the instancens of charts for future work.
         lineChartsToCategoryContainer[containerId] = chart;
+        $container.find('.loader').fadeOut(50);
+
+        // We also initially fetch speeches to the category.
+        var speechesView = await getSpeechesViewForCategory(categoryId, subcategoryId, 0);
+        $container.find('.category-speeches-div .category-speeches').html(speechesView);
+
+        $container.find('.speeches-loader').fadeOut(50);
+
+        // Show popovers
+        $('[data-toggle="popover"]').popover();
     }
 
     // Builds the line chart for a category
@@ -130,4 +166,19 @@ $('body').on('click', '.parliament-panorama-container .category-card', async fun
 // Handles the clicking onto a category itself
 $('body').on('click', '.parliament-panorama-container .clickable-category', async function () {
     panoramaHandler.handleCategoryClicked($(this));
+})
+
+// Handles the clicking onto a bookmark on a category
+// TODO: This is only demo for JURIX!
+$('body').on('click', '.parliament-panorama-container .category-card .bookmark', async function () {
+    console.log('marked');
+    var marked = $(this).data('marked');
+    if (marked) {
+        $(this).removeClass('text-warning');
+        $(this).find('i').removeClass('fas').addClass('far');
+    } else {
+        $(this).addClass('text-warning');
+        $(this).find('i').addClass('fas').removeClass('far');
+    }
+    $(this).data('marked', !marked);
 })

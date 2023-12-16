@@ -16,6 +16,7 @@ namespace BundestagMine.Pages
 {
     public class AdminCockpitModel : PageModel
     {
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly BundestagMineDbContext _db;
         private readonly DailyPaperService _dailyPaperService;
         private readonly ImportService _importService;
@@ -62,8 +63,10 @@ namespace BundestagMine.Pages
         public AdminCockpitModel(SignInManager<IdentityUser> signInManager, 
             ImportService importService,
             DailyPaperService dailyPaperService,
-            BundestagMineDbContext db)
+            BundestagMineDbContext db,
+            UserManager<IdentityUser> userManager)
         {
+            _userManager = userManager;
             _db = db;
             _dailyPaperService = dailyPaperService;
             _importService = importService;
@@ -87,7 +90,8 @@ namespace BundestagMine.Pages
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(LoginInput.Email, LoginInput.Password, false, lockoutOnFailure: false);
+                var user = await _userManager.FindByEmailAsync(LoginInput.Email);
+                var result = await _signInManager.PasswordSignInAsync(user.UserName, LoginInput.Password, false, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     return RedirectToPage("");

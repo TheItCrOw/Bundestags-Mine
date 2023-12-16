@@ -1,4 +1,9 @@
-﻿.parliament-panorama-container .bg-image {
+﻿:root {
+    --bg-darkprime: rgba(38,38,38,1);
+}
+
+
+.parliament-panorama-container .bg-image {
     position: fixed;
     z-index: -1;
     left: 50%;
@@ -59,11 +64,18 @@
 
 .parliament-panorama-container .category-card {
     text-align: center;
-    background-color: white;
+    background-color: rgba(255,255,255,0.9);
     transition: 0.15s;
     border: gray 1px solid;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
+
+    .parliament-panorama-container .category-card .line-chart-container .loader {
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        left: 50%;
+    }
 
     .parliament-panorama-container .category-card .clickable-category {
         cursor: pointer;
@@ -74,6 +86,11 @@
             text-decoration: underline !important;
             transition: 0.15s;
         }
+
+    .parliament-panorama-container .category-card .selected-category {
+        color: var(--bg-darkprime);
+        font-weight: bold;
+    }
 
     .parliament-panorama-container .category-card:hover {
         transform: scale(1.025, 1.025);
@@ -95,4 +112,22 @@
 
     .parliament-panorama-container .selected-category-card .card-t {
         display: none !important;
+    }
+
+.parliament-panorama-container .category-speeches-div {
+    padding: 8px;
+}
+
+    .parliament-panorama-container .category-speeches-div .speeches-date-input {
+        border-radius: 0 !important;
+        border-bottom: 0;
+    }
+
+    .parliament-panorama-container .category-speeches-div .category-speeches {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .parliament-panorama-container .category-speeches-div .progress-bar {
+        border-radius:0;
     }

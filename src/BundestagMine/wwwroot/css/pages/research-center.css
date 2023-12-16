@@ -11,6 +11,7 @@ nav {
     }
 
 .atlas {
+    object-fit:contain;
     width: 100%;
     -webkit-filter: drop-shadow(0px 0px 1px black) drop-shadow(0px 0px 1px black) drop-shadow(0px 0px 1px black) drop-shadow(0px 0px 1px black);
 }
