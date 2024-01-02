@@ -1,10 +1,9 @@
 ﻿.header-me {
     border-radius: 3px 3px 3px 3px;
-    position: absolute;
+    position: static;
     left: 0;
-    top: 50%;
+    margin-top:20%;
     width: 100%;
-    transform: translate(0%, -50%);
 }
 
     .header-me img {
