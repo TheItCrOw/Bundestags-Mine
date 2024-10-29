@@ -1,6 +1,7 @@
 ﻿using BundestagMine.Logic.HelperModels;
 using BundestagMine.Logic.ViewModels;
 using BundestagMine.Logic.ViewModels.ParliamentPanorama;
+using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.SqlDatabase;
 using Microsoft.Extensions.Logging;
 using System;
@@ -25,6 +26,25 @@ namespace BundestagMine.Logic.Services
             _db = db;
             _logger = logger;
             _blacklistedCategories = ConfigManager.GetBlacklistedCategories();
+        }
+
+        /// <summary>
+        /// Returns a list of categories alongsinde their categories stacked in the <see cref="CategoryViewModel"/>
+        /// </summary>
+        /// <param name="speech"></param>
+        /// <returns></returns>
+        public List<CategoryViewModel> GetCategoriesOfSpeech(NLPSpeech speech)
+        {
+            return _db.Categories
+                .Where(c => c.NLPSpeechId == speech.Id)
+                .GroupBy(c => c.Name)
+                .Select(g => new CategoryViewModel()
+                {
+                    NLPSpeechId = speech.Id,
+                    Name = g.Key,
+                    SubCategories = g.Select(c => c.SubCategory).ToList()
+                })
+                .ToList();
         }
 
         /// <summary>

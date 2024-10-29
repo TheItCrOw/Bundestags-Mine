@@ -127,11 +127,11 @@
 }
 
     .agenda-item[data-id="00000000-0000-0000-0000-000000000000"] {
-        font-weight:bold;
+        font-weight: bold;
     }
 
         .agenda-item[data-id="00000000-0000-0000-0000-000000000000"] i {
-            color:black;
+            color: black;
         }
 
 .poll-item {
@@ -142,11 +142,41 @@
     }
 
 .speech-item {
+    padding-top: 2px;
+    padding-bottom: 2px;
     margin-left: 15px;
     margin-left: 15px;
     padding-left: 15px;
     background-color: rgba(255,255,255,0.6);
 }
+
+    .speech-item:hover .speech-categories {
+        display: block !important;
+        transition: 0.15s;
+    }
+
+    .speech-item .speech-categories {
+        transition: 0.15s;
+        border-left: 1px lightgray solid;
+        padding-left: 6px;
+        display: none;
+        font-size: small;
+    }
+
+    .speech-item .subcategory {
+        padding-left: 12px;
+        position: relative;
+    }
+
+        .speech-item .subcategory::before {
+            content: '';
+            left: -6px;
+            top: 50%;
+            height: 1px;
+            width: 14px;
+            background-color: lightgray;
+            position: absolute;
+        }
 
 .read-more-item {
     text-align: right;
@@ -168,6 +198,10 @@
 .expanded-item {
     background-color: var(--bg-darkprime);
     color: white;
+}
+
+.expanded-item .speech-categories{
+    display:block;
 }
 
 .agenda-item-inspector {

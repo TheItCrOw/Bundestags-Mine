@@ -271,10 +271,14 @@ async function loadSpeechesToAgendaItem($agenda) {
     var number = param[2];
 
     // Now do the speeches
-    var speeches = await getSpeechesOfAgendaItem(period, protocol, number);
+    var speechesData = await getSpeechesOfAgendaItem(period, protocol, number);
+    var speeches = speechesData.speeches;
+    var allCategories = speechesData.categories;
 
     for (var i = 0; i < speeches.length; i++) {
         var speech = speeches[i];
+        var categories = allCategories[i];
+        console.log(categories);
         // Fetch the name of the speaker by the speaker id
         var speaker = allSpeaker.find(s => s.speakerId == speech.speakerId);
         var fullname = 'Unbekannt';
@@ -303,8 +307,14 @@ async function loadSpeechesToAgendaItem($agenda) {
         item.setAttribute('data-content', buildHtmlForSpeechSummaryPopover(speech.abstractSummary));
         item.innerHTML += `<div class='flexed wrapper'>
                             <i class="fas fa-comments mr-2"></i>
-                            <p class='w-100 mb-0'>Rede von ${speech.speakerName} (${fractionOrParty})</p>
-                            </div>`;
+                            <div class='w-100 mb-0 flexed justify-content-between'>
+                                <span>${speech.speakerName}</span>
+                                <span class="small-font">(${fractionOrParty})</span>
+                            </div>
+                           </div>
+                           <div>
+                             ${buildHtmlForSpeechCategories(categories)}
+                           </div>`;
 
         // Add the objects right under the agendaItem
         $agenda.after(item);
@@ -715,6 +725,30 @@ async function buildShoutHtmlFromShout(shout) {
                                 </span>
                                 </div>`;
     return shoutHtml;
+}
+
+// Builds the html for the category tree in the speech tree
+function buildHtmlForSpeechCategories(categories) {
+    var html = '<div class="speech-categories">'
+
+    for (var i = 0; i < categories.length; i++) {
+        var category = categories[i];
+        var cHtml = `<div>`;
+
+        cHtml += `<p class="mb-0 category">${category.name}</p>`;
+        for (var k = 0; k < category.subCategories.length; k++) {
+            var subCategory = category.subCategories[k];
+            console.log(subCategory);
+            if (subCategory == 'default' || subCategory == null) continue;
+            cHtml += `<p class="mb-0 subcategory">${subCategory}</p>`
+        }
+
+        cHtml += '</div>';
+        html += cHtml;
+    }
+
+    html += '</div>'
+    return html;
 }
 
 // Takes in a speech and builds the summary html which we show in a popover

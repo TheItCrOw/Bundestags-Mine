@@ -87,14 +87,6 @@
                         </a>
                     </li>
 
-                    <!-- Nav Item - Dashboard -->
-                    <li class="nav-item active nav-item-switcher" data-id="dashboardsContent">
-                        <a class="nav-link">
-                            <i class="fas fa-fw fa-tachometer-alt"></i>
-                            <span>Dashboards</span>
-                        </a>
-                    </li>
-
                     <!-- Nav Item - text analysis -->
                     <li class="nav-item active nav-item-switcher" data-id="speechContent">
                         <a class="nav-link">
@@ -140,6 +132,14 @@
                         <a class="nav-link">
                             <i class="fas fa-network-wired"></i>
                             <span>Kommentar-Netzwerk</span>
+                        </a>
+                    </li>
+
+                    <!-- Nav Item - Dashboard -->
+                    <li class="nav-item active nav-item-switcher" data-id="dashboardsContent">
+                        <a class="nav-link">
+                            <i class="fas fa-fw fa-tachometer-alt"></i>
+                            <span>Dashboards</span>
                         </a>
                     </li>
 
@@ -212,7 +212,12 @@
 
                     <h5 class="mb-0 text-light col-4 text-center" id="currentViewTitle">Bundestags-Mine</h5>
 
-                    <div class="flexed text-light align-items-center col-4 justify-content-end text-right right">
+                    <div class="flexed text-light align-items-center col-4 justify-content-end text-right right"
+                    data-toggle="popover" data-content="Die Bundestags-Mine befindet sich in einem frühen und andauerndem Entwicklungs-Zustand, weshalb Fehler oder Ungereimtheiten entstehen können. Ich bitte diese zu entschuldigen und bitte weiterhin: melden Sie diese direkt via Kontakt-Formular im Footer oder an info@bundestag-mine.de, danke!" data-trigger="hover">
+                        <p class="mb-0 text-warning">Early Version</p>
+                    </div>
+
+@*                    <div class="flexed text-light align-items-center col-4 justify-content-end text-right right">
                         @if (!User.Identity.IsAuthenticated)
                         {
                             <a asp-page="/AdminCockpit/Index" target="_blank" class="text-light"><span>Login</span> <i class="ml-1 fas fa-user"></i>  </a>
@@ -221,7 +226,7 @@
                         {
                             <p class="mb-0 text-light">Hi @(User.Identity.Name)!</p>
                         }
-                    </div>
+                    </div>*@
                 </nav>
             </div>
 

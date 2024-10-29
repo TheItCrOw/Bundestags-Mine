@@ -28,6 +28,7 @@ namespace BundestagMine.Controllers
     [ApiController]
     public class DashboardController : Controller
     {
+        private readonly CategoryService _categoryService;
         private readonly GlobalSearchService _globalSearchService;
         private readonly ILogger<DashboardController> _logger;
         private readonly TopicAnalysisService _topicAnalysisService;
@@ -47,8 +48,10 @@ namespace BundestagMine.Controllers
             TopicAnalysisService topicAnalysisService,
             ILogger<DashboardController> logger,
             GlobalSearchService globalSearchService,
-            BundestagMineTokenDbContext tdb)
+            BundestagMineTokenDbContext tdb,
+            CategoryService categoryService)
         {
+            _categoryService = categoryService;
             _globalSearchService = globalSearchService;
             _logger = logger;
             _topicAnalysisService = topicAnalysisService;
@@ -310,11 +313,20 @@ namespace BundestagMine.Controllers
                 var protocol = int.Parse(splited[1]);
                 var number = int.Parse(splited[2]);
                 response.status = "200";
+                var speeches = new List<NLPSpeech>();
                 if (number == -1)
-                    response.result = _metadataService.GetUnassignableNLPSpeeches(
-                        _db.Protocols.FirstOrDefault(p => p.LegislaturePeriod == period && p.Number == protocol));
+                    speeches = _metadataService.GetUnassignableNLPSpeeches(
+                        _db.Protocols.FirstOrDefault(p => p.LegislaturePeriod == period && p.Number == protocol))
+                        .ToList();
                 else
-                    response.result = _metadataService.GetNLPSpeechesOfAgendaItem(period, protocol, number);
+                    speeches = _metadataService.GetNLPSpeechesOfAgendaItem(period, protocol, number);
+
+                // We also send the categories of the speeches
+                response.result = new
+                {
+                    Speeches = speeches,
+                    Categories = speeches.Select(s => _categoryService.GetCategoriesOfSpeech(s))
+                };
             }
             catch (Exception ex)
             {

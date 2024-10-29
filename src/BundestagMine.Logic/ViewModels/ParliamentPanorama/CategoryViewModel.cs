@@ -8,6 +8,7 @@ namespace BundestagMine.Logic.ViewModels.ParliamentPanorama
 {
     public class CategoryViewModel
     {
+        public Guid NLPSpeechId { get; set; }
         public string Name { get; set; }
         public List<string> SubCategories { get; set; }
     }
