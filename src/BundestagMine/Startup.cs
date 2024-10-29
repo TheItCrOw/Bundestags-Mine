@@ -102,9 +102,17 @@ namespace BundestagMine
                         Url = new Uri("https://www.linkedin.com/in/kevin-b%C3%B6nisch-0a91751a3/")
                     }
                 });
-
                 var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+                var path = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+                try
+                {
+                    c.IncludeXmlComments(path);
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("Error getting the swagger descriptions: " + path);
+                    Console.WriteLine(ex.Message);
+                }
             });
 
             services.AddTransient<AnnotationService>();
@@ -138,14 +146,22 @@ namespace BundestagMine
                 app.UseHsts();
             }
 
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
+            try
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1");
-                c.RoutePrefix = "api/documentation";
-                c.DocumentTitle = "Bundestags-Mine API";
-                c.InjectStylesheet("/swagger-theme.css");
-            });
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1");
+                    c.RoutePrefix = "api/documentation";
+                    c.DocumentTitle = "Bundestags-Mine API";
+                    c.InjectStylesheet("/swagger-theme.css");
+                });
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Couldn't setup swagger UI.");
+                Console.WriteLine(ex.ToString());
+            }
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

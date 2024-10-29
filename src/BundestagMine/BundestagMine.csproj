@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -51,6 +51,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\data\" />
     <Folder Include="wwwroot\fonts\" />
+    <Folder Include="wwwroot\files\" />
     <Folder Include="wwwroot\videos\" />
   </ItemGroup>
 
