@@ -14,6 +14,7 @@ namespace BundestagMine.Controllers
     }
 
     [Route("api/AdminCockpitController")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     [ApiController]
     public class AdminCockpitController : Controller
     {

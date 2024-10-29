@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,6 +33,34 @@ namespace BundestagMine.Controllers
             _db = db;
         }
 
+        /// <summary>
+        /// Gets the Category objects of a single speech
+        /// </summary>
+        /// <param name="speechIdAsString">The GUID of the speech.</param>
+        /// <returns></returns>
+        [HttpGet("/api/ParliamentPanoramaController/GetCategoriesOfSpeech/{speechIdAsString}")]
+        public IActionResult GetCategoriesOfSpeech(string speechIdAsString)
+        {
+            dynamic response = new ExpandoObject();
+
+            try
+            {
+                var speechId = Guid.Parse(speechIdAsString);
+                response.result = _categoryService.GetCategoriesOfSpeech(
+                    _db.NLPSpeeches.FirstOrDefault(s => s.Id == speechId));
+                response.status = "200";
+            }
+            catch (Exception ex)
+            {
+                response.status = "400";
+                response.message = "Couldn't get the categories of a speech.";
+                _logger.LogError(ex, "Error getting categories of a speech:");
+            }
+
+            return Json(response);
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet("/api/ParliamentPanoramaController/GetSpeechesViewForCategory/{param}")]
         public async Task<IActionResult> GetSpeechesViewForCategory(string param)
         {
@@ -62,6 +91,7 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet("/api/ParliamentPanoramaController/GetCategoryLineChartData/{param}")]
         public IActionResult GetCategoryLineChartData(string param)
         {
@@ -88,6 +118,7 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet("/api/ParliamentPanoramaController/GetCategoriesPanoramaView/")]
         public async Task<IActionResult> GetCategoriesPanoramaView()
         {

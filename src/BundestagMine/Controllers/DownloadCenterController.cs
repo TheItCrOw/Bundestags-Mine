@@ -6,11 +6,13 @@ using BundestagMine.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Swashbuckle.Swagger.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BundestagMine.Controllers
@@ -22,19 +24,26 @@ namespace BundestagMine.Controllers
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly DownloadCenterService _downloadCenterService;
         private readonly GlobalSearchService _globalSearchService;
+        private readonly MetadataService _metadataService;
+        private readonly BundestagMineDbContext _db;
         private readonly ILogger<DownloadCenterController> _logger;
 
         public DownloadCenterController(ILogger<DownloadCenterController> logger,
             GlobalSearchService globalSearchService,
             DownloadCenterService downloadCenterService,
+            MetadataService metadataService,
+            BundestagMineDbContext db,
             IServiceScopeFactory serviceScopeFactory)
         {
+            _metadataService = metadataService;
+            _db = db;
             _serviceScopeFactory = serviceScopeFactory;
             _downloadCenterService = downloadCenterService;
             _globalSearchService = globalSearchService;
             _logger = logger;
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet("/api/DownloadCenterController/DownloadDocumentation/")]
         public IActionResult DownloadDocumentation()
         {
@@ -57,7 +66,42 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Returns a single protocol as a json file as it were in the DownloadCenter. 
+        /// This can't be tried in the swagger UI, as the response is too large (might take a few seconds as well). 
+        /// Try an example call in a new browser tab like <br/>: https://bundestag-mine/api/DownloadCenterController/DownloadProtocol/20%2C%20175
+        /// </summary>
+        /// <param name="param">legislature_periode + ',' + protocol_number</param>
+        /// <returns></returns>
+        [HttpGet("/api/DownloadCenterController/DownloadProtocol/{param}")]
+        public IActionResult DownloadProtocol(string param)
+        {
+            dynamic response = new ExpandoObject();
+
+            try
+            {
+                var splited = param.Split(",");
+                var period = int.Parse(splited[0]);
+                var protocolNumber = int.Parse(splited[1]);
+                var protocol = _db.Protocols
+                    .FirstOrDefault(p => p.LegislaturePeriod == period && p.Number == protocolNumber);
+
+                response.status = "200";
+                response.result = _downloadCenterService.CreateDownloadProtocolFromProtocol(
+                    protocol, null, null, null, true);
+            }
+            catch (Exception ex)
+            {
+                response.status = "400";
+                response.message = "Couldn't download the protocol, error in logs";
+                _logger.LogError(ex, "Error download the data set:");
+            }
+
+            return Json(response);
+        }
+
         [HttpGet("/api/DownloadCenterController/DownloadDataset/{fileName}")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public FileResult DownloadDataset(string fileName)
         {
             dynamic response = new ExpandoObject();
@@ -82,8 +126,8 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
-
         [HttpPost("/api/DownloadCenterController/GenerateDatasetByFilter/")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult GenerateDatasetByFilter(FilterDownloadRequest filterDownloadRequest)
         {
             dynamic response = new ExpandoObject();
@@ -176,6 +220,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpPost("/api/DownloadCenterController/CalculateData/")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult CalculateData(FilterDownloadRequest filterDownloadRequest)
         {
             dynamic response = new ExpandoObject();

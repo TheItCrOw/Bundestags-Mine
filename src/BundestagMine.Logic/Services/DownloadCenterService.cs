@@ -23,7 +23,7 @@ namespace BundestagMine.Logic.Services
         public float AverageFetchTimeInSecondsPerNLPSpeech() => 0.1f;
         public float AverageFileSizeInMBPerNLPSpeech() => 0.025f;
 
-        public DownloadCenterService(BundestagMineDbContext db, 
+        public DownloadCenterService(BundestagMineDbContext db,
             ILogger<DownloadCenterService> logger,
             CategoryService categoryService)
         {
@@ -104,7 +104,7 @@ namespace BundestagMine.Logic.Services
                 foreach (var protocol in protocols)
                 {
                     log.AppendLine($"Handling protocol LP: {protocol.LegislaturePeriod} SN: {protocol.Number}");
-                    var downloadProtocol = createDownloadProtocolFromProtocol(protocol,
+                    var downloadProtocol = CreateDownloadProtocolFromProtocol(protocol,
                         speakerIds,
                         fractions,
                         parties);
@@ -158,9 +158,9 @@ namespace BundestagMine.Logic.Services
                 {
                     foreach (var protocol in protocols)
                     {
-                        var downloadProtocol = createDownloadProtocolFromProtocol(protocol, 
-                            speakerIds, 
-                            fractions, 
+                        var downloadProtocol = CreateDownloadProtocolFromProtocol(protocol,
+                            speakerIds,
+                            fractions,
                             parties);
 
                         // Generate a json
@@ -215,10 +215,11 @@ namespace BundestagMine.Logic.Services
         /// </summary>
         /// <param name="protocol"></param>
         /// <returns></returns>
-        private CompleteDownloadProtocol createDownloadProtocolFromProtocol(Protocol protocol, 
+        public CompleteDownloadProtocol CreateDownloadProtocolFromProtocol(Protocol protocol,
             List<string> speakerIds,
             List<string> fractions,
-            List<string> parties)
+            List<string> parties,
+            bool includeAll = false)
         {
             var downloadProtocol = new CompleteDownloadProtocol();
             downloadProtocol.Protocol = protocol;
@@ -226,7 +227,8 @@ namespace BundestagMine.Logic.Services
             downloadProtocol.NLPSpeeches = _db.NLPSpeeches
                 .Where(s => s.LegislaturePeriod == protocol.LegislaturePeriod && s.ProtocolNumber == protocol.Number && _db.Deputies.Any(d => d.SpeakerId == s.SpeakerId)
                     && (
-                    speakerIds.Contains(s.SpeakerId)
+                    includeAll
+                    || speakerIds.Contains(s.SpeakerId)
                     || fractions.Contains(_db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId).Fraction)
                     || parties.Contains(_db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId).Party)
                     ))

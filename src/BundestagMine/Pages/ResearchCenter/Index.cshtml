@@ -33,7 +33,7 @@
     <div class="container mt-5">
 
         @*Annotations*@
-        <div class="research-topic bg-darkprime-gradient">
+        <div class="research-topic bg-darkprime-gradient mb-4">
             <h5 class="font-weight-bold text-light">Was ist Natural Language Processing (NLP)?</h5>
             <p class="text-white-50">
                 Das "Natural Language Processing" ist ein Bereich der Computerlinguistik.
@@ -44,16 +44,24 @@
             </p>
         </div>
 
+        @*With api now*@
+        <div class="alert alert-success card-shadow-light mb-5 flexed align-items-center">
+            <i class="fas fa-exclamation-circle mr-3"></i>
+            <p class="mb-0">Die Bundestags-Mine hat jetzt eine <a target="_blank" href="https://bundestag-mine.de/api/documentation">API Dokumentation</a>!</p>
+        </div>
+
         <div class="row m-0 p-0">
             <div class="col-md-5 m-0 p-0 justify-content-center align-items-center position-relative">
-                <p class="font-italic w-100 text-center mb-0 pr-2">"Standing on the shoulders of giants"</p>
-                <p class="text-center w-100 mb-0 pr-2">
-                    von
-                    <a class="text-black text-underlined" href="https://www.artlas.design/" target="_blank">
-                        ARTLAS Designs
-                    </a>
-                </p>
-                <img src="./img/ARTLAS/Atlas_transparent_klein.png" class="atlas pl-2 pt-2 pb-2 pr-4" />
+                <div>
+                    <p class="font-italic w-100 text-center mb-0 pr-2">"Standing on the shoulders of giants"</p>
+                    <p class="text-center w-100 mb-0 pr-2">
+                        von
+                        <a class="text-black text-underlined" href="https://www.artlas.design/" target="_blank">
+                            ARTLAS Designs
+                        </a>
+                    </p>
+                    <img src="./img/ARTLAS/Atlas_transparent_klein.png" class="atlas pl-2 pt-2 pb-2 pr-4" />
+                </div>
             </div>
 
             <div class="col-md-7 m-0 p-0">
@@ -88,7 +96,7 @@
                     <h5 class="font-weight-bold">VecTop</h5>
                     <h6>Vector Database for Topic Extraction using Contextualized Word Embeddings</h6>
                     <p class="text-black-50">
-                        Gegeben sei ein unbekannter Text. Wie können wir diesen Text in Kategorien und Unterkategorien einordnen, 
+                        Gegeben sei ein unbekannter Text. Wie können wir diesen Text in Kategorien und Unterkategorien einordnen,
                         um somit eine strukturierte Übersicht eines ganzen Korpus zu erhalten? Unteranderem mit VecTop.
                     </p>
                     <a class="read-more-btn btn btn-warning float-right" asp-page="VecTop/">

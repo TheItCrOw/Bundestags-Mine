@@ -34,6 +34,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DailyPaperController/SendNewDailyPaperMails/")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> SendNewDailyPaperMails()
         {
             dynamic response = new ExpandoObject();
@@ -96,6 +97,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpGet("/api/DailyPaperController/DeleteSubscription/{mail}")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<string> DeleteSubscription(string mail)
         {
             dynamic response = new ExpandoObject();
@@ -132,6 +134,7 @@ namespace BundestagMine.Controllers
         }
 
         [HttpPost("/api/DailyPaperController/PostSubscription/{mail}")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> PostSubscription(string mail)
         {
             dynamic response = new ExpandoObject();
@@ -207,6 +210,11 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Returns a fully calculated DailyPaper HTML view of a single protocol.
+        /// </summary>
+        /// <param name="meetingAndPeriodNumber">legislature_period + ',' + protocol_number</param>
+        /// <returns></returns>
         [HttpGet("/api/DailyPaperController/GetDailyPaperOfProtocol/{meetingAndPeriodNumber}")]
         public async Task<IActionResult> GetDailyPaperOfProtocol(string meetingAndPeriodNumber)
         {

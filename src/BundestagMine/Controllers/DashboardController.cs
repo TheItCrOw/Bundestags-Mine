@@ -64,6 +64,10 @@ namespace BundestagMine.Controllers
             _tdb = tdb;
         }
 
+        /// <summary>
+        /// Gets all protocols imported into the Bundestags-Mine
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("/api/DashboardController/GetProtocols")]
         public IActionResult GetProtocols()
         {
@@ -96,6 +100,10 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets all parties currently imported into the Bundestags-Mine
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("/api/DashboardController/GetParties")]
         public IActionResult GetParties()
         {
@@ -126,6 +134,11 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets all fractions currently imported into the Bundestags-Mine
+        /// </summary>
+        /// <returns></returns>
+
         [HttpGet("/api/DashboardController/GetFractions")]
         public IActionResult GetFractions()
         {
@@ -135,7 +148,6 @@ namespace BundestagMine.Controllers
             {
                 response.status = "200";
                 response.result = _metadataService.GetFractions();
-
             }
             catch (Exception ex)
             {
@@ -146,6 +158,12 @@ namespace BundestagMine.Controllers
 
             return Json(response);
         }
+
+        /// <summary>
+        /// Gets the AgendaItem objects to a single protocol
+        /// </summary>
+        /// <param name="protocolIdAsString">The GUID of the protocol</param>
+        /// <returns></returns>
 
         [HttpGet("/api/DashboardController/GetAgendaItemsOfProtocol/{protocolIdAsString}")]
         public async Task<IActionResult> GetAgendaItemsOfProtocol(string protocolIdAsString)
@@ -172,6 +190,12 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets the polls of a protocol
+        /// </summary>
+        /// <param name="param">legislature_period + ',' + protocol_number</param>
+        /// <returns></returns>
+
         [HttpGet("/api/DashboardController/GetPollsOfProtocol/{param}")]
         public IActionResult GetPollsOfProtocol(string param)
         {
@@ -196,6 +220,12 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets the original url from the German Bundestag to this poll
+        /// </summary>
+        /// <param name="pollIdAsString">The GUID of the poll.</param>
+        /// <returns></returns>
+
         [HttpGet("/api/DashboardController/GetBundestagUrlOfPoll/{pollIdAsString}")]
         public async Task<IActionResult> GetBundestagUrlOfPoll(string pollIdAsString)
         {
@@ -218,6 +248,12 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets a speaker object by its id.
+        /// </summary>
+        /// <param name="speakerId">This is not the GUID, but the "speakerId" as it can also be used on the German Bundestag page.</param>
+        /// <returns></returns>
+
         [HttpGet("/api/DashboardController/GetSpeakerById/{speakerId}")]
         public IActionResult GetSpeakerById(string speakerId)
         {
@@ -239,11 +275,14 @@ namespace BundestagMine.Controllers
         }
 
         /// <summary>
-        /// Param[0] = limit, Param[1] = from, Param[2] = to, Param[3] = fraction, Param[4] = party,
+        /// Param[0] = limit, Param[1] = from_date, Param[2] = to_date, Param[3] = fraction, Param[4] = party
+        /// TODO: What is this used for...? Looks bizarre.
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
         [HttpGet("/api/DashboardController/GetSpeaker/{param}")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+
         public IActionResult GetSpeaker(string param)
         {
             dynamic response = new ExpandoObject();
@@ -300,6 +339,11 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets the raw speeches objects of an agenda item.
+        /// </summary>
+        /// <param name="param">legislature_period + ',' + protocol_number + ',' + agenda_item_number</param>
+        /// <returns></returns>
 
         [HttpGet("/api/DashboardController/GetSpeechesOfAgendaItem/{param}")]
         public async Task<IActionResult> GetSpeechesOfAgendaItem(string param)
@@ -338,6 +382,12 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets the Tokens, Named-Entities and Sentiments of a single NLPSpeech.
+        /// </summary>
+        /// <param name="idAsString">The GUID of the speech.</param>
+        /// <returns></returns>
+
         [HttpGet("/api/DashboardController/GetNLPAnnotationsOfSpeech/{idAsString}")]
         public IActionResult GetNLPAnnotationsOfSpeech(string idAsString)
         {
@@ -365,6 +415,11 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets a full rendered speech statistics view of a NLPSpeech.
+        /// </summary>
+        /// <param name="idAsString">The GUID of the speech</param>
+        /// <returns></returns>
         [HttpGet("/api/DashboardController/GetNLPSpeechStatisticsView/{idAsString}")]
         public async Task<IActionResult> GetNLPSpeechStatisticsView(string idAsString)
         {
@@ -400,6 +455,11 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets a NLPSpeech by its id (meaning: the speech alongside NLP annotations)
+        /// </summary>
+        /// <param name="idAsString">The GUID of the speech (NLPSpeech and speech have the same GUID)</param>
+        /// <returns></returns>
         [HttpGet("/api/DashboardController/GetNLPSpeechById/{idAsString}")]
         public async Task<IActionResult> GetNLPSpeechById(string idAsString)
         {
@@ -442,6 +502,11 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets the comment network data as a json file of the whole speeches.
+        /// </summary>
+        /// <returns></returns>
+
         [HttpGet("/api/DashboardController/GetCommentNetworkData/")]
         public IActionResult GetCommentNetworkData()
         {
@@ -475,6 +540,11 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets the topic map chart data as json of a specific year
+        /// </summary>
+        /// <param name="year">2017-today</param>
+        /// <returns></returns>
         [HttpGet("/api/DashboardController/GetTopicMapChartData/{year}")]
         public IActionResult GetTopicMapChartData(string year)
         {
@@ -495,6 +565,10 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets the whole topic bar race chart data as json.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("/api/DashboardController/GetTopicBarRaceChartData/")]
         public IActionResult GetTopicBarRaceChartData()
         {
@@ -514,6 +588,12 @@ namespace BundestagMine.Controllers
 
             return Json(response);
         }
+
+        /// <summary>
+        /// Gets a list of annotated tokens. Params fraction, party and speakerId are optional.
+        /// </summary>
+        /// <param name="param">limit + ',' + 'from_date' + ',' + 'to_date' + ',' + fraction + ',' + party + ',' + speakerId</param>
+        /// <returns></returns>
 
         [HttpGet("/api/DashboardController/GetTokens/{param}")]
         public IActionResult GetTokens(string param)
@@ -545,6 +625,12 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets a list of annotated POS. Params fraction, party and speakerId are optional.
+        /// </summary>
+        /// <param name="param">limit + ',' + 'from_date' + ',' + 'to_date' + ',' + fraction + ',' + party + ',' + speakerId</param>
+        /// <returns></returns>
+
         [HttpGet("/api/DashboardController/GetPOS/{param}")]
         public IActionResult GetPOS(string param)
         {
@@ -575,6 +661,12 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets a list of annotated sentiments. Params fraction, party and speakerId are optional.
+        /// </summary>
+        /// <param name="param">'from_date' + ',' + 'to_date' + ',' + fraction + ',' + party + ',' + speakerId</param>
+        /// <returns></returns>
+
         [HttpGet("/api/DashboardController/GetSentiments/{param}")]
         public IActionResult GetSentiments(string param)
         {
@@ -601,6 +693,12 @@ namespace BundestagMine.Controllers
 
             return Json(response);
         }
+
+        /// <summary>
+        /// Gets a list of annotated Named-Entities. Params fraction, party and speakerId are optional.
+        /// </summary>
+        /// <param name="param">limit + ',' + 'from_date' + ',' + 'to_date' + ',' + fraction + ',' + party + ',' + speakerId</param>
+        /// <returns></returns>
 
         [HttpGet("/api/DashboardController/GetNamedEntitites/{param}")]
         public IActionResult GetNamedEntitites(string param)
@@ -630,6 +728,12 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Searches through Named-Entities and returns a possibly found one from the database.
+        /// Returns a Named-Entity object.
+        /// </summary>
+        /// <param name="searchString">E.g. "Ukraine"</param>
+        /// <returns></returns>
         [HttpGet("/api/DashboardController/SearchNamedEntities/{searchString}")]
         public IActionResult SearchNamedEntities(string searchString)
         {
@@ -659,6 +763,12 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets the sentiment/tone of a speaker about a specific Named-Entity
+        /// </summary>
+        /// <param name="param">from_date  + ',' + to_date + ',' + speakerId + ',' + namedEntity_as_string</param>
+        /// <returns></returns>
+
         [HttpGet("/api/DashboardController/GetSpeakerSentimentsAboutNamedEntity/{param}")]
         public IActionResult GetSpeakerSentimentsAboutNamedEntity(string param)
         {
@@ -685,6 +795,11 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Searches the speeches for a given searchterm. Returns speech objects with their AgendaItems.
+        /// </summary>
+        /// <param name="searchTerm">The search term as a string</param>
+        /// <returns></returns>
         [HttpGet("/api/DashboardController/SearchSpeeches/{searchTerm}")]
         public IActionResult SearchSpeeches(string searchTerm)
         {
@@ -715,6 +830,7 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet("/api/DashboardController/GetHomescreenData")]
         public IActionResult GetHomescreenData()
         {
@@ -739,6 +855,11 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets the image/portrait of a deputy as a Base64encoded String
+        /// </summary>
+        /// <param name="speakerId">Not the GUID, but the speakerId of a speaker.</param>
+        /// <returns></returns>
         [HttpGet("/api/DashboardController/GetDeputyPortrait/{speakerId}")]
         public async Task<IActionResult> GetDeputyPortrait(string speakerId)
         {
@@ -766,6 +887,7 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpPost("/api/DashboardController/PostNewTopicAnalysis/")]
         public async Task<IActionResult> PostNewTopicAnalysis(TopicAnalysisConfigurationRequest configurationRequest)
         {
@@ -802,6 +924,7 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpPost("/api/DashboardController/BuildReportPage/")]
         public async Task<IActionResult> BuildReportPage(ReportPageRequest reportPageRequest)
         {

@@ -17,6 +17,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.Swagger;
+using Swashbuckle.AspNetCore.Annotations;
+using System.Reflection;
+using System.IO;
 
 namespace BundestagMine
 {
@@ -42,7 +47,7 @@ namespace BundestagMine
             services.AddDbContext<BundestagMineTokenDbContext>(
                 option => option.UseSqlServer(ConfigManager.GetTokenDbConnectionString(), o => o.CommandTimeout(600)));
             services.AddLogging(c => c.ClearProviders());
-            
+
             // Identity Configurations.
             services.AddIdentity<IdentityUser, IdentityRole>()
                     .AddEntityFrameworkStores<IdentityContext>()
@@ -84,6 +89,23 @@ namespace BundestagMine
             services.AddControllers();
             services.AddHttpContextAccessor();
             services.AddRazorPages().AddRazorRuntimeCompilation();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo()
+                {
+                    Title = "Bundestags-Mine API Docs",
+                    Version = "v1",
+                    Description = "A short API documentation of the Bundestags-Mine",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Kevin Bönisch",
+                        Url = new Uri("https://www.linkedin.com/in/kevin-b%C3%B6nisch-0a91751a3/")
+                    }
+                });
+
+                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+            });
 
             services.AddTransient<AnnotationService>();
             services.AddTransient<ViewRenderService>();
@@ -115,6 +137,15 @@ namespace BundestagMine
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1");
+                c.RoutePrefix = "api/documentation";
+                c.DocumentTitle = "Bundestags-Mine API";
+                c.InjectStylesheet("/swagger-theme.css");
+            });
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

@@ -10,6 +10,7 @@ using System.Linq;
 namespace BundestagMine.Controllers
 {
     [Route("api/ResearchController")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     [ApiController]
     public class ResearchController : Controller
     {
