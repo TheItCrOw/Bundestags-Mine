@@ -1,6 +1,7 @@
 ﻿using BundestagMine.Logic.HelperModels;
 using BundestagMine.Logic.ViewModels;
 using BundestagMine.Logic.ViewModels.ParliamentPanorama;
+using BundestagMine.Models.Database;
 using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.SqlDatabase;
 using Microsoft.Extensions.Logging;
@@ -33,7 +34,7 @@ namespace BundestagMine.Logic.Services
         /// </summary>
         /// <param name="speech"></param>
         /// <returns></returns>
-        public List<CategoryViewModel> GetCategoriesOfSpeech(NLPSpeech speech)
+        public List<CategoryViewModel> GetCategoryViewModelsOfSpeech(NLPSpeech speech)
         {
             return _db.Categories
                 .Where(c => c.NLPSpeechId == speech.Id)
@@ -44,6 +45,18 @@ namespace BundestagMine.Logic.Services
                     Name = g.Key,
                     SubCategories = g.Select(c => c.SubCategory).ToList()
                 })
+                .ToList();
+        }
+
+        /// <summary>
+        /// Returns the list of categories belonging to this speech.
+        /// </summary>
+        /// <param name="speech"></param>
+        /// <returns></returns>
+        public List<Category> GetCategoriesOfSpeech(NLPSpeech speech)
+        {
+            return _db.Categories
+                .Where(c => c.NLPSpeechId == speech.Id)
                 .ToList();
         }
 

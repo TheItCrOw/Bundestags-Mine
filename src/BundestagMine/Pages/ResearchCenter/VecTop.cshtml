@@ -34,24 +34,35 @@
             <a class="clickable text-dark" asp-page="Index">
                 <i class="fas fa-chevron-left"></i> Übersicht
             </a>
+
+            <div class="alert alert-primary flexed justify-content-between align-items-center mt-3 mb-3">
+                <p class="text-black-50 mr-3 mb-0">
+                    Laden Sie das Paper zu VecTop herunter, welches kurz die Historie des 
+                    Topic Modellings erläutert, um danach VecTop vorzustellen.
+                </p>
+                <a class="btn btn-light rounded-0 h-100 border-1" target="_blank"
+                   asp-action="DownloadVecTopPaper" asp-controller="Research">
+                    <i class="mb-2 mt-2 fas fa-file-pdf large-font mr-1"></i>
+                    Paper
+                </a>
+            </div>
             <h5 class="mt-3">Word Embeddings</h5>
             <div>
                 <p class="text-black-50">
-                    Im Natural Language Processing und in der KI allgemein muss der erste Schritt immer sein, Daten von 
-                    unterschiedlichen Typen (Bilder, Texte, Videos etc.) in eine numerische Form zu bringen. Nur mit 
-                    Zahlen kann ein Neuronales Netz lernen. <br/>
-                    Texte werden dabei typischerweise in Word Embeddings transformiert. Das sind Vektoren mit unterschiedlichen 
-                    Dimensionen. <b>Die Idee</b>: die Embeddings zweier sehr ähnlicher Texte sollen im Vektorraum auch sehr 
+                    Im Natural Language Processing und in der KI allgemein muss der erste Schritt immer sein, Daten von
+                    unterschiedlichen Typen (Bilder, Texte, Videos etc.) in eine numerische Form zu bringen. Nur mit
+                    Zahlen kann ein Neuronales Netz lernen. <br />
+                    Texte werden dabei typischerweise in Word Embeddings transformiert. Das sind Vektoren mit unterschiedlichen
+                    Dimensionen. <b>Die Idee</b>: die Embeddings zweier sehr ähnlicher Texte sollen im Vektorraum auch sehr
                     nah beieinander liegen. Wir kriegen somit mehrere Cluster von kontextual ähnlichen Texten.
                 </p>
-
             </div>
             <hr />
             <h5 class="mt-3">Kosinus Ähnlichkeit</h5>
             <div>
                 <p class="text-black-50">
                     Wenn mehrere Texte im Vektorraum durch Word Embeddings abgebildet werden, bedarf es einer
-                    Funktion um die Ähnlichkeit zweier Vektoren und damit Texten zu berechnen. Eine davon ist die 
+                    Funktion um die Ähnlichkeit zweier Vektoren und damit Texten zu berechnen. Eine davon ist die
                     <b>Kosinus-Ähnlichkeit</b>. Je größer die Ähnlichkeit, desto ähnlicher sind sich die Texte.
                 </p>
             </div>
@@ -60,15 +71,15 @@
             <div>
                 <p class="text-black-50">
                     VecTop nutzt diese beiden Techniken in Verbindung mit Spiegel Online. Durch Webscraping werden
-                    huntertausende Artikel des Spiegel Onlines gespeichert. Diese Text werden erst zusammengefasst, da 
-                    Word Embeddings mit sehr langen Texten Probleme bekommt und danach in Word Embeddings umgewandelt. 
+                    huntertausende Artikel des Spiegel Onlines gespeichert. Diese Text werden erst zusammengefasst, da
+                    Word Embeddings mit sehr langen Texten Probleme bekommt und danach in Word Embeddings umgewandelt.
                     <b>Die Idee:</b> Spiegel Online ordnet alle Artikel in bestimmte Kategorien ein, zB. Wirtschaft -> Börse.
-                    <br/>
-                    Wenn Sie nun eine Rede im Bundestag kategorisieren möchten, wird diese Rede, sollte sie zu lange sein, 
-                    zusammengefasst, in Word Embeddings transformiert und auf den Spiegel Online Korpus verglichen. 
-                    <b>Welche Artikel ähneln kotextual der Rede am Meisten?</b> Diese werden durch die Kosinus-Ähnlichkeit 
-                    extrahiert und mithilfe der 
-                    Kategorien aus Spiegel Online gleichzeitig kategorisiert. Eine Rede, die im Vektorraum sehr nah 
+                    <br />
+                    Wenn Sie nun eine Rede im Bundestag kategorisieren möchten, wird diese Rede, sollte sie zu lange sein,
+                    zusammengefasst, in Word Embeddings transformiert und auf den Spiegel Online Korpus verglichen.
+                    <b>Welche Artikel ähneln kotextual der Rede am Meisten?</b> Diese werden durch die Kosinus-Ähnlichkeit
+                    extrahiert und mithilfe der
+                    Kategorien aus Spiegel Online gleichzeitig kategorisiert. Eine Rede, die im Vektorraum sehr nah
                     an einem Artikel über die Börse platziert ist, wird somit mit Wirtschaft -> Börse kategorisiert.
                 </p>
             </div>
@@ -78,7 +89,7 @@
                 <p class="text-black-50">
                     Sie möchten selbst Texte für Ihre Zwecke kategorisieren oder einfach mal VecTop ausprobieren?
                     Dann finden Sie eine Live-Demo von VecTop <a href="http://vectop.bundestag-mine.de/" target="_blank">hier</a>!
-                    <br/>
+                    <br />
                     Für die Informatiker: VecTop ist open-source auf GitHub <a href="https://github.com/TheItCrOw/VecTop" target="_blank">hier</a> zu finden.
                 </p>
             </div>

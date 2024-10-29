@@ -48,6 +48,28 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        [HttpGet("/api/ResearchController/DownloadVecTopPaper/")]
+        public IActionResult DownloadVecTopPaper()
+        {
+            dynamic response = new ExpandoObject();
+
+            try
+            {
+                response.status = "200";
+                var filepath = "~/files/VecTop.pdf";
+                Response.Headers.Add("Content-Disposition", "inline; filename=Chancen_und_Risiken_von Text_Summarization.pdf");
+                return File(filepath, "application/pdf");
+            }
+            catch (Exception ex)
+            {
+                response.status = "400";
+                response.message = "Couldn't download the VecTop paper, error in logs";
+                _logger.LogError(ex, "Error download the paper:");
+            }
+
+            return Json(response);
+        }
+
 
         [HttpPost("/api/ResearchController/GetNLPSpeeches/")]
         public IActionResult GetNLPSpeeches()

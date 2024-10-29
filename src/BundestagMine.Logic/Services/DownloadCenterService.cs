@@ -11,18 +11,23 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using BundestagMine.Models.Database.MongoDB;
 
 namespace BundestagMine.Logic.Services
 {
     public class DownloadCenterService
     {
+        private readonly CategoryService _categoryService;
         private readonly ILogger<DownloadCenterService> _logger;
         private readonly BundestagMineDbContext _db;
         public float AverageFetchTimeInSecondsPerNLPSpeech() => 0.1f;
         public float AverageFileSizeInMBPerNLPSpeech() => 0.025f;
 
-        public DownloadCenterService(BundestagMineDbContext db, ILogger<DownloadCenterService> logger)
+        public DownloadCenterService(BundestagMineDbContext db, 
+            ILogger<DownloadCenterService> logger,
+            CategoryService categoryService)
         {
+            _categoryService = categoryService;
             _logger = logger;
             _db = db;
         }
@@ -99,25 +104,10 @@ namespace BundestagMine.Logic.Services
                 foreach (var protocol in protocols)
                 {
                     log.AppendLine($"Handling protocol LP: {protocol.LegislaturePeriod} SN: {protocol.Number}");
-                    var downloadProtocol = new CompleteDownloadProtocol();
-                    downloadProtocol.Protocol = protocol;
-                    downloadProtocol.AgendaItems = _db.AgendaItems.AsNoTracking().Where(ag => ag.ProtocolId == downloadProtocol.Protocol.Id).ToList();
-                    downloadProtocol.NLPSpeeches = _db.NLPSpeeches.AsNoTracking()
-                        .Where(s => s.LegislaturePeriod == protocol.LegislaturePeriod && s.ProtocolNumber == protocol.Number && _db.Deputies.Any(d => d.SpeakerId == s.SpeakerId)
-                            && (
-                            speakerIds.Contains(s.SpeakerId)
-                            || fractions.Contains(_db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId).Fraction)
-                            || parties.Contains(_db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId).Party)
-                            ))
-                        .AsEnumerable()
-                        .Select(s =>
-                        {
-                            s.Sentiments = _db.Sentiment.Where(t => t.NLPSpeechId == s.Id).ToList();
-                            s.NamedEntities = _db.NamedEntity.Where(t => t.NLPSpeechId == s.Id).ToList();
-                            s.Segments = _db.SpeechSegment.Where(ss => ss.SpeechId == s.Id).Include(ss => ss.Shouts).ToList();
-                            return s;
-                        })
-                        .ToList();
+                    var downloadProtocol = createDownloadProtocolFromProtocol(protocol,
+                        speakerIds,
+                        fractions,
+                        parties);
 
                     log.AppendLine($"Generated the Model, now json and save it.");
                     // Generate a json
@@ -129,6 +119,7 @@ namespace BundestagMine.Logic.Services
                     log.AppendLine($"Writing it to " + filename);
                     // For some reason, the RAM gets to bloated as if the objects written into json are not being disposed here.
                     // Calling the garbage collector by hand here does exactly that and keeps the RAM low...
+                    asJson = null;
                     GC.Collect();
                 }
             }
@@ -167,25 +158,10 @@ namespace BundestagMine.Logic.Services
                 {
                     foreach (var protocol in protocols)
                     {
-                        var downloadProtocol = new CompleteDownloadProtocol();
-                        downloadProtocol.Protocol = protocol;
-                        downloadProtocol.AgendaItems = _db.AgendaItems.Where(ag => ag.ProtocolId == downloadProtocol.Protocol.Id).ToList();
-                        downloadProtocol.NLPSpeeches = _db.NLPSpeeches
-                            .Where(s => s.LegislaturePeriod == protocol.LegislaturePeriod && s.ProtocolNumber == protocol.Number && _db.Deputies.Any(d => d.SpeakerId == s.SpeakerId)
-                                && (
-                                speakerIds.Contains(s.SpeakerId)
-                                || fractions.Contains(_db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId).Fraction)
-                                || parties.Contains(_db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId).Party)
-                                ))
-                            .AsEnumerable()
-                            .Select(s =>
-                            {
-                                s.Sentiments = _db.Sentiment.Where(t => t.NLPSpeechId == s.Id).ToList();
-                                s.NamedEntities = _db.NamedEntity.Where(t => t.NLPSpeechId == s.Id).ToList();
-                                s.Segments = _db.SpeechSegment.Where(ss => ss.SpeechId == s.Id).Include(ss => ss.Shouts).ToList();
-                                return s;
-                            })
-                            .ToList();
+                        var downloadProtocol = createDownloadProtocolFromProtocol(protocol, 
+                            speakerIds, 
+                            fractions, 
+                            parties);
 
                         // Generate a json
                         var asJson = JsonConvert.SerializeObject(downloadProtocol);
@@ -234,5 +210,38 @@ namespace BundestagMine.Logic.Services
             return result;
         }
 
+        /// <summary>
+        /// From a given protocol, creates a download protocol datastructure.
+        /// </summary>
+        /// <param name="protocol"></param>
+        /// <returns></returns>
+        private CompleteDownloadProtocol createDownloadProtocolFromProtocol(Protocol protocol, 
+            List<string> speakerIds,
+            List<string> fractions,
+            List<string> parties)
+        {
+            var downloadProtocol = new CompleteDownloadProtocol();
+            downloadProtocol.Protocol = protocol;
+            downloadProtocol.AgendaItems = _db.AgendaItems.Where(ag => ag.ProtocolId == downloadProtocol.Protocol.Id).ToList();
+            downloadProtocol.NLPSpeeches = _db.NLPSpeeches
+                .Where(s => s.LegislaturePeriod == protocol.LegislaturePeriod && s.ProtocolNumber == protocol.Number && _db.Deputies.Any(d => d.SpeakerId == s.SpeakerId)
+                    && (
+                    speakerIds.Contains(s.SpeakerId)
+                    || fractions.Contains(_db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId).Fraction)
+                    || parties.Contains(_db.Deputies.FirstOrDefault(d => d.SpeakerId == s.SpeakerId).Party)
+                    ))
+                .AsEnumerable()
+                .Select(s =>
+                {
+                    s.Sentiments = _db.Sentiment.Where(t => t.NLPSpeechId == s.Id).ToList();
+                    s.NamedEntities = _db.NamedEntity.Where(t => t.NLPSpeechId == s.Id).ToList();
+                    s.Segments = _db.SpeechSegment.Where(ss => ss.SpeechId == s.Id).Include(ss => ss.Shouts).ToList();
+                    return s;
+                })
+                .ToList();
+            downloadProtocol.SpeechCategories = downloadProtocol.NLPSpeeches.SelectMany(s => _categoryService.GetCategoriesOfSpeech(s)).ToList();
+
+            return downloadProtocol;
+        }
     }
 }

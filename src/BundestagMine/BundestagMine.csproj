@@ -46,7 +46,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\data\" />
-    <Folder Include="wwwroot\files\" />
     <Folder Include="wwwroot\fonts\" />
     <Folder Include="wwwroot\videos\" />
   </ItemGroup>

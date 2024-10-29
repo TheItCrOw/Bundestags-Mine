@@ -325,7 +325,7 @@ namespace BundestagMine.Controllers
                 response.result = new
                 {
                     Speeches = speeches,
-                    Categories = speeches.Select(s => _categoryService.GetCategoriesOfSpeech(s))
+                    Categories = speeches.Select(s => _categoryService.GetCategoryViewModelsOfSpeech(s))
                 };
             }
             catch (Exception ex)
