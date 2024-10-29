@@ -52,5 +52,22 @@ Within the Bundestags-Mine, we use a list of NLP techniques through pipelines to
 - Automatic Text Summarization
 - Translation
 
-The majority of the NLP pipelines are provided by the TextImager made by the Text Technology Lab -> [pdf](https://aclanthology.org/C16-2013.pdf) [bibtex](https://aclanthology.org/C16-2013.bib) [github](https://github.com/texttechnologylab/textimager-uima)
+# Citation
+
+```
+@inproceedings{Boenisch:et:al:2023,
+  title     = {{Bundestags-Mine}: Natural Language Processing for Extracting
+               Key Information from Government Documents},
+  isbn      = {9781643684734},
+  issn      = {1879-8314},
+  url       = {http://dx.doi.org/10.3233/FAIA230996},
+  doi       = {10.3233/faia230996},
+  booktitle = {Legal Knowledge and Information Systems},
+  publisher = {IOS Press},
+  author    = {B\"{o}nisch, Kevin and Abrami, Giuseppe and Wehnert, Sabine and Mehler, Alexander},
+  year      = {2023}
+}
+```
+
+<i>The majority of the NLP pipelines are provided by the TextImager made by the Text Technology Lab</i> ([pdf](https://aclanthology.org/C16-2013.pdf) [bibtex](https://aclanthology.org/C16-2013.bib) [github](https://github.com/texttechnologylab/textimager-uima))
 
