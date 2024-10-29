@@ -1,0 +1,234 @@
+﻿.paper-layout {
+    min-height: 100vh !important;
+    background-color: ghostwhite;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    padding-left: 2vw;
+    padding-right: 2vw;
+    padding-top: 3vw;
+    padding-bottom: 3vw;
+}
+
+    .paper-layout * :not(.fas) {
+        font-family: 'Times New Roman', Times, serif !important;
+    }
+
+    .paper-layout h4 {
+        text-align: center;
+        color: black;
+    }
+
+    .paper-layout .paper-header {
+        position: relative;
+    }
+
+        .paper-layout .paper-header h1 {
+            text-align: center;
+            color: black;
+            font-weight: bolder;
+            text-transform: uppercase;
+            font-size: clamp(2.5rem, 5vw, 75px);
+            /*If 2.5rem is less than 4vw, the font-size will be 2.5rem.
+If 4vw is greater than 70px, the font-size will be 70px.
+Otherwise, it will be 4vw.*/
+        }
+
+        .paper-layout .paper-header .logo {
+            width: 10vw;
+            min-width: 100px;
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%, 0%);
+            z-index: 0;
+            opacity: 0.05;
+        }
+
+        .paper-layout .paper-header .meta {
+            display: flex;
+            margin-top: 24px;
+            width: 100%;
+            justify-content: space-between;
+            overflow-wrap: break-word;
+            border-top: 1px solid gray;
+        }
+
+            .paper-layout .paper-header .meta p {
+                margin-bottom: 0;
+                margin-top: 0;
+                margin-left: 3px;
+                margin-right: 3px;
+                color: rgba(0,0,0,0.75);
+            }
+
+            .paper-layout .paper-header .meta .date {
+                font-size: x-large;
+            }
+
+    .paper-layout .paper-content {
+        margin-top: 16px;
+    }
+
+        .paper-layout .paper-content p {
+            font-size: 15px;
+            line-height: 16px;
+            text-align: justify;
+            word-break: break-word;
+        }
+
+        .paper-layout .paper-content .shouts p{
+            text-align:left !important;
+        }
+
+        .paper-layout .paper-content .source {
+            text-align: end;
+            width: 100%;
+            font-style: italic;
+            font-size: small;
+        }
+
+        .paper-layout .paper-content .mid {
+            border-right: lightgray solid 1px;
+            border-left: lightgray solid 1px;
+            padding: 12px;
+        }
+
+            .paper-layout .paper-content .mid .thumbnail {
+                width: 100%;
+                filter: brightness(1.20);
+                box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+            }
+
+            .paper-layout .paper-content .mid .subtitle {
+                text-align: center;
+                color: black;
+                font-weight: bold;
+            }
+
+            .paper-layout .paper-content .mid .sentiments h6 {
+                color: rgba(0,0,0,0.75);
+                font-weight: bold;
+                text-align: center;
+            }
+
+            .paper-layout .paper-content .mid .comment-network-chart {
+                position: relative;
+                width: 100%;
+                border: lightgray 1px solid;
+                height: 30vw;
+            }
+
+                .paper-layout .paper-content .mid .comment-network-chart svg {
+                    width: 100%;
+                    height: 100%;
+                }
+
+                    .paper-layout .paper-content .mid .comment-network-chart svg .links path {
+                        stroke-opacity: 0.9;
+                    }
+
+                    .paper-layout .paper-content .mid .comment-network-chart svg .nodes circle {
+                        stroke: black;
+                        stroke-width: 0.5px;
+                    }
+
+                    .paper-layout .paper-content .mid .comment-network-chart svg text {
+                        font-family: sans-serif;
+                        font-size: 5px;
+                    }
+
+        .paper-layout .paper-content .right {
+            padding-left: 12px;
+            padding-right: 0px !important;
+        }
+
+            .paper-layout .paper-content .right .agenda .list {
+                text-align: left;
+                line-height: 20px;
+            }
+
+                .paper-layout .paper-content .right .agenda .list span {
+                    cursor: pointer;
+                }
+
+                    .paper-layout .paper-content .right .agenda .list span:hover {
+                        color: black;
+                    }
+
+
+            .paper-layout .paper-content .right .agenda-chart {
+                max-height: 250px;
+            }
+
+            .paper-layout .paper-content .right .poll-chart {
+                height: 20px !important;
+            }
+
+            .paper-layout .paper-content .right .polls .poll {
+                width: 100%;
+                margin-top: 20px;
+            }
+
+                .paper-layout .paper-content .right .polls .poll h6 {
+                    text-align: center;
+                    text-decoration: underline;
+                }
+
+                    .paper-layout .paper-content .right .polls .poll h6:hover {
+                        cursor: pointer;
+                        color: black;
+                    }
+
+
+        .paper-layout .paper-content .all-speakers {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+            .paper-layout .paper-content .all-speakers p {
+                margin-bottom: 6px !important;
+                text-align: left !important;
+            }
+
+                .paper-layout .paper-content .all-speakers p:hover {
+                    color: black;
+                    cursor: pointer;
+                }
+
+        .paper-layout .paper-content .left {
+            padding-right: 12px;
+            padding-left: 0px !important;
+        }
+
+            .paper-layout .paper-content .left .most-commented-speech img {
+                width: 100%;
+                max-height: 200px;
+                object-fit: contain;
+            }
+
+.daily-paper-fullscreen-content {
+    min-height: 100vh;
+}
+
+#dailyPaperContent .loader {
+    position: absolute;
+    width: 100%;
+    z-index: 5;
+    background-color: rgba(255,255,255,0.8);
+    top: 0;
+    min-height: 100%; /*This is the height of all the headers. Its hacky, yes. Wont work on mobile.*/
+    left: 0;
+    display: none;
+}
+
+    #dailyPaperContent .loader .lds-ripple {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+#dailyPaperContent .selector {
+    position: sticky;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    z-index: 4;
+    top: 0;
+}

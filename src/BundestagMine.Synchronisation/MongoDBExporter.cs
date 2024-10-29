@@ -29,34 +29,37 @@ namespace BundestagMine.Synchronisation
         {
             using (var sqlDb = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
             {
-                var counter = 0;
-                var speeches = sqlDb.NLPSpeeches.Where(s => sqlDb.NamedEntity
-                    .Any(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == null)).ToList();
-                speeches.Reverse();
-                foreach (var speech in speeches)
+                using (var sqlTokenDb = new BundestagMineTokenDbContext(ConfigManager.GetTokenDbOptions()))
                 {
-                    var tokens = sqlDb.Token.Where(t => t.NLPSpeechId == speech.Id).ToList();
-                    if (tokens.Count() == 0) continue;
-                    
-                    // ToList cause we change the collection, so we need to load it into the RAM
-                    foreach(var namedEntity in sqlDb.NamedEntity.Where(ne => ne.NLPSpeechId == speech.Id).ToList())
+                    var counter = 0;
+                    var speeches = sqlDb.NLPSpeeches.Where(s => sqlDb.NamedEntity
+                        .Any(ne => ne.NLPSpeechId == s.Id && ne.LemmaValue == null)).ToList();
+                    speeches.Reverse();
+                    foreach (var speech in speeches)
                     {
-                        if (namedEntity.LemmaValue != null) continue;
-                        namedEntity.LemmaValue = string.Join(' ', tokens
-                            .Where(t => t.Begin >= namedEntity.Begin && t.End <= namedEntity.End)
-                            .Select(t => t.LemmaValue));
+                        var tokens = sqlTokenDb.Token.Where(t => t.NLPSpeechId == speech.Id).ToList();
+                        if (tokens.Count() == 0) continue;
+
+                        // ToList cause we change the collection, so we need to load it into the RAM
+                        foreach (var namedEntity in sqlDb.NamedEntity.Where(ne => ne.NLPSpeechId == speech.Id).ToList())
+                        {
+                            if (namedEntity.LemmaValue != null) continue;
+                            namedEntity.LemmaValue = string.Join(' ', tokens
+                                .Where(t => t.Begin >= namedEntity.Begin && t.End <= namedEntity.End)
+                                .Select(t => t.LemmaValue));
+                        }
+                        Console.WriteLine($"Saving NE for {tokens.Count()} tokens");
+                        if (counter / 10 == 1)
+                        {
+                            await sqlDb.SaveChangesAsync();
+                            Console.WriteLine("Saved");
+                            counter = 0;
+                        }
+                        counter++;
                     }
-                    Console.WriteLine($"Saving NE for {tokens.Count()} tokens");
-                    if(counter / 10 == 1)
-                    {
-                        await sqlDb.SaveChangesAsync();
-                        Console.WriteLine("Saved");
-                        counter = 0;
-                    }
-                    counter++;
+                    await sqlDb.SaveChangesAsync();
                 }
-                await sqlDb.SaveChangesAsync();
-            }             
+            }
         }
 
         /// <summary>
@@ -305,207 +308,212 @@ namespace BundestagMine.Synchronisation
             var counter = 0;
             using (var sqlDb = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
             {
-                foreach (string file in Directory.EnumerateFiles(ConfigManager.GetLocalDataDirectory() + "SpeechesNLP", "*.json"))
+                using (var sqlTokenDb = new BundestagMineTokenDbContext(ConfigManager.GetTokenDbOptions()))
                 {
-                    var curJsonContent = File.ReadAllText(file);
-                    var mongoSpeech = BsonDocument.Parse(curJsonContent);
-
-                    var speech = new NLPSpeech();
-                    speech.MongoId = mongoSpeech.GetValue("_id").ToString();
-                    var alreadyExistingSpeech = sqlDb.NLPSpeeches.FirstOrDefault(s => s.MongoId == speech.MongoId);
-                    // NLP results
-                    var mongoResult = mongoSpeech.GetValue("result").AsBsonDocument;
-                    // Fixing errors of the past :-)
-                    if (alreadyExistingSpeech != null)
+                    foreach (string file in Directory.EnumerateFiles(ConfigManager.GetLocalDataDirectory() + "SpeechesNLP", "*.json"))
                     {
-                        Console.WriteLine("Skipping speech");
+                        var curJsonContent = File.ReadAllText(file);
+                        var mongoSpeech = BsonDocument.Parse(curJsonContent);
 
-                        if (!sqlDb.Token.Any(t => t.NLPSpeechId == alreadyExistingSpeech.Id))
+                        var speech = new NLPSpeech();
+                        speech.MongoId = mongoSpeech.GetValue("_id").ToString();
+                        var alreadyExistingSpeech = sqlDb.NLPSpeeches.FirstOrDefault(s => s.MongoId == speech.MongoId);
+                        // NLP results
+                        var mongoResult = mongoSpeech.GetValue("result").AsBsonDocument;
+                        // Fixing errors of the past :-)
+                        if (alreadyExistingSpeech != null)
                         {
-                            Console.WriteLine($"Readding tokens for {alreadyExistingSpeech.Id}");
-                            // Dont do this at home kids.
-                            var tokens2 = new List<Token>();
-                            foreach (var mongoToken in mongoResult.GetValue("tokens").AsBsonArray)
-                            {
-                                var token = new Token();
-                                token.NLPSpeechId = alreadyExistingSpeech.Id;
-                                if (mongoToken.AsBsonDocument.TryGetValue("begin", out var begin)) token.Begin = begin.AsInt32;
-                                if (mongoToken.AsBsonDocument.TryGetValue("end", out var end)) token.End = end.AsInt32;
-                                if (mongoToken.AsBsonDocument.TryGetValue("lemmaValue", out var lemmaValue)) token.LemmaValue = lemmaValue.AsString;
-                                if (mongoToken.AsBsonDocument.TryGetValue("morph", out var morph) && bool.TryParse(morph.AsString, out var bo))
-                                {
-                                    token.Morph = bo;
-                                }
-                                if (mongoToken.AsBsonDocument.TryGetValue("gender", out var gender)) token.Gender = gender.AsString;
-                                if (mongoToken.AsBsonDocument.TryGetValue("stem", out var stem)) token.Stem = stem.AsString;
-                                if (mongoToken.AsBsonDocument.TryGetValue("posValue", out var posValue)) token.posValue = posValue.AsString;
-                                if (mongoToken.AsBsonDocument.TryGetValue("number", out var number)) token.Number = number.AsString;
-                                if (mongoToken.AsBsonDocument.TryGetValue("case", out var case2)) token.Case = case2.AsString;
-                                if (mongoToken.AsBsonDocument.TryGetValue("degree", out var degree)) token.Degree = degree.AsString;
-                                if (mongoToken.AsBsonDocument.TryGetValue("verbForm", out var verbForm)) token.VerbForm = verbForm.AsString;
-                                if (mongoToken.AsBsonDocument.TryGetValue("tense", out var tense)) token.Tense = tense.AsString;
-                                if (mongoToken.AsBsonDocument.TryGetValue("mood", out var mood)) token.Mood = mood.AsString;
-                                if (mongoToken.AsBsonDocument.TryGetValue("voice", out var voice)) token.Voice = voice.AsString;
-                                if (mongoToken.AsBsonDocument.TryGetValue("definiteness", out var definiteness)) token.Definiteness = definiteness.AsString;
-                                if (mongoToken.AsBsonDocument.TryGetValue("value", out var value)) token.Value = value.AsString;
-                                if (mongoToken.AsBsonDocument.TryGetValue("person", out var person)) token.Person = person.AsString;
-                                if (mongoToken.AsBsonDocument.TryGetValue("aspect", out var aspect)) token.Aspect = aspect.AsString;
-                                if (mongoToken.AsBsonDocument.TryGetValue("animacy", out var animacy)) token.Animacy = animacy.AsString;
-                                if (mongoToken.AsBsonDocument.TryGetValue("negative", out var negative)) token.Negative = negative.AsString;
-                                if (mongoToken.AsBsonDocument.TryGetValue("possessive", out var possessive)) token.Possessive = possessive.AsString;
-                                if (mongoToken.AsBsonDocument.TryGetValue("pronType", out var pronType)) token.PronType = pronType.AsString;
-                                if (mongoToken.AsBsonDocument.TryGetValue("reflex", out var reflex)) token.Reflex = reflex.AsString;
-                                if (mongoToken.AsBsonDocument.TryGetValue("transitivity", out var transitivity)) token.Transitivity = transitivity.AsString;
-                                tokens2.Add(token);
-                            }
-                            await sqlDb.Token.AddRangeAsync(tokens2);
-                            await sqlDb.SaveChangesAsync();
-                        }
-                        continue;
-                    }
-                    speech.Text = mongoSpeech.GetValue("text").AsString;
-                    if (mongoSpeech.TryGetValue("speakerId", out var speakerId)) speech.SpeakerId = speakerId.AsString;
+                            Console.WriteLine("Skipping speech");
 
-                    // AgendaItem
-                    var mongoAngedaItem = mongoSpeech.GetValue("agendaItem").AsBsonDocument;
-                    speech.LegislaturePeriod = mongoAngedaItem.GetValue("legislaturePeriod").AsInt32;
-                    speech.ProtocolNumber = mongoAngedaItem.GetValue("protocol").AsInt32;
-                    speech.AgendaItemNumber = mongoAngedaItem.GetValue("number").AsInt32;
-
-                    // Segments
-                    if (mongoSpeech.TryGetValue("segments", out var mongoSegments) && mongoSegments.AsBsonDocument.ElementCount > 0)
-                    {
-                        var segments = new List<SpeechSegment>();
-                        for (int i = 0; i < mongoSegments.AsBsonDocument.ElementCount; i++)
-                        {
-                            var mongoSegment = mongoSegments.AsBsonDocument[i].AsBsonArray[0].AsBsonDocument;
-                            var segment = new SpeechSegment()
+                            if (!sqlTokenDb.Token.Any(t => t.NLPSpeechId == alreadyExistingSpeech.Id))
                             {
-                                Text = mongoSegment.GetValue("text").AsString
-                            };
-                            // potential shouts
-                            if (mongoSegment.AsBsonDocument.TryGetValue("shouts", out var mongoShouts) && mongoShouts.AsBsonDocument.ElementCount > 0)
-                            {
-                                var shouts = new List<Shout>();
-                                for (int k = 0; k < mongoShouts.AsBsonDocument.ElementCount; k++)
+                                Console.WriteLine($"Readding tokens for {alreadyExistingSpeech.Id}");
+                                // Dont do this at home kids.
+                                var tokens2 = new List<Token>();
+                                foreach (var mongoToken in mongoResult.GetValue("tokens").AsBsonArray)
                                 {
-                                    var mongoShout = mongoShouts.AsBsonDocument[k].AsBsonArray[0].AsBsonDocument;
-                                    var shout = new Shout()
+                                    var token = new Token();
+                                    token.NLPSpeechId = alreadyExistingSpeech.Id;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("begin", out var begin)) token.Begin = begin.AsInt32;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("end", out var end)) token.End = end.AsInt32;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("lemmaValue", out var lemmaValue)) token.LemmaValue = lemmaValue.AsString;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("morph", out var morph) && bool.TryParse(morph.AsString, out var bo))
                                     {
-                                        Text = mongoShout.AsBsonDocument.GetValue("text").AsString
-                                    };
-                                    if (mongoShout.AsBsonDocument.TryGetValue("by", out var by))
-                                    {
-                                        if (by.AsBsonDocument.TryGetValue("firstName", out var firstName)) shout.FirstName = firstName.AsString;
-                                        if (by.AsBsonDocument.TryGetValue("lastName", out var lastName)) shout.LastName = lastName.AsString;
-                                        if (by.AsBsonDocument.TryGetValue("fraction", out var fraction)) shout.Fraction = fraction.AsString;
-                                        if (by.AsBsonDocument.TryGetValue("party", out var party)) shout.Party = party.AsString;
-                                        if (by.AsBsonDocument.TryGetValue("id", out var speakerId2)) shout.SpeakerId = speakerId2.AsString;
+                                        token.Morph = bo;
                                     }
-
-                                    shouts.Add(shout);
+                                    if (mongoToken.AsBsonDocument.TryGetValue("gender", out var gender)) token.Gender = gender.AsString;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("stem", out var stem)) token.Stem = stem.AsString;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("posValue", out var posValue)) token.posValue = posValue.AsString;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("number", out var number)) token.Number = number.AsString;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("case", out var case2)) token.Case = case2.AsString;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("degree", out var degree)) token.Degree = degree.AsString;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("verbForm", out var verbForm)) token.VerbForm = verbForm.AsString;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("tense", out var tense)) token.Tense = tense.AsString;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("mood", out var mood)) token.Mood = mood.AsString;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("voice", out var voice)) token.Voice = voice.AsString;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("definiteness", out var definiteness)) token.Definiteness = definiteness.AsString;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("value", out var value)) token.Value = value.AsString;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("person", out var person)) token.Person = person.AsString;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("aspect", out var aspect)) token.Aspect = aspect.AsString;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("animacy", out var animacy)) token.Animacy = animacy.AsString;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("negative", out var negative)) token.Negative = negative.AsString;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("possessive", out var possessive)) token.Possessive = possessive.AsString;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("pronType", out var pronType)) token.PronType = pronType.AsString;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("reflex", out var reflex)) token.Reflex = reflex.AsString;
+                                    if (mongoToken.AsBsonDocument.TryGetValue("transitivity", out var transitivity)) token.Transitivity = transitivity.AsString;
+                                    tokens2.Add(token);
                                 }
-                                segment.Shouts = shouts;
+                                await sqlTokenDb.Token.AddRangeAsync(tokens2);
+                                await sqlDb.SaveChangesAsync();
+                                await sqlTokenDb.SaveChangesAsync();
                             }
-                            segments.Add(segment);
+                            continue;
                         }
-                        speech.Segments = segments;
-                    }
+                        speech.Text = mongoSpeech.GetValue("text").AsString;
+                        if (mongoSpeech.TryGetValue("speakerId", out var speakerId)) speech.SpeakerId = speakerId.AsString;
 
-                    // Categories
-                    var categories = new List<CategoryCoveredTagged>();
-                    foreach (var mongoCategory in mongoResult.GetValue("categoryCoveredTagged").AsBsonArray)
-                    {
-                        var category = new CategoryCoveredTagged();
-                        if (mongoCategory.AsBsonDocument.TryGetValue("begin", out var begin)) category.Begin = begin.AsInt32;
-                        if (mongoCategory.AsBsonDocument.TryGetValue("end", out var end)) category.End = end.AsInt32;
-                        if (mongoCategory.AsBsonDocument.TryGetValue("value", out var value)) category.Value = value.AsString;
-                        try
+                        // AgendaItem
+                        var mongoAngedaItem = mongoSpeech.GetValue("agendaItem").AsBsonDocument;
+                        speech.LegislaturePeriod = mongoAngedaItem.GetValue("legislaturePeriod").AsInt32;
+                        speech.ProtocolNumber = mongoAngedaItem.GetValue("protocol").AsInt32;
+                        speech.AgendaItemNumber = mongoAngedaItem.GetValue("number").AsInt32;
+
+                        // Segments
+                        if (mongoSpeech.TryGetValue("segments", out var mongoSegments) && mongoSegments.AsBsonDocument.ElementCount > 0)
                         {
-                            if (mongoCategory.AsBsonDocument.TryGetValue("score", out var score)) category.Score = score.AsDouble;
+                            var segments = new List<SpeechSegment>();
+                            for (int i = 0; i < mongoSegments.AsBsonDocument.ElementCount; i++)
+                            {
+                                var mongoSegment = mongoSegments.AsBsonDocument[i].AsBsonArray[0].AsBsonDocument;
+                                var segment = new SpeechSegment()
+                                {
+                                    Text = mongoSegment.GetValue("text").AsString
+                                };
+                                // potential shouts
+                                if (mongoSegment.AsBsonDocument.TryGetValue("shouts", out var mongoShouts) && mongoShouts.AsBsonDocument.ElementCount > 0)
+                                {
+                                    var shouts = new List<Shout>();
+                                    for (int k = 0; k < mongoShouts.AsBsonDocument.ElementCount; k++)
+                                    {
+                                        var mongoShout = mongoShouts.AsBsonDocument[k].AsBsonArray[0].AsBsonDocument;
+                                        var shout = new Shout()
+                                        {
+                                            Text = mongoShout.AsBsonDocument.GetValue("text").AsString
+                                        };
+                                        if (mongoShout.AsBsonDocument.TryGetValue("by", out var by))
+                                        {
+                                            if (by.AsBsonDocument.TryGetValue("firstName", out var firstName)) shout.FirstName = firstName.AsString;
+                                            if (by.AsBsonDocument.TryGetValue("lastName", out var lastName)) shout.LastName = lastName.AsString;
+                                            if (by.AsBsonDocument.TryGetValue("fraction", out var fraction)) shout.Fraction = fraction.AsString;
+                                            if (by.AsBsonDocument.TryGetValue("party", out var party)) shout.Party = party.AsString;
+                                            if (by.AsBsonDocument.TryGetValue("id", out var speakerId2)) shout.SpeakerId = speakerId2.AsString;
+                                        }
+
+                                        shouts.Add(shout);
+                                    }
+                                    segment.Shouts = shouts;
+                                }
+                                segments.Add(segment);
+                            }
+                            speech.Segments = segments;
                         }
-                        catch (Exception ex) { Console.WriteLine("Parsing wieder " + ex); }
-                        categories.Add(category);
-                    }
-                    speech.CategoryCoveredTags = categories;
 
-                    // entities
-                    var entities = new List<NamedEntity>();
-                    foreach (var mongoEntity in mongoResult.GetValue("namedEntities").AsBsonArray)
-                    {
-                        var entity = new NamedEntity();
-                        if (mongoEntity.AsBsonDocument.TryGetValue("begin", out var begin)) entity.Begin = begin.AsInt32;
-                        if (mongoEntity.AsBsonDocument.TryGetValue("end", out var end)) entity.End = end.AsInt32;
-                        if (mongoEntity.AsBsonDocument.TryGetValue("value", out var value)) entity.Value = value.AsString;
-                        entities.Add(entity);
-                    }
-                    speech.NamedEntities = entities;
-
-                    // tokens
-                    var tokens = new List<Token>();
-                    foreach (var mongoToken in mongoResult.GetValue("tokens").AsBsonArray)
-                    {
-                        var token = new Token();
-                        if (mongoToken.AsBsonDocument.TryGetValue("begin", out var begin)) token.Begin = begin.AsInt32;
-                        if (mongoToken.AsBsonDocument.TryGetValue("end", out var end)) token.End = end.AsInt32;
-                        if (mongoToken.AsBsonDocument.TryGetValue("lemmaValue", out var lemmaValue)) token.LemmaValue = lemmaValue.AsString;
-                        if (mongoToken.AsBsonDocument.TryGetValue("morph", out var morph) && bool.TryParse(morph.AsString, out var bo))
+                        // Categories
+                        var categories = new List<CategoryCoveredTagged>();
+                        foreach (var mongoCategory in mongoResult.GetValue("categoryCoveredTagged").AsBsonArray)
                         {
-                            token.Morph = bo;
+                            var category = new CategoryCoveredTagged();
+                            if (mongoCategory.AsBsonDocument.TryGetValue("begin", out var begin)) category.Begin = begin.AsInt32;
+                            if (mongoCategory.AsBsonDocument.TryGetValue("end", out var end)) category.End = end.AsInt32;
+                            if (mongoCategory.AsBsonDocument.TryGetValue("value", out var value)) category.Value = value.AsString;
+                            try
+                            {
+                                if (mongoCategory.AsBsonDocument.TryGetValue("score", out var score)) category.Score = score.AsDouble;
+                            }
+                            catch (Exception ex) { Console.WriteLine("Parsing wieder " + ex); }
+                            categories.Add(category);
                         }
-                        if (mongoToken.AsBsonDocument.TryGetValue("gender", out var gender)) token.Gender = gender.AsString;
-                        if (mongoToken.AsBsonDocument.TryGetValue("stem", out var stem)) token.Stem = stem.AsString;
-                        if (mongoToken.AsBsonDocument.TryGetValue("posValue", out var posValue)) token.posValue = posValue.AsString;
-                        if (mongoToken.AsBsonDocument.TryGetValue("number", out var number)) token.Number = number.AsString;
-                        if (mongoToken.AsBsonDocument.TryGetValue("case", out var case2)) token.Case = case2.AsString;
-                        if (mongoToken.AsBsonDocument.TryGetValue("degree", out var degree)) token.Degree = degree.AsString;
-                        if (mongoToken.AsBsonDocument.TryGetValue("verbForm", out var verbForm)) token.VerbForm = verbForm.AsString;
-                        if (mongoToken.AsBsonDocument.TryGetValue("tense", out var tense)) token.Tense = tense.AsString;
-                        if (mongoToken.AsBsonDocument.TryGetValue("mood", out var mood)) token.Mood = mood.AsString;
-                        if (mongoToken.AsBsonDocument.TryGetValue("voice", out var voice)) token.Voice = voice.AsString;
-                        if (mongoToken.AsBsonDocument.TryGetValue("definiteness", out var definiteness)) token.Definiteness = definiteness.AsString;
-                        if (mongoToken.AsBsonDocument.TryGetValue("value", out var value)) token.Value = value.AsString;
-                        if (mongoToken.AsBsonDocument.TryGetValue("person", out var person)) token.Person = person.AsString;
-                        if (mongoToken.AsBsonDocument.TryGetValue("aspect", out var aspect)) token.Aspect = aspect.AsString;
-                        if (mongoToken.AsBsonDocument.TryGetValue("animacy", out var animacy)) token.Animacy = animacy.AsString;
-                        if (mongoToken.AsBsonDocument.TryGetValue("negative", out var negative)) token.Negative = negative.AsString;
-                        if (mongoToken.AsBsonDocument.TryGetValue("possessive", out var possessive)) token.Possessive = possessive.AsString;
-                        if (mongoToken.AsBsonDocument.TryGetValue("pronType", out var pronType)) token.PronType = pronType.AsString;
-                        if (mongoToken.AsBsonDocument.TryGetValue("reflex", out var reflex)) token.Reflex = reflex.AsString;
-                        if (mongoToken.AsBsonDocument.TryGetValue("transitivity", out var transitivity)) token.Transitivity = transitivity.AsString;
-                        tokens.Add(token);
-                    }
-                    speech.Tokens = tokens;
+                        speech.CategoryCoveredTags = categories;
 
-                    // Sentiments
-                    var sentiments = new List<Sentiment>();
-                    foreach (var mongoSentimentArray in mongoResult.GetValue("sentiments").AsBsonArray)
-                    {
-                        var mongoSentiment = mongoSentimentArray.AsBsonArray[0];
-                        var sentiment = new Sentiment();
-                        if (mongoSentiment.AsBsonDocument.TryGetValue("begin", out var begin)) sentiment.Begin = begin.AsInt32;
-                        if (mongoSentiment.AsBsonDocument.TryGetValue("end", out var end)) sentiment.End = end.AsInt32;
-                        if (mongoSentiment.AsBsonDocument.TryGetValue("sentimentSingleScore", out var sentimentSingleScore))
+                        // entities
+                        var entities = new List<NamedEntity>();
+                        foreach (var mongoEntity in mongoResult.GetValue("namedEntities").AsBsonArray)
                         {
-                            var test = sentimentSingleScore.AsString.Replace(".", ",");
-                            sentiment.SentimentSingleScore = double.Parse(test);
+                            var entity = new NamedEntity();
+                            if (mongoEntity.AsBsonDocument.TryGetValue("begin", out var begin)) entity.Begin = begin.AsInt32;
+                            if (mongoEntity.AsBsonDocument.TryGetValue("end", out var end)) entity.End = end.AsInt32;
+                            if (mongoEntity.AsBsonDocument.TryGetValue("value", out var value)) entity.Value = value.AsString;
+                            entities.Add(entity);
                         }
-                        sentiments.Add(sentiment);
-                    }
-                    speech.Sentiments = sentiments;
+                        speech.NamedEntities = entities;
 
-                    sqlDb.NLPSpeeches.Add(speech);
-                    Console.WriteLine(counter);
-                    if (counter / 10 == 1)
-                    {
-                        await sqlDb.SaveChangesAsync();
-                        Console.WriteLine("Saved");
-                        counter = 0;
-                    }
+                        // tokens
+                        var tokens = new List<Token>();
+                        foreach (var mongoToken in mongoResult.GetValue("tokens").AsBsonArray)
+                        {
+                            var token = new Token();
+                            if (mongoToken.AsBsonDocument.TryGetValue("begin", out var begin)) token.Begin = begin.AsInt32;
+                            if (mongoToken.AsBsonDocument.TryGetValue("end", out var end)) token.End = end.AsInt32;
+                            if (mongoToken.AsBsonDocument.TryGetValue("lemmaValue", out var lemmaValue)) token.LemmaValue = lemmaValue.AsString;
+                            if (mongoToken.AsBsonDocument.TryGetValue("morph", out var morph) && bool.TryParse(morph.AsString, out var bo))
+                            {
+                                token.Morph = bo;
+                            }
+                            if (mongoToken.AsBsonDocument.TryGetValue("gender", out var gender)) token.Gender = gender.AsString;
+                            if (mongoToken.AsBsonDocument.TryGetValue("stem", out var stem)) token.Stem = stem.AsString;
+                            if (mongoToken.AsBsonDocument.TryGetValue("posValue", out var posValue)) token.posValue = posValue.AsString;
+                            if (mongoToken.AsBsonDocument.TryGetValue("number", out var number)) token.Number = number.AsString;
+                            if (mongoToken.AsBsonDocument.TryGetValue("case", out var case2)) token.Case = case2.AsString;
+                            if (mongoToken.AsBsonDocument.TryGetValue("degree", out var degree)) token.Degree = degree.AsString;
+                            if (mongoToken.AsBsonDocument.TryGetValue("verbForm", out var verbForm)) token.VerbForm = verbForm.AsString;
+                            if (mongoToken.AsBsonDocument.TryGetValue("tense", out var tense)) token.Tense = tense.AsString;
+                            if (mongoToken.AsBsonDocument.TryGetValue("mood", out var mood)) token.Mood = mood.AsString;
+                            if (mongoToken.AsBsonDocument.TryGetValue("voice", out var voice)) token.Voice = voice.AsString;
+                            if (mongoToken.AsBsonDocument.TryGetValue("definiteness", out var definiteness)) token.Definiteness = definiteness.AsString;
+                            if (mongoToken.AsBsonDocument.TryGetValue("value", out var value)) token.Value = value.AsString;
+                            if (mongoToken.AsBsonDocument.TryGetValue("person", out var person)) token.Person = person.AsString;
+                            if (mongoToken.AsBsonDocument.TryGetValue("aspect", out var aspect)) token.Aspect = aspect.AsString;
+                            if (mongoToken.AsBsonDocument.TryGetValue("animacy", out var animacy)) token.Animacy = animacy.AsString;
+                            if (mongoToken.AsBsonDocument.TryGetValue("negative", out var negative)) token.Negative = negative.AsString;
+                            if (mongoToken.AsBsonDocument.TryGetValue("possessive", out var possessive)) token.Possessive = possessive.AsString;
+                            if (mongoToken.AsBsonDocument.TryGetValue("pronType", out var pronType)) token.PronType = pronType.AsString;
+                            if (mongoToken.AsBsonDocument.TryGetValue("reflex", out var reflex)) token.Reflex = reflex.AsString;
+                            if (mongoToken.AsBsonDocument.TryGetValue("transitivity", out var transitivity)) token.Transitivity = transitivity.AsString;
+                            tokens.Add(token);
+                        }
 
-                    counter++;
+                        // Sentiments
+                        var sentiments = new List<Sentiment>();
+                        foreach (var mongoSentimentArray in mongoResult.GetValue("sentiments").AsBsonArray)
+                        {
+                            var mongoSentiment = mongoSentimentArray.AsBsonArray[0];
+                            var sentiment = new Sentiment();
+                            if (mongoSentiment.AsBsonDocument.TryGetValue("begin", out var begin)) sentiment.Begin = begin.AsInt32;
+                            if (mongoSentiment.AsBsonDocument.TryGetValue("end", out var end)) sentiment.End = end.AsInt32;
+                            if (mongoSentiment.AsBsonDocument.TryGetValue("sentimentSingleScore", out var sentimentSingleScore))
+                            {
+                                var test = sentimentSingleScore.AsString.Replace(".", ",");
+                                sentiment.SentimentSingleScore = double.Parse(test);
+                            }
+                            sentiments.Add(sentiment);
+                        }
+                        speech.Sentiments = sentiments;
+
+                        sqlDb.NLPSpeeches.Add(speech);
+                        sqlTokenDb.Token.AddRange(tokens);
+                        Console.WriteLine(counter);
+                        if (counter / 10 == 1)
+                        {
+                            await sqlDb.SaveChangesAsync();
+                            await sqlTokenDb.SaveChangesAsync();
+                            Console.WriteLine("Saved");
+                            counter = 0;
+                        }
+
+                        counter++;
+                    }
+                    await sqlDb.SaveChangesAsync();
                 }
-                await sqlDb.SaveChangesAsync();
             }
         }
     }

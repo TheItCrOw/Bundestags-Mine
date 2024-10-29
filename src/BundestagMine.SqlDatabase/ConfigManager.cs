@@ -20,6 +20,7 @@ namespace BundestagMine.SqlDatabase
         /// </summary>
         /// <returns></returns>
         public static string GetConnectionString() => _config.GetSection("ConnectionStrings").GetSection("DefaultConnection").Value;
+        public static string GetTokenDbConnectionString() => _config.GetSection("ConnectionStrings").GetSection("TokenConnection").Value;
 
         public static string GetDataDirectoryPath() => _config.GetSection("Paths").GetSection("DataDirectory").Value;
 
@@ -61,6 +62,31 @@ namespace BundestagMine.SqlDatabase
         public static string GetPresetDatasetsLastUpdateDate() =>
             _config.GetSection("Configurations").GetSection("DownloadCenter").GetSection("PresetDatasetsLastUpdateDate").Value;
 
+        public static string GetPixabayAPIKey() => _config.GetSection("PixabayAPI").GetSection("APIKey").Value;
+        public static string GetPixabayBaseUrl() => _config.GetSection("PixabayAPI").GetSection("BaseUrl").Value;
+        public static string GetPixabayDefaultParameters() => _config.GetSection("PixabayAPI").GetSection("DefaultParameters").Value;
+
+        public static string GetPythonScriptPath() => _config.GetSection("TextSummarizationPython").GetSection("PythonScriptPath").Value;
+        public static string GetPythonScriptName_PEGASUS_Summary() => _config.GetSection("TextSummarizationPython").GetSection("PythonScriptName_PEGASUS_Summary").Value;
+        public static string GetPythonScriptName_BART_Summary() => _config.GetSection("TextSummarizationPython").GetSection("PythonScriptName_BART_Summary").Value;
+        public static string GetPythonScriptName_TextRank_Summary() => _config.GetSection("TextSummarizationPython").GetSection("PythonScriptName_TextRank_Summary").Value;
+        public static string GetPythonScriptName_Translation() => _config.GetSection("TextSummarizationPython").GetSection("PythonScriptName_Translation").Value;
+        public static string GetPythonScriptName_Translation_Evaluation() => _config.GetSection("TextSummarizationPython").GetSection("PythonScriptName_Translation_Evaluation").Value;
+        public static string GetPythonExePath() => _config.GetSection("TextSummarizationPython").GetSection("PythonExePath").Value;
+
+        public static string GetLaTeXProtocolTemplatePath() => _config.GetSection("LaTeX").GetSection("ProtocolTemplatePath").Value;
+        public static string GetBuildPDFCommand() => _config.GetSection("LaTeX").GetSection("BuildPDFCommand").Value;
+        public static string GetProtocolWorkingDirectoryPath() => _config.GetSection("LaTeX").GetSection("ProtocolWorkingDirectoryPath").Value;
+        public static string GetProtocolLaTeXLogo() => _config.GetSection("LaTeX").GetSection("Logo").Value;
+        public static string GetUnknownImage() => _config.GetSection("LaTeX").GetSection("UnknownImage").Value;
+        public static string GetLaTeXTmpsPath() => _config.GetSection("LaTeX").GetSection("TmpsPath").Value;
+        public static string GetLaTeXCachePath() => _config.GetSection("LaTeX").GetSection("CachePath").Value;
+
+        public static string GetVecTopBaseUrl() => _config.GetSection("VecTopAPI").GetSection("BaseUrl").Value;
+        public static string GetVecTopExtractEndpoint() => _config.GetSection("VecTopAPI").GetSection("ExtractEndpoint").Value;
+        public static string[] GetBlacklistedCategories() => _config.GetSection("VecTopAPI").GetSection("CategoryBlacklist").Value.Split(',');
+
+
         /// <summary>
         /// Returns the db options we need to pass into each new db context.
         /// </summary>
@@ -69,6 +95,18 @@ namespace BundestagMine.SqlDatabase
         {
             var options = new DbContextOptionsBuilder<BundestagMineDbContext>();
             var conn = GetConnectionString();
+            options.UseSqlServer(conn, o => o.CommandTimeout(600));
+            return options.Options;
+        }
+
+        /// <summary>
+        /// Returns the db options we need to pass into each new token db context.
+        /// </summary>
+        /// <returns></returns>
+        public static DbContextOptions<BundestagMineTokenDbContext> GetTokenDbOptions()
+        {
+            var options = new DbContextOptionsBuilder<BundestagMineTokenDbContext>();
+            var conn = GetTokenDbConnectionString();
             options.UseSqlServer(conn, o => o.CommandTimeout(600));
             return options.Options;
         }

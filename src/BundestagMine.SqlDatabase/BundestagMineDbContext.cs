@@ -16,6 +16,15 @@ namespace BundestagMine.SqlDatabase
 
         }
 
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseSqlServer(ConfigManager.GetConnectionString(), builder =>
+        //    {
+        //        builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+        //    });
+        //    base.OnConfiguring(optionsBuilder);
+        //}
+
         public DbSet<Protocol> Protocols { get; set; }
         public DbSet<Deputy> Deputies { get; set; }
         public DbSet<NetworkData> NetworkDatas { get; set; }
@@ -33,5 +42,10 @@ namespace BundestagMine.SqlDatabase
         public DbSet<PollEntry> PollEntries { get; set; }
         public DbSet<AgendaItem> AgendaItems { get; set; }
         public DbSet<ImportedEntity> ImportedEntities { get; set; }
+        public DbSet<DailyPaper> DailyPapers { get; set; }
+        public DbSet<DailyPaperSubscription> DailyPaperSubscriptions { get; set; }
+        public DbSet<TextSummarizationEvaluationScore> TextSummarizationEvaluationScores { get; set; }
+        public DbSet<LaTeXChunk> LaTeXChunks { get; set; }
+        public DbSet<Category> Categories { get; set; }
     }
 }

@@ -1,0 +1,133 @@
+﻿:root {
+    --bg-darkprime: rgba(38,38,38,1);
+}
+
+
+.parliament-panorama-container .bg-image {
+    position: fixed;
+    z-index: -1;
+    left: 50%;
+    bottom: 0;
+    opacity: 0.2;
+    width: 100%;
+    max-width: 700px;
+    transform: translate(-50%, 0%);
+    transition: 0.5s;
+    -webkit-filter: drop-shadow(0px 0px 1px black) drop-shadow(0px 0px 1px black) drop-shadow(0px 0px 1px black) drop-shadow(0px 0px 1px black);
+}
+
+.parliament-panorama-container .category-container {
+}
+
+.parliament-panorama-container .subcategory-container {
+    border-top: lightgray 1px solid;
+    padding-top: 10px;
+    margin-top: 20px;
+    position: relative;
+}
+
+    .parliament-panorama-container .subcategory-container:before {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        content: "";
+        width: 1px;
+        height: 20px;
+        background-color: lightgray;
+    }
+
+    .parliament-panorama-container .subcategory-container .subcategory {
+        position: relative;
+    }
+
+        .parliament-panorama-container .subcategory-container .subcategory:before {
+            position: absolute;
+            top: -10px;
+            left: calc(50% + 0.5px);
+            content: "";
+            width: 1px;
+            height: 15px;
+            background-color: lightgray;
+        }
+
+        .parliament-panorama-container .subcategory-container .subcategory:after {
+            position: absolute;
+            top: 0;
+            border-radius: 50%;
+            transform: translate(-50%, 0);
+            left: calc(50% + 1px);
+            content: "";
+            width: 8px;
+            height: 8px;
+            background-color: lightgray;
+        }
+
+.parliament-panorama-container .category-card {
+    text-align: center;
+    background-color: rgba(255,255,255,0.9);
+    transition: 0.15s;
+    border: gray 1px solid;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
+    .parliament-panorama-container .category-card .line-chart-container .loader {
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        left: 50%;
+    }
+
+    .parliament-panorama-container .category-card .clickable-category {
+        cursor: pointer;
+        transition: 0.15s;
+    }
+
+        .parliament-panorama-container .category-card .clickable-category:hover {
+            text-decoration: underline !important;
+            transition: 0.15s;
+        }
+
+    .parliament-panorama-container .category-card .selected-category {
+        color: var(--bg-darkprime);
+        font-weight: bold;
+    }
+
+    .parliament-panorama-container .category-card:hover {
+        transform: scale(1.025, 1.025);
+        transition: 0.15s;
+        border: black 1px solid;
+    }
+
+        .parliament-panorama-container .category-card:hover h5 {
+            color: black;
+        }
+
+.parliament-panorama-container .selected-category-card {
+    border: black 1px solid;
+    transform: scale(1, 1) !important;
+    margin-bottom: 0.5rem;
+    border-radius: 3px;
+    border-bottom: gold 4px solid !important;
+}
+
+    .parliament-panorama-container .selected-category-card .card-t {
+        display: none !important;
+    }
+
+.parliament-panorama-container .category-speeches-div {
+    padding: 8px;
+}
+
+    .parliament-panorama-container .category-speeches-div .speeches-date-input {
+        border-radius: 0 !important;
+        border-bottom: 0;
+    }
+
+    .parliament-panorama-container .category-speeches-div .category-speeches {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .parliament-panorama-container .category-speeches-div .progress-bar {
+        border-radius:0;
+    }

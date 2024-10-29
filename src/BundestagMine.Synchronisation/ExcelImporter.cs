@@ -41,6 +41,7 @@ namespace BundestagMine.Synchronisation
                         var title = fileName.Substring(22, fileName.Length - 26).Trim();
                         Log.Information("Trying to import poll: " + title);
 
+                        // TODO: UNCOMMENT THIS
                         if (sqlDb.Polls.Any(p => p.Title == title))
                         {
                             Log.Information("Skipping importing Poll because its already in the database: " + title);
@@ -83,12 +84,12 @@ namespace BundestagMine.Synchronisation
                                     entry.Fraction = dt.Rows[row].ItemArray[3].ToString();
                                     entry.LastName = dt.Rows[row].ItemArray[4].ToString();
                                     entry.FirstName = dt.Rows[row].ItemArray[5].ToString();
-                                    entry.Yes = dt.Rows[row].ItemArray[6].ToString() == "1" ? true : false;
-                                    entry.No = dt.Rows[row].ItemArray[7].ToString() == "1" ? true : false;
-                                    entry.Abstention = dt.Rows[row].ItemArray[8].ToString() == "1" ? true : false;
-                                    entry.NotValid = dt.Rows[row].ItemArray[9].ToString() == "1" ? true : false;
-                                    entry.NotSubmitted = dt.Rows[row].ItemArray[10].ToString() == "1" ? true : false;
-                                    entry.Comment = dt.Rows[row].ItemArray[12].ToString();
+                                    entry.Yes = dt.Rows[row].ItemArray[7].ToString() == "1" ? true : false;
+                                    entry.No = dt.Rows[row].ItemArray[8].ToString() == "1" ? true : false;
+                                    entry.Abstention = dt.Rows[row].ItemArray[9].ToString() == "1" ? true : false;
+                                    entry.NotValid = dt.Rows[row].ItemArray[10].ToString() == "1" ? true : false;
+                                    entry.NotSubmitted = dt.Rows[row].ItemArray[11].ToString() == "1" ? true : false;
+                                    //entry.Comment = dt.Rows[row].ItemArray[13].ToString();
                                     poll.Entries.Add(entry);
                                 }
 

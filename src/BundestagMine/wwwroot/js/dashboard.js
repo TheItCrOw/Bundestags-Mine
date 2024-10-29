@@ -12,11 +12,12 @@ async function buildNewDashboard(dashboardId, name, fetchId, type, from, to) {
         $template.addClass('new-dashboard');
         // Set the header text
         $template.find('.header-name').html(name);
+        $template.find('.header-name').attr('data-id', fetchId);
         $template.find('.header-time').html(parseToGermanDate(from) + ' - ' + parseToGermanDate(to));
-        // Add the token chart
-        addTokenChartToDashboard($template, fetchId, type, from, to);
-        // Add the POS chart
-        addPOSChartToDashboard($template, fetchId, type, from, to);
+        // Add the token chart - currenlty not available
+        //addTokenChartToDashboard($template, fetchId, type, from, to);
+        // Add the POS chart - currenly not available
+        //addPOSChartToDashboard($template, fetchId, type, from, to);
         // Add the sentiment radar char
         addSentimentRadarChartToDashboard($template, fetchId, type, from, to);
         // Add the named entity chart
@@ -104,13 +105,12 @@ async function addSentimentRadarChartToDashboard($dashboard, name, type, from, t
 // Adds a pos chart to a dashboard
 async function addPOSChartToDashboard($dashboard, name, type, from, to) {
     // Get parameters
-    var minimum = 20;
     var dashboardId = $dashboard.attr('id');
 
     // Set the header
     $dashboard.find('.pos-chart').attr('id', dashboardId + '-posChart');
     $dashboard.find('.pos-chart').next('.chart-loader').fadeIn(250);
-    $dashboard.find('.pos-chart-card .minimum').html(minimum);
+    $dashboard.find('.pos-chart-card .minimum').html("");
 
     // Build and fill the chart.
     var posChart = buildEmptyPOSChart(dashboardId + '-posChart');
@@ -186,13 +186,13 @@ async function getChartData(chartType, fetchId, type, from, to) {
     else if (chartType == 'Named Entity') {
         var namedEntities = [];
         if (type == 'Gesamt') {
-            namedEntities = await getNamedEntity(20, from, to);
+            namedEntities = await getNamedEntity(10, from, to);
         } else if (type == 'Redner') {
-            namedEntities = await getNamedEntityOfSpeaker(20, fetchId, from, to);
+            namedEntities = await getNamedEntityOfSpeaker(10, fetchId, from, to);
         } else if (type == 'Fraktion') {
-            namedEntities = await getNamedEntityOfFraction(20, fetchId, from, to);
+            namedEntities = await getNamedEntityOfFraction(10, fetchId, from, to);
         } else if (type == 'Party') {
-            namedEntities = await getNamedEntityOfParty(20, fetchId, from, to);
+            namedEntities = await getNamedEntityOfParty(10, fetchId, from, to);
         }
         return await buildNamedEntityDataForChart(namedEntities);
     }

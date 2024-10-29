@@ -1,7 +1,7 @@
-﻿using BundestagMine.RequestModels;
+﻿using BundestagMine.Logic.Services;
+using BundestagMine.RequestModels;
 using BundestagMine.Services;
 using BundestagMine.SqlDatabase;
-using BundestagMine.ViewModels.GlobalSearch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -30,6 +30,7 @@ namespace BundestagMine.Controllers
             _db = db;
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet("/api/GlobalSearchController/GetPollViewModelListViewOfSpeaker/{speakerId}")]
         public async Task<IActionResult> GetPollViewModelListViewOfSpeaker(string speakerId)
         {
@@ -51,6 +52,7 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet("/api/GlobalSearchController/GetSpeechCommentViewModelListViewOfSpeaker/{speakerId}")]
         public async Task<IActionResult> GetSpeechCommentViewModelListViewOfSpeaker(string speakerId)
         {
@@ -72,6 +74,7 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet("/api/GlobalSearchController/GetSpeechViewModelListViewOfSpeaker/{speakerId}")]
         public async Task<IActionResult> GetSpeechViewModelListViewOfSpeaker(string speakerId)
         {
@@ -93,7 +96,11 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
-
+        /// <summary>
+        /// Gets the fully rendered SpeakerInspector html view of a speaker.
+        /// </summary>
+        /// <param name="speakerId">Not the GUID, but the speakerId of a speaker.</param>
+        /// <returns></returns>
         [HttpGet("/api/GlobalSearchController/GetSpeakerInspectorView/{speakerId}")]
         public async Task<IActionResult> GetSpeakerInspectorView(string speakerId)
         {
@@ -115,6 +122,11 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Returns a fully rendered GlobalSearchView of the parameters.
+        /// </summary>
+        /// <param name="globalSearchRequest"></param>
+        /// <returns></returns>
         [HttpPost("/api/GlobalSearchController/GlobalSearch/")]
         public async Task<IActionResult> GlobalSearch(GlobalSearchRequest globalSearchRequest)
         {

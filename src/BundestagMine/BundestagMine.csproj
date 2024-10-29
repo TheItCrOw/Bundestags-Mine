@@ -1,9 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
     <ServerGarbageCollection>true</ServerGarbageCollection>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
     <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
   </PropertyGroup>
 
@@ -13,10 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\Shared\_HomeNew.cshtml" />
     <_ContentIncludedByDefault Remove="wwwroot\js\global-search.js" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="30.0.1" />
     <PackageReference Include="dcsoup" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.8" />
@@ -34,21 +38,25 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGenerators.Mvc" Version="6.0.8" />
     <PackageReference Include="NLog" Version="5.0.2" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="5.1.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
+    <PackageReference Include="Swashbuckle.Core" Version="5.6.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BundestagMine.Logic\BundestagMine.Logic.csproj" />
     <ProjectReference Include="..\BundestagMine.SqlDatabase\BundestagMine.SqlDatabase.csproj" />
     <ProjectReference Include="..\BundestagMine.Synchronisation\BundestagMine.Synchronisation.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\img\" />
     <Folder Include="wwwroot\data\" />
-    <Folder Include="wwwroot\files\" />
     <Folder Include="wwwroot\fonts\" />
+    <Folder Include="wwwroot\files\" />
+    <Folder Include="wwwroot\videos\" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
     <None Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -59,6 +67,10 @@
     <Content Update="nlog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Shared\_HomeNew.cshtml" />
   </ItemGroup>
 
 </Project>

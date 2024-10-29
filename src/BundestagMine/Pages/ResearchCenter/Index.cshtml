@@ -1,0 +1,142 @@
+﻿@page
+@model BundestagMine.Pages.ResearchCenter.IndexModel
+@{
+    ViewData["Title"] = "Research-Center";
+}
+
+<head>
+    <link href="./css/pages/research-center.css" rel="stylesheet">
+</head>
+
+<nav class="bg-darkprime-gradient card-shadow">
+    <div class="container flexed justify-content-between align-items-center">
+        <a class="btn rounded-0" asp-page="/Index">
+            <div>
+                <img class="logo" src="/img/logo/Logo_weiß_transparent_RGB_534x512.png" />
+                <h5 class="ml-2 mb-0 text-light small-font">Bundestags-Mine</h5>
+            </div>
+        </a>
+        <h5 class="m-0 font-weight-bold text-light">
+            Research-Center
+        </h5>
+        <a class="btn rounded-0 hidden">
+            <div>
+                <img class="logo" src="/img/Logo_weiß_transparent_RGB_534x512.png" />
+                <h5 class="ml-2 mb-0 text-light small-font">Bundestags-Mine</h5>
+            </div>
+        </a>
+    </div>
+</nav>
+
+<div class="page-wrapper">
+    <div class="bg-anim"></div>
+    <div class="container mt-5">
+
+        @*Annotations*@
+        <div class="research-topic bg-darkprime-gradient mb-4">
+            <h5 class="font-weight-bold text-light">Was ist Natural Language Processing (NLP)?</h5>
+            <p class="text-white-50">
+                Das "Natural Language Processing" ist ein Bereich der Computerlinguistik.
+                Mithilfe von künstlicher Intelligenz wird versucht, dass ein Computer den Inhalt
+                eines Textes "versteht". Der Computer kann den Text dann sortieren und
+                kategorisieren, Verbindungen herstellen und auf verschiedenste Weise auswerten.
+                Genaueres zu diesen Auswertungen finden Sie in den unten gelisteten Punkten.
+            </p>
+        </div>
+
+        @*With api now*@
+        <div class="alert alert-success card-shadow-light mb-5 flexed align-items-center">
+            <i class="fas fa-exclamation-circle mr-3"></i>
+            <p class="mb-0">Die Bundestags-Mine hat jetzt eine <a target="_blank" href="https://bundestag-mine.de/api/documentation">API Dokumentation</a>!</p>
+        </div>
+
+        <div class="row m-0 p-0">
+            <div class="col-md-5 m-0 p-0 justify-content-center align-items-center position-relative">
+                <div>
+                    <p class="font-italic w-100 text-center mb-0 pr-2">"Standing on the shoulders of giants"</p>
+                    <p class="text-center w-100 mb-0 pr-2">
+                        von
+                        <a class="text-black text-underlined" href="https://www.artlas.design/" target="_blank">
+                            ARTLAS Designs
+                        </a>
+                    </p>
+                    <img src="./img/ARTLAS/Atlas_transparent_klein.png" class="atlas pl-2 pt-2 pb-2 pr-4" />
+                </div>
+            </div>
+
+            <div class="col-md-7 m-0 p-0">
+                @*Annotations*@
+                <div class="research-topic">
+                    <h5 class="font-weight-bold">Text Technology Lab und spaCy (Named-Entities, Sentiment etc.)</h5>
+                    <p class="text-black-50">
+                        spaCy ist eine Library, welche NLP Werkzeuge und Methoden bereitstellt. Das Text Technology Lab
+                        der Goethe-Universität Frankfurt nutzt diese, um NLP Pipelines zu erstellen.
+                        Dies werden von der Bundestags-Mine genutzt, um die Reden der Abgeordneten im Deutschen Bundestag
+                        zu analysieren und annotieren.
+                    </p>
+                    <a class="read-more-btn btn btn-warning float-right" asp-page="BasicAnnotations/">
+                        Mehr erfahren
+                    </a>
+                </div>
+
+                @*text summarization*@
+                <div class="research-topic">
+                    <h5 class="font-weight-bold">Automatic Text Summarization (+ Übersetzungen und Sprach-Modelle)</h5>
+                    <p class="text-black-50">
+                        Die Kunst, Dokumente und Texte maschinell zusammenzufassen. Dies wird in der Bundestags-Mine genutzt,
+                        um die Reden der Abgeordneten im Deutschen Bundestag automatisch zusammenzufassen.
+                    </p>
+                    <a class="read-more-btn btn btn-warning float-right" asp-page="AutomaticTextSummarization/">
+                        Mehr erfahren
+                    </a>
+                </div>
+
+                @*VecTop*@
+                <div class="research-topic">
+                    <h5 class="font-weight-bold">VecTop</h5>
+                    <h6>Vector Database for Topic Extraction using Contextualized Word Embeddings</h6>
+                    <p class="text-black-50">
+                        Gegeben sei ein unbekannter Text. Wie können wir diesen Text in Kategorien und Unterkategorien einordnen,
+                        um somit eine strukturierte Übersicht eines ganzen Korpus zu erhalten? Unteranderem mit VecTop.
+                    </p>
+                    <a class="read-more-btn btn btn-warning float-right" asp-page="VecTop/">
+                        Mehr erfahren
+                    </a>
+                </div>
+
+                @*Web scraper*@
+                <div class="research-topic">
+                    <h5 class="font-weight-bold">Web Scraper</h5>
+                    <p class="text-black-50">
+                        Die Daten (Reden, Protokolle, Drucksachen, etc.), die hier in der Bundestags-Mine verarbeitet und benutzt werden, sind alle von der
+                        Seite des deutschen Bundestags ge-webscraped worden.
+                    </p>
+                    <a class="read-more-btn btn btn-warning float-right" asp-page="WebScraper/">
+                        Mehr erfahren
+                    </a>
+                </div>
+
+                @*GitHub Repo*@
+                <div class="research-topic">
+                    <h5 class="font-weight-bold">Source Code</h5>
+                    <p class="text-black-50">
+                        Sowohl die Webapplikation "Bundestags-Mine", als auch die in Java genutzte NLP Pipeline und alle
+                        anderen Services sind öffentlich auf GitHub einzusehen. Dazu gibt es die zwei Repositories "NLP-Service"
+                        und "Bundestags-Mine".
+                    </p>
+                    <a class="read-more-btn btn btn-warning float-right" href="https://github.com/TheItCrOw" target="_blank">
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Activate popovers
+        $('[data-toggle="popover"]').popover();
+    }
+</script>

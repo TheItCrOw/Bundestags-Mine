@@ -182,7 +182,10 @@
 
     // Init the topic map
     $(document).ready(async function () {
-        await initTopicMapChart(await getTopicMapChartData("2017"));
+        if (!window.mobileCheck())
+            await initTopicMapChart(await getTopicMapChartData("2017"));
+        else
+            console.log("Not initing the topic map due to mobile device");
     })
 
     // Handle the switching of the time frame year

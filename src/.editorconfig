@@ -1,0 +1,7 @@
+﻿[*.cs]
+
+# CS8601: Mögliche Nullverweiszuweisung.
+dotnet_diagnostic.CS8601.severity = silent
+
+# CS8619: Die NULL-Zulässigkeit von Verweistypen im Wert entspricht nicht dem Zieltyp.
+dotnet_diagnostic.CS8619.severity = silent

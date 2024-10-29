@@ -1,4 +1,4 @@
-﻿using BundestagMine.Services;
+﻿using BundestagMine.Logic.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -14,6 +14,7 @@ namespace BundestagMine.Controllers
     }
 
     [Route("api/AdminCockpitController")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     [ApiController]
     public class AdminCockpitController : Controller
     {

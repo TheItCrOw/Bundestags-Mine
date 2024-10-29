@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BundestagMine.Data;
+using BundestagMine.Logic.Services;
 using BundestagMine.Services;
 using BundestagMine.SqlDatabase;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -15,6 +17,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.Swagger;
+using Swashbuckle.AspNetCore.Annotations;
+using System.Reflection;
+using System.IO;
 
 namespace BundestagMine
 {
@@ -30,12 +37,17 @@ namespace BundestagMine
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Add the default db context
             services.AddDbContext<BundestagMineDbContext>(
                 option => option.UseSqlServer(ConfigManager.GetConnectionString(), o => o.CommandTimeout(600)));
+            // Add the identity db context
             services.AddDbContext<IdentityContext>(
                 option => option.UseSqlServer(ConfigManager.GetConnectionString(), o => o.CommandTimeout(600)));
+            // Add the token db context
+            services.AddDbContext<BundestagMineTokenDbContext>(
+                option => option.UseSqlServer(ConfigManager.GetTokenDbConnectionString(), o => o.CommandTimeout(600)));
             services.AddLogging(c => c.ClearProviders());
-            
+
             // Identity Configurations.
             services.AddIdentity<IdentityUser, IdentityRole>()
                     .AddEntityFrameworkStores<IdentityContext>()
@@ -52,7 +64,7 @@ namespace BundestagMine
                 options.Password.RequiredLength = 6;
 
                 // Lockout settings.
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(180);
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.AllowedForNewUsers = true;
 
@@ -65,7 +77,7 @@ namespace BundestagMine
             {
                 // Cookie settings
                 options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(120); // TODO: THis is best with 5 minutes
 
                 options.LoginPath = "/Identity/Account/Login";
                 options.LogoutPath = "/Identity/Account/Logout";
@@ -77,17 +89,47 @@ namespace BundestagMine
             services.AddControllers();
             services.AddHttpContextAccessor();
             services.AddRazorPages().AddRazorRuntimeCompilation();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo()
+                {
+                    Title = "Bundestags-Mine API Docs",
+                    Version = "v1",
+                    Description = "A short API documentation of the Bundestags-Mine",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Kevin Bönisch",
+                        Url = new Uri("https://www.linkedin.com/in/kevin-b%C3%B6nisch-0a91751a3/")
+                    }
+                });
+                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var path = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+                try
+                {
+                    c.IncludeXmlComments(path);
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("Error getting the swagger descriptions: " + path);
+                    Console.WriteLine(ex.Message);
+                }
+            });
 
             services.AddTransient<AnnotationService>();
             services.AddTransient<ViewRenderService>();
-            services.AddTransient<GraphService>();
+            services.AddTransient<GraphDataService>();
             services.AddTransient<MetadataService>();
             services.AddTransient<BundestagScraperService>();
             services.AddTransient<TopicAnalysisService>();
             services.AddTransient<ImportService>();
             services.AddTransient<GlobalSearchService>();
             services.AddTransient<DownloadCenterService>();
-
+            services.AddTransient<DailyPaperService>();
+            services.AddTransient<PixabayApiService>();
+            services.AddTransient<TextSummarizationService>();
+            services.AddTransient<LaTeXService>();
+            services.AddTransient<VecTopService>();
+            services.AddTransient<CategoryService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -102,6 +144,23 @@ namespace BundestagMine
                 app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+            }
+
+            try
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1");
+                    c.RoutePrefix = "api/documentation";
+                    c.DocumentTitle = "Bundestags-Mine API";
+                    c.InjectStylesheet("/swagger-theme.css");
+                });
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Couldn't setup swagger UI.");
+                Console.WriteLine(ex.ToString());
             }
 
             app.UseHttpsRedirection();

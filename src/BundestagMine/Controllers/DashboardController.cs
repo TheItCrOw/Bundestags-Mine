@@ -6,7 +6,6 @@ using System.IO;
 using System.Threading.Tasks;
 using BundestagMine.Extensions;
 using BundestagMine.Models.Database.MongoDB;
-using BundestagMine.Services;
 using BundestagMine.SqlDatabase;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +14,13 @@ using Supremes;
 using Newtonsoft.Json;
 using BundestagMine.Utility;
 using BundestagMine.RequestModels;
-using BundestagMine.ViewModels;
 using System.Text.RegularExpressions;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using BundestagMine.Logic.Services;
+using BundestagMine.Services;
+using BundestagMine.Logic.ViewModels;
+using BundestagMine.Logic.ViewModels.FulltextAnalysis;
 
 namespace BundestagMine.Controllers
 {
@@ -26,25 +28,30 @@ namespace BundestagMine.Controllers
     [ApiController]
     public class DashboardController : Controller
     {
+        private readonly CategoryService _categoryService;
         private readonly GlobalSearchService _globalSearchService;
         private readonly ILogger<DashboardController> _logger;
         private readonly TopicAnalysisService _topicAnalysisService;
         private readonly BundestagScraperService _bundestagScraperService;
-        private readonly GraphService _graphService;
+        private readonly GraphDataService _graphService;
         private readonly MetadataService _metadataService;
         private readonly ViewRenderService _viewRenderService;
         private readonly AnnotationService _annotationService;
         private readonly BundestagMineDbContext _db;
+        private readonly BundestagMineTokenDbContext _tdb;
 
         public DashboardController(BundestagMineDbContext db, AnnotationService tokenService,
             ViewRenderService viewRenderService,
             MetadataService metadataService,
-            GraphService graphService,
+            GraphDataService graphService,
             BundestagScraperService bundestagScraperService,
             TopicAnalysisService topicAnalysisService,
             ILogger<DashboardController> logger,
-            GlobalSearchService globalSearchService)
+            GlobalSearchService globalSearchService,
+            BundestagMineTokenDbContext tdb,
+            CategoryService categoryService)
         {
+            _categoryService = categoryService;
             _globalSearchService = globalSearchService;
             _logger = logger;
             _topicAnalysisService = topicAnalysisService;
@@ -54,8 +61,13 @@ namespace BundestagMine.Controllers
             _viewRenderService = viewRenderService;
             _annotationService = tokenService;
             _db = db;
+            _tdb = tdb;
         }
 
+        /// <summary>
+        /// Gets all protocols imported into the Bundestags-Mine
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("/api/DashboardController/GetProtocols")]
         public IActionResult GetProtocols()
         {
@@ -88,6 +100,10 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets all parties currently imported into the Bundestags-Mine
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("/api/DashboardController/GetParties")]
         public IActionResult GetParties()
         {
@@ -118,6 +134,11 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets all fractions currently imported into the Bundestags-Mine
+        /// </summary>
+        /// <returns></returns>
+
         [HttpGet("/api/DashboardController/GetFractions")]
         public IActionResult GetFractions()
         {
@@ -127,7 +148,6 @@ namespace BundestagMine.Controllers
             {
                 response.status = "200";
                 response.result = _metadataService.GetFractions();
-
             }
             catch (Exception ex)
             {
@@ -139,8 +159,14 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets the AgendaItem objects to a single protocol
+        /// </summary>
+        /// <param name="protocolIdAsString">The GUID of the protocol</param>
+        /// <returns></returns>
+
         [HttpGet("/api/DashboardController/GetAgendaItemsOfProtocol/{protocolIdAsString}")]
-        public IActionResult GetAgendaItemsOfProtocol(string protocolIdAsString)
+        public async Task<IActionResult> GetAgendaItemsOfProtocol(string protocolIdAsString)
         {
             dynamic response = new ExpandoObject();
 
@@ -148,7 +174,11 @@ namespace BundestagMine.Controllers
             {
                 var id = Guid.Parse(protocolIdAsString);
                 response.status = "200";
-                response.result = _db.AgendaItems.Where(a => a.ProtocolId == id).OrderBy(a => a.Order).ToList();
+                response.result = new
+                {
+                    agendaItems = _db.AgendaItems.Where(a => a.ProtocolId == id).OrderBy(a => a.Order).ToList(),
+                    unassingableSpeechesCount = await _metadataService.GetUnassignableNLPSpeechesCountAsync(id)
+                };
             }
             catch (Exception ex)
             {
@@ -159,6 +189,12 @@ namespace BundestagMine.Controllers
 
             return Json(response);
         }
+
+        /// <summary>
+        /// Gets the polls of a protocol
+        /// </summary>
+        /// <param name="param">legislature_period + ',' + protocol_number</param>
+        /// <returns></returns>
 
         [HttpGet("/api/DashboardController/GetPollsOfProtocol/{param}")]
         public IActionResult GetPollsOfProtocol(string param)
@@ -184,6 +220,12 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets the original url from the German Bundestag to this poll
+        /// </summary>
+        /// <param name="pollIdAsString">The GUID of the poll.</param>
+        /// <returns></returns>
+
         [HttpGet("/api/DashboardController/GetBundestagUrlOfPoll/{pollIdAsString}")]
         public async Task<IActionResult> GetBundestagUrlOfPoll(string pollIdAsString)
         {
@@ -206,6 +248,12 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets a speaker object by its id.
+        /// </summary>
+        /// <param name="speakerId">This is not the GUID, but the "speakerId" as it can also be used on the German Bundestag page.</param>
+        /// <returns></returns>
+
         [HttpGet("/api/DashboardController/GetSpeakerById/{speakerId}")]
         public IActionResult GetSpeakerById(string speakerId)
         {
@@ -227,11 +275,14 @@ namespace BundestagMine.Controllers
         }
 
         /// <summary>
-        /// Param[0] = limit, Param[1] = from, Param[2] = to, Param[3] = fraction, Param[4] = party,
+        /// Param[0] = limit, Param[1] = from_date, Param[2] = to_date, Param[3] = fraction, Param[4] = party
+        /// TODO: What is this used for...? Looks bizarre.
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
         [HttpGet("/api/DashboardController/GetSpeaker/{param}")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+
         public IActionResult GetSpeaker(string param)
         {
             dynamic response = new ExpandoObject();
@@ -288,9 +339,14 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets the raw speeches objects of an agenda item.
+        /// </summary>
+        /// <param name="param">legislature_period + ',' + protocol_number + ',' + agenda_item_number</param>
+        /// <returns></returns>
 
         [HttpGet("/api/DashboardController/GetSpeechesOfAgendaItem/{param}")]
-        public IActionResult GetSpeechesOfAgendaItem(string param)
+        public async Task<IActionResult> GetSpeechesOfAgendaItem(string param)
         {
             dynamic response = new ExpandoObject();
 
@@ -301,20 +357,109 @@ namespace BundestagMine.Controllers
                 var protocol = int.Parse(splited[1]);
                 var number = int.Parse(splited[2]);
                 response.status = "200";
-                response.result = _db.Speeches
-                    .Where(s => s.LegislaturePeriod == period && s.ProtocolNumber == protocol && s.AgendaItemNumber == number)
-                    .ToList();
+                var speeches = new List<NLPSpeech>();
+                if (number == -1)
+                    speeches = _metadataService.GetUnassignableNLPSpeeches(
+                        _db.Protocols.FirstOrDefault(p => p.LegislaturePeriod == period && p.Number == protocol))
+                        .ToList();
+                else
+                    speeches = _metadataService.GetNLPSpeechesOfAgendaItem(period, protocol, number);
+
+                // We also send the categories of the speeches
+                response.result = new
+                {
+                    Speeches = speeches,
+                    Categories = speeches.Select(s => _categoryService.GetCategoryViewModelsOfSpeech(s))
+                };
             }
             catch (Exception ex)
             {
                 response.status = "400";
-                response.message = "Couldn't fetch agenda items, error in logs";
+                response.message = "Couldn't fetch speeches of agenda item, error in logs";
                 _logger.LogError(ex, "Error fetching speeches of agenda item:");
             }
 
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets the Tokens, Named-Entities and Sentiments of a single NLPSpeech.
+        /// </summary>
+        /// <param name="idAsString">The GUID of the speech.</param>
+        /// <returns></returns>
+
+        [HttpGet("/api/DashboardController/GetNLPAnnotationsOfSpeech/{idAsString}")]
+        public IActionResult GetNLPAnnotationsOfSpeech(string idAsString)
+        {
+            dynamic response = new ExpandoObject();
+
+            try
+            {
+                var id = Guid.Parse(idAsString);
+                response.status = "200";
+
+                response.result = new
+                {
+                    tokens = _tdb.Token.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList(),
+                    namedEntities = _db.NamedEntity.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList(),
+                    sentiments = _db.Sentiment.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                response.status = "400";
+                response.message = $"Couldn't fetch nlp annotations of speech {idAsString}, error in logs";
+                _logger.LogError(ex, "Error fetching nlp annotations of speech:");
+            }
+
+            return Json(response);
+        }
+
+        /// <summary>
+        /// Gets a full rendered speech statistics view of a NLPSpeech.
+        /// </summary>
+        /// <param name="idAsString">The GUID of the speech</param>
+        /// <returns></returns>
+        [HttpGet("/api/DashboardController/GetNLPSpeechStatisticsView/{idAsString}")]
+        public async Task<IActionResult> GetNLPSpeechStatisticsView(string idAsString)
+        {
+            dynamic response = new ExpandoObject();
+
+            try
+            {
+                var id = Guid.Parse(idAsString);
+                response.status = "200";
+
+                var speech = await _db.NLPSpeeches.FindAsync(id);
+                var speechVm = new NLPSpeechStatisticsViewModel()
+                {
+                    Speech = speech,
+                    StackedNamedEntityWithSentimentChartData =
+                    _annotationService.GetNamedEntityWithSentimentOfSpeechForStackedBarChart(speech),
+                    SentimentRadarChartData = _annotationService.GetSentimentsForGraphs(
+                        DateTime.Now, DateTime.Now, "", "", "", speech.Id.ToString()),
+                    AverageSentiment = _annotationService.GetSentimentsOfNLPSpeechWithoutShouts(speech.Id)
+                                        .Average(s => s.SentimentSingleScore)
+                };
+
+                response.result = await _viewRenderService.RenderToStringAsync("FulltextAnalysis/_NLPSpeechStatisticsView",
+                    speechVm);
+            }
+            catch (Exception ex)
+            {
+                response.status = "400";
+                response.message = "Couldn't fetch statistisc view for the nlp speech, error in logs";
+                _logger.LogError(ex, "Error fetching statistisc view  for nlp speech:");
+            }
+
+            return Json(response);
+        }
+
+        /// <summary>
+        /// Gets a NLPSpeech by its id (meaning: the speech alongside NLP annotations)
+        /// </summary>
+        /// <param name="idAsString">The GUID of the speech (NLPSpeech and speech have the same GUID)</param>
+        /// <returns></returns>
         [HttpGet("/api/DashboardController/GetNLPSpeechById/{idAsString}")]
         public async Task<IActionResult> GetNLPSpeechById(string idAsString)
         {
@@ -326,15 +471,10 @@ namespace BundestagMine.Controllers
                 response.status = "200";
 
                 var speech = await _db.NLPSpeeches.FindAsync(id);
-                speech.Tokens = _db.Token.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
-                speech.NamedEntities = _db.NamedEntity.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
-                speech.Sentiments = _db.Sentiment.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin).ToList();
                 speech.Segments = _db.SpeechSegment.Include(s => s.Shouts).Where(s => s.SpeechId == speech.Id).ToList();
-                //speech.CategoryCoveredTags = _db.CategoryCoveredTagged.Where(c => c.NLPSpeechId == speech.Id)
-                //    .OrderByDescending(t => t.Score).ToList();
 
                 // We want the top X named entities which build the topic of this speech.
-                var topics = speech.NamedEntities
+                var topics = _db.NamedEntity.Where(t => t.NLPSpeechId == id && t.ShoutId == Guid.Empty).OrderBy(t => t.Begin)
                     .GroupBy(ne => ne.LemmaValue)
                     .OrderByDescending(g => g.Count())
                     .Select(ne => new
@@ -362,6 +502,11 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets the comment network data as a json file of the whole speeches.
+        /// </summary>
+        /// <returns></returns>
+
         [HttpGet("/api/DashboardController/GetCommentNetworkData/")]
         public IActionResult GetCommentNetworkData()
         {
@@ -371,8 +516,18 @@ namespace BundestagMine.Controllers
             {
                 response.status = "200";
                 var data = _db.NetworkDatas.First();
-                data.Links = _db.CommentNetworkLink.ToList();
-                data.Nodes = _db.CommentNetworkNode.ToList();
+                var nodes = _db.CommentNetworkNode.Where(nl => nl.Party != String.Empty).ToList();
+                // We only want those links, where the source and target exist in the nodes list. Otherwise
+                // they are useless.
+                var links = _db.CommentNetworkLink
+                    .AsEnumerable()
+                    .Where(nl => nodes.Any(n => n.Id == nl.Target)
+                    && nodes.Any(n => n.Id == nl.Source)
+                    && nl.Value >= 10)
+                    .ToList();
+
+                data.Links = links;
+                data.Nodes = nodes;
                 response.result = data;
             }
             catch (Exception ex)
@@ -385,6 +540,11 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets the topic map chart data as json of a specific year
+        /// </summary>
+        /// <param name="year">2017-today</param>
+        /// <returns></returns>
         [HttpGet("/api/DashboardController/GetTopicMapChartData/{year}")]
         public IActionResult GetTopicMapChartData(string year)
         {
@@ -405,6 +565,10 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets the whole topic bar race chart data as json.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("/api/DashboardController/GetTopicBarRaceChartData/")]
         public IActionResult GetTopicBarRaceChartData()
         {
@@ -425,6 +589,12 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets a list of annotated tokens. Params fraction, party and speakerId are optional.
+        /// </summary>
+        /// <param name="param">limit + ',' + 'from_date' + ',' + 'to_date' + ',' + fraction + ',' + party + ',' + speakerId</param>
+        /// <returns></returns>
+
         [HttpGet("/api/DashboardController/GetTokens/{param}")]
         public IActionResult GetTokens(string param)
         {
@@ -440,6 +610,8 @@ namespace BundestagMine.Controllers
                 var party = splited[4];
                 var speakerId = splited[5];
 
+                // This is currently not working since we had to source out all the tokens into a different
+                // database!
                 response.result = _annotationService.GetTokensForGraphs(limit, from, to, fraction, party, speakerId);
                 response.status = "200";
             }
@@ -452,6 +624,12 @@ namespace BundestagMine.Controllers
 
             return Json(response);
         }
+
+        /// <summary>
+        /// Gets a list of annotated POS. Params fraction, party and speakerId are optional.
+        /// </summary>
+        /// <param name="param">limit + ',' + 'from_date' + ',' + 'to_date' + ',' + fraction + ',' + party + ',' + speakerId</param>
+        /// <returns></returns>
 
         [HttpGet("/api/DashboardController/GetPOS/{param}")]
         public IActionResult GetPOS(string param)
@@ -468,6 +646,8 @@ namespace BundestagMine.Controllers
                 var party = splited[4];
                 var speakerId = splited[5];
 
+                // This is currently not working since we had to source out all the tokens into a different
+                // database!
                 response.result = _annotationService.GetPOSForGraphs(limit, from, to, fraction, party, speakerId);
                 response.status = "200";
             }
@@ -480,6 +660,12 @@ namespace BundestagMine.Controllers
 
             return Json(response);
         }
+
+        /// <summary>
+        /// Gets a list of annotated sentiments. Params fraction, party and speakerId are optional.
+        /// </summary>
+        /// <param name="param">'from_date' + ',' + 'to_date' + ',' + fraction + ',' + party + ',' + speakerId</param>
+        /// <returns></returns>
 
         [HttpGet("/api/DashboardController/GetSentiments/{param}")]
         public IActionResult GetSentiments(string param)
@@ -507,6 +693,12 @@ namespace BundestagMine.Controllers
 
             return Json(response);
         }
+
+        /// <summary>
+        /// Gets a list of annotated Named-Entities. Params fraction, party and speakerId are optional.
+        /// </summary>
+        /// <param name="param">limit + ',' + 'from_date' + ',' + 'to_date' + ',' + fraction + ',' + party + ',' + speakerId</param>
+        /// <returns></returns>
 
         [HttpGet("/api/DashboardController/GetNamedEntitites/{param}")]
         public IActionResult GetNamedEntitites(string param)
@@ -536,6 +728,12 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Searches through Named-Entities and returns a possibly found one from the database.
+        /// Returns a Named-Entity object.
+        /// </summary>
+        /// <param name="searchString">E.g. "Ukraine"</param>
+        /// <returns></returns>
         [HttpGet("/api/DashboardController/SearchNamedEntities/{searchString}")]
         public IActionResult SearchNamedEntities(string searchString)
         {
@@ -546,8 +744,8 @@ namespace BundestagMine.Controllers
                 searchString = searchString.ToCleanRequestString();
                 response.status = "200";
                 response.result = _db.NamedEntity
-                    .Where(ne => !TopicHelper.TopicBlackList.Contains(ne.LemmaValue) && 
-                            ne.LemmaValue.ToLower().Trim().Contains(searchString.ToLower().Trim()) 
+                    .Where(ne => !TopicHelper.TopicBlackList.Contains(ne.LemmaValue) &&
+                            ne.LemmaValue.ToLower().Trim().Contains(searchString.ToLower().Trim())
                             && ne.ShoutId == Guid.Empty)
                     .GroupBy(ne => ne.LemmaValue)
                     .OrderByDescending(kv => kv.Count())
@@ -564,6 +762,12 @@ namespace BundestagMine.Controllers
 
             return Json(response);
         }
+
+        /// <summary>
+        /// Gets the sentiment/tone of a speaker about a specific Named-Entity
+        /// </summary>
+        /// <param name="param">from_date  + ',' + to_date + ',' + speakerId + ',' + namedEntity_as_string</param>
+        /// <returns></returns>
 
         [HttpGet("/api/DashboardController/GetSpeakerSentimentsAboutNamedEntity/{param}")]
         public IActionResult GetSpeakerSentimentsAboutNamedEntity(string param)
@@ -591,6 +795,11 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Searches the speeches for a given searchterm. Returns speech objects with their AgendaItems.
+        /// </summary>
+        /// <param name="searchTerm">The search term as a string</param>
+        /// <returns></returns>
         [HttpGet("/api/DashboardController/SearchSpeeches/{searchTerm}")]
         public IActionResult SearchSpeeches(string searchTerm)
         {
@@ -621,6 +830,7 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet("/api/DashboardController/GetHomescreenData")]
         public IActionResult GetHomescreenData()
         {
@@ -632,7 +842,7 @@ namespace BundestagMine.Controllers
                 response.result.protocols = _db.Protocols.Count();
                 response.result.speeches = _db.Speeches.Count();
                 response.result.deputies = _db.Deputies.Count();
-                response.result.tokens = _db.Token.Count();
+                response.result.tokens = _tdb.Token.Count();
                 response.status = "200";
             }
             catch (Exception ex)
@@ -645,6 +855,11 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Gets the image/portrait of a deputy as a Base64encoded String
+        /// </summary>
+        /// <param name="speakerId">Not the GUID, but the speakerId of a speaker.</param>
+        /// <returns></returns>
         [HttpGet("/api/DashboardController/GetDeputyPortrait/{speakerId}")]
         public async Task<IActionResult> GetDeputyPortrait(string speakerId)
         {
@@ -672,6 +887,7 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpPost("/api/DashboardController/PostNewTopicAnalysis/")]
         public async Task<IActionResult> PostNewTopicAnalysis(TopicAnalysisConfigurationRequest configurationRequest)
         {
@@ -708,6 +924,7 @@ namespace BundestagMine.Controllers
             return Json(response);
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpPost("/api/DashboardController/BuildReportPage/")]
         public async Task<IActionResult> BuildReportPage(ReportPageRequest reportPageRequest)
         {

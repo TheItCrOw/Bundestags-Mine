@@ -11,16 +11,24 @@ body {
 }
 
 @font-face {
-    font-family: montreal;
-    src: url('/fonts/montreal/PPNeueMontreal-Book.otf') format("opentype");
+    font-family: railway;
+    src: url('/fonts/raleway/Raleway-VariableFont_wght.ttf') format("opentype");
 }
 
 * {
-    font-family: montreal;
+    font-family: railway;
+}
+
+.text-shadow {
+    text-shadow: 2px 2px black;
 }
 
 .font-italic {
     font-style: italic;
+}
+
+.text-line-through {
+    text-decoration: line-through;
 }
 
 .overflow {
@@ -31,8 +39,8 @@ body {
     font-size: 25px;
 }
 
-.xxlarge-font{
-    font-size:xx-large;
+.xxlarge-font {
+    font-size: xx-large;
 }
 
 .text-purple {
@@ -42,6 +50,23 @@ body {
 .clickable {
     cursor: pointer !important;
 }
+
+.transition {
+    transition: 0.25s;
+}
+
+    .transition:hover {
+        transition: 0.25s;
+    }
+
+.hoverable {
+    transition: 0.25s;
+}
+
+    .hoverable:hover {
+        transform: scale(1.55, 1.55);
+        transition: 0.25s;
+    }
 
 /*loader*/
 .lds-ripple {
@@ -110,15 +135,64 @@ body {
 }
 
 .navbar-nav {
-    z-index: 5 !important;
+    left: -100%;
+    background-color: white;
+    min-width: calc(33vw + 6px) !important;
+    position: fixed;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    z-index: 6 !important;
 }
 
-.navbar-expand {
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    .navbar-nav:before {
+        content: '';
+        position: fixed;
+        pointer-events: all;
+        z-index: 3;
+        background-color: rgba(0,0,0,0.4);
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+    }
+
+    .navbar-nav .navbar-content {
+        padding: 12px;
+        z-index: 6;
+        overflow-y: auto;
+        height: 100vh;
+        border-right: gold 6px solid;
+    }
+
+.main-content-header {
+    top: 0;
+    border-bottom: 1px gold solid;
+    position: sticky !important;
+    align-items: center;
+    z-index: 5;
+    align-items: center;
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 10px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
 }
+
+.nav-button {
+    transition: 0.25s;
+    outline: none !important;
+    padding: 6px !important;
+    border-bottom: none;
+    box-shadow: none !important;
+}
+
+    .nav-button:hover {
+        transition: 0.25s;
+        transform: scale(1.1, 1.1);
+    }
 
 .position-fixed {
     position: fixed;
+}
+
+.img-shadow {
+    -webkit-filter: drop-shadow(1px 1px 0 gray) drop-shadow(-1px -1px 0 gray);
+    filter: drop-shadow(1px 1px 0 gray) drop-shadow(-1px -1px 0 gray);
 }
 
 .margin-top-navbar {
@@ -168,6 +242,10 @@ body {
     font-size: small;
 }
 
+.xsmall-font {
+    font-size: x-small;
+}
+
 .medium-font {
     font-size: medium;
 }
@@ -176,12 +254,12 @@ body {
     max-width: 0;
 }
 
-.hidden{
-    visibility:hidden;
+.hidden {
+    visibility: hidden;
 }
 
-.pointer-events-none{
-    pointer-events:none;
+.pointer-events-none {
+    pointer-events: none;
 }
 
 .border-dashed {
@@ -196,8 +274,8 @@ body {
     border-top: 0;
 }
 
-.text-underlined{
-    text-decoration:underline;
+.text-underlined {
+    text-decoration: underline;
 }
 
 .display-none {
@@ -218,37 +296,64 @@ body {
     min-height: 100%;
 }
 
+.max-height-100vh {
+    max-height: 100vh;
+}
+
+.link-container {
+    border: 1px lightgray solid;
+    background-color: white;
+}
+
 .nav-item {
     transition: .15s;
     cursor: pointer;
+    margin-bottom: 0px !important;
 }
 
-    .nav-item a:first-child{
-        transition:.15s;
+    .nav-item a {
+        padding: 12px !important;
     }
 
-    .nav-item a:first-child:hover {
-        transform: scale(1.05, 1.05);
-        transition: .15s;
-        color: white;
-    }
+        .nav-item a:first-child {
+            transition: .15s;
+        }
+
+            .nav-item a:first-child:hover {
+                transform: scale(1.025, 1.025);
+                transition: .15s;
+                color: black;
+            }
 
 .selected-nav-item {
-    color: white;
-    border-left: solid;
-    border-color: gold;
-    border-width: 8px;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    color: black;
+    border-left: solid gold 8px;
+    border-top: lightgray 1px solid;
+    border-bottom: lightgray 1px solid;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
 
 .start-loader {
     position: fixed;
+    background-image: url(/img/logo/Logo_schwarz_transparent_RGB_1069x1024.png);
     width: 100%;
     height: 100%;
     top: 0;
     left: 0;
     z-index: 100;
 }
+
+    .start-loader .bg-img {
+        position: absolute;
+        z-index: -1;
+        left: 50%;
+        top: 50%;
+        opacity: 0.5;
+        width: 100%;
+        max-width: 700px;
+        transform: translate(-50%, -50%);
+        -webkit-filter: drop-shadow(0px 0px 1px lightgray) drop-shadow(0px 0px 1px lightgray) drop-shadow(0px 0px 1px lightgray) drop-shadow(0px 0px 1px lightgray);
+    }
 
     .start-loader .lds-ripple {
         position: absolute;
@@ -266,6 +371,7 @@ body {
 
     .start-loader #startLoaderStatusMessage {
         position: absolute;
+        color: var(--bg-darkprime);
         width: 100%;
         text-align: center;
         top: 55%;
@@ -278,8 +384,8 @@ body {
         text-align: center;
     }
 
-    .start-loader img{
-        width:150px;
+    .start-loader img {
+        width: 150px;
     }
 
 .dashboard-ribbon {
@@ -432,6 +538,9 @@ body {
 
     .speechviewmodel-list .speech .text {
         font-size: small;
+        border-left: 1px lightgray solid;
+        padding-left: 6px;
+        padding-top: 4px;
     }
 
     .speechviewmodel-list .speech .open-speech-btn {
@@ -537,7 +646,7 @@ body {
         margin-bottom: 0;
         font-size: small;
         color: black;
-        width:auto;
+        width: auto;
         cursor: pointer;
         text-decoration: underline;
     }
@@ -569,3 +678,185 @@ body {
             font-weight: bold;
             margin-bottom: 0;
         }
+
+/* helper popup here */
+.view-helper-tooltip {
+    position: absolute;
+    top: 65%;
+    width: 37px;
+    height: 37px;
+    background-color: white;
+    left: calc(100% - 36px);
+    z-index: 98;
+    border-radius: 50% 0% 0% 50%;
+    text-align: center;
+    border: gray 1px solid;
+    transition: 0.25s;
+}
+
+    .view-helper-tooltip:hover {
+        transform: scale(1.1, 1.1);
+        transition: 0.25s;
+        cursor: pointer;
+        background-color: white;
+    }
+
+.view-helper-video-box {
+    position: absolute;
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.95);
+    z-index: 99;
+}
+
+    .view-helper-video-box iframe {
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        top: 50%;
+        box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+    }
+
+@media only screen and (max-width: 750px) {
+    .view-helper-video-box iframe {
+        height: 205px;
+        width: 350px;
+    }
+}
+
+/*Color fade animation*/
+@-webkit-keyframes bgAnimation {
+    0% {
+        background-position: 0% 76%
+    }
+
+    50% {
+        background-position: 100% 25%
+    }
+
+    100% {
+        background-position: 0% 76%
+    }
+}
+
+@-moz-keyframes AnimationName {
+    0% {
+        background-position: 0% 76%
+    }
+
+    50% {
+        background-position: 100% 25%
+    }
+
+    100% {
+        background-position: 0% 76%
+    }
+}
+
+@keyframes AnimationName {
+    0% {
+        background-position: 0% 76%
+    }
+
+    50% {
+        background-position: 100% 25%
+    }
+
+    100% {
+        background-position: 0% 76%
+    }
+}
+
+/*bg darkprime gradient*/
+.bg-darkprime-gradient {
+    background: linear-gradient(245deg, #ffffff, #818181, #000000);
+    background-size: 600% 600%;
+    -webkit-animation: bgAnimation 2s ease infinite;
+    -moz-animation: bgAnimation 2s ease infinite;
+    animation: bgAnimation 0s ease infinite;
+}
+/*end darkprime gradient*/
+
+/* bg animation*/
+/* Cool infinite background scrolling animation.
+ * Twitter: @kootoopas
+ */
+/* Exo thin font from Google. */
+@import url(https://fonts.googleapis.com/css?family=Exo:100);
+/* Background data (Original source: https://subtlepatterns.com/grid-me/) */
+/* Animations */
+@-webkit-keyframes bg-scrolling-reverse {
+    100% {
+        background-position: 50px 50px;
+    }
+}
+
+@-moz-keyframes bg-scrolling-reverse {
+    100% {
+        background-position: 50px 50px;
+    }
+}
+
+@-o-keyframes bg-scrolling-reverse {
+    100% {
+        background-position: 50px 50px;
+    }
+}
+
+@keyframes bg-scrolling-reverse {
+    100% {
+        background-position: 50px 50px;
+    }
+}
+
+@-webkit-keyframes bg-scrolling {
+    0% {
+        background-position: 50px 50px;
+    }
+}
+
+@-moz-keyframes bg-scrolling {
+    0% {
+        background-position: 50px 50px;
+    }
+}
+
+@-o-keyframes bg-scrolling {
+    0% {
+        background-position: 50px 50px;
+    }
+}
+
+@keyframes bg-scrolling {
+    0% {
+        background-position: 50px 50px;
+    }
+}
+/* Main styles */
+.bg-anim {
+    position: fixed;
+    z-index: -2;
+    left: 0;
+    top: 0;
+    pointer-events: none !important;
+    height: 100%;
+    width: 100%;
+    color: #999;
+    text-align: center;
+    /* img size is 50x50 */
+    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABnSURBVHja7M5RDYAwDEXRDgmvEocnlrQS2SwUFST9uEfBGWs9c97nbGtDcquqiKhOImLs/UpuzVzWEi1atGjRokWLFi1atGjRokWLFi1atGjRokWLFi1af7Ukz8xWp8z8AAAA//8DAJ4LoEAAlL1nAAAAAElFTkSuQmCC") repeat 0 0;
+    -webkit-animation: bg-scrolling-reverse 5.92s infinite;
+    /* Safari 4+ */
+    -moz-animation: bg-scrolling-reverse 5.92s infinite;
+    /* Fx 5+ */
+    -o-animation: bg-scrolling-reverse 5.92s infinite;
+    /* Opera 12+ */
+    animation: bg-scrolling-reverse 5.92s infinite;
+    /* IE 10+ */
+    -webkit-animation-timing-function: linear;
+    -moz-animation-timing-function: linear;
+    -o-animation-timing-function: linear;
+    animation-timing-function: linear;
+}
+/*end bg animation*/

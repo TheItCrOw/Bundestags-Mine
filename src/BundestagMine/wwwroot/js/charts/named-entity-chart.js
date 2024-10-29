@@ -59,27 +59,11 @@ function updateNamedEntityChart(chart, dataDict) {
             tooltip: {
                 callbacks: {
                     label: function (tooltipItem) {
-                        return tooltipItem.dataset.labels[tooltipItem.parsed.x];
+                        return capitalizeFirstLetter(tooltipItem.dataset.labels[tooltipItem.parsed.x]);
                     }
                 }
             }
-        },
-        //animation: {
-        //    onComplete: function () {
-        //        var ctx = chart.ctx;
-        //        var height = chart.boxes[0].bottom;
-        //        ctx.textAlign = "center";
-        //        Chart.helpers.each(this.data.datasets.forEach(function (dataset, i) {
-        //            var meta = chart.getDatasetMeta(i);
-        //            Chart.helpers.each(meta.data.forEach(function (bar, index) {
-        //                console.log(bar);
-        //                console.log(index);
-        //                console.log(dataset.labels);
-        //                ctx.fillText(dataset.labels[index], bar.x, height - ((height - bar.y) / 2) - 10);
-        //            }), this)
-        //        }), this);
-        //    }
-        //}
+        }
     }
     chart.update();
 }

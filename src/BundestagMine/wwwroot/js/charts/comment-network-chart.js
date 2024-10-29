@@ -167,7 +167,7 @@ $('body').on('click', '.network-start-btn', async function () {
     // End the simulation after 3 seconds. Its a bit laggy.
     simulation.alphaTarget(0.3).restart();
     commentNetworkZoom.scaleBy(commentNetworkSVG.transition().duration(750), 0.05);
-    setTimeout(function () { simulation.stop(); }, 10000);
+    setTimeout(function () { simulation.stop(); }, 7500);
     $('.network-overlay').fadeOut(1000);
     $(this).fadeOut(1000);
     $('.network-loader').fadeOut(100);

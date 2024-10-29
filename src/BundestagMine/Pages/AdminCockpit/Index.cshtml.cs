@@ -1,6 +1,9 @@
 using BundestagMine.Data;
+using BundestagMine.Logic.Services;
+using BundestagMine.Logic.ViewModels.Import;
+using BundestagMine.Models.Database;
 using BundestagMine.Services;
-using BundestagMine.ViewModels.Import;
+using BundestagMine.SqlDatabase;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -13,6 +16,9 @@ namespace BundestagMine.Pages
 {
     public class AdminCockpitModel : PageModel
     {
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly BundestagMineDbContext _db;
+        private readonly DailyPaperService _dailyPaperService;
         private readonly ImportService _importService;
         private readonly SignInManager<IdentityUser> _signInManager;
 
@@ -45,8 +51,24 @@ namespace BundestagMine.Pages
         [BindProperty]
         public List<string> ImportableDeputies { get; set; }
 
-        public AdminCockpitModel(SignInManager<IdentityUser> signInManager, ImportService importService)
+        [BindProperty]
+        /// <summary>
+        /// These are the subscriptions which havent received mail for atleast one new daily paper version
+        /// </summary>
+        public List<DailyPaperSubscription> NotUpToDateSubscriptions { get; set; }
+
+        [BindProperty]
+        public List<DailyPaperSubscription> AllDailyPaperSubscriptions { get; set; }
+
+        public AdminCockpitModel(SignInManager<IdentityUser> signInManager, 
+            ImportService importService,
+            DailyPaperService dailyPaperService,
+            BundestagMineDbContext db,
+            UserManager<IdentityUser> userManager)
         {
+            _userManager = userManager;
+            _db = db;
+            _dailyPaperService = dailyPaperService;
             _importService = importService;
             _signInManager = signInManager;
         }
@@ -58,6 +80,8 @@ namespace BundestagMine.Pages
             ImportLogsList = _importService.GetImportLogFileNames();
             ImportableProtocols = _importService.GetToBeImportedProtocols().ToList();
             ImportableDeputies = _importService.GetToBeImportedDeputies().ToList();
+            NotUpToDateSubscriptions = _dailyPaperService.GetNotUpToDateSubscriptions();
+            AllDailyPaperSubscriptions = _db.DailyPaperSubscriptions.Take(200).ToList();
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -66,7 +90,8 @@ namespace BundestagMine.Pages
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(LoginInput.Email, LoginInput.Password, false, lockoutOnFailure: false);
+                var user = await _userManager.FindByEmailAsync(LoginInput.Email);
+                var result = await _signInManager.PasswordSignInAsync(user.UserName, LoginInput.Password, false, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     return RedirectToPage("");

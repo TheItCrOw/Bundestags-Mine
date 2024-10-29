@@ -12,7 +12,6 @@
     <meta charset="utf-8">
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
     <meta name="author" content="Kevin Bönisch">
 
     <link href="./css/sb-admin-2.min.css" rel="stylesheet">
@@ -28,134 +27,212 @@
     <link href="~/css/bar-topic-race-chart.css" rel="stylesheet">
     <link href="~/css/speaker-inspector.css" rel="stylesheet">
     <link href="~/css/download-center.css" rel="stylesheet">
-    <link href="~/css/home.css" rel="stylesheet">
+    <link href="~/css/pages/home-new.css" rel="stylesheet">
+    <link href="~/css/pages/support.css" rel="stylesheet">
+    <link href="~/css/pages/daily-paper.css" rel="stylesheet">
+    <link href="~/css/pages/parliament-panorama.css" rel="stylesheet">
 </head>
 
 <body id="page-top">
-    <div id="testDiv1" class="display-none"></div>
     <!--start loader-->
-    <div class="start-loader bg-gradient-light">
-        <h3 class="text-black-50" id="startLoaderStatusMessage">Lädt</h3>
+    <div class="start-loader">
+        <div class="bg-anim"></div>
+        <img src="~/img/logo/Logo_weiss_transparent_RGB_1069x1024.png" class="bg-img" />
+        <h3 id="startLoaderStatusMessage">Lädt</h3>
         <div class="lds-ripple"><div></div><div></div></div>
-        <div class="progress rounded-0" style="height: 20px;">
-            <div class="progress-bar bg-gradient-dark" id="startProgress" role="progressbar" style="width: 0%;"></div>
+        <div class="progress rounded-0 bg-darkprime-gradient" style="height: 20px;">
+            <div class="progress-bar bg-warning" id="startProgress" role="progressbar" style="width: 0%;"></div>
         </div>
         <div class="copyright">
-            <img src="~/img/logo/Logo mit Schriftzug_schwarz_transparent_RGB_1024x473.png"/><br/>
             Copyright &copy; Kevin Bönisch 2022
         </div>
     </div>
 
     <!-- Page Wrapper -->
-    <div id="wrapper">
+    <div id="wrapper position-relative">
         <!-- Sidebar -->
-        <ul class="navbar-nav sidebar side-bar-shadow bg-darkprime accordion" id="accordionSidebar">
-            <!-- Sidebar - Brand -->
-            <a class="sidebar-brand p-2 d-flex mt-2 align-items-center selected-nav-item justify-content-center nav-item nav-item-switcher" data-id="homeContent">
-                <img src="~/img/logo/Logo_weiß_transparent_RGB_534x512.png" class="menu-icon" />
-            </a>
+        <div class="navbar-nav sidebar side-bar-shadow accordion" id="accordionSidebar" data-expanded="false">
 
-            <!-- Heading -->
-            <div class="text-center mb-2 sidebar-heading mt-3">
-                Funktionen
-            </div>
+            <div class="navbar-content">
+                <div class="bg-anim" style="position:absolute !important; width:33vw; height:100vh"></div>
 
-            <!-- Nav Item - Global Search -->
-            <li class="nav-item active nav-item-switcher" data-id="globalSearchContent">
-                <a class="nav-link">
-                    <i class="fas fa-search"></i>
-                    <span>Suche</span>
-                </a>
-            </li>
-
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item active nav-item-switcher" data-id="dashboardsContent">
-                <a class="nav-link">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboards</span>
-                </a>
-            </li>
-
-            <!-- Nav Item - text analysis -->
-            <li class="nav-item active nav-item-switcher" data-id="speechContent">
-                <a class="nav-link">
-                    <i class="fas fa-comments"></i>
-                    <span>Text Analyse</span>
-                </a>
-            </li>
-
-            <!-- Nav Item - topic analysis-->
-            <li class="nav-item active nav-item-switcher" data-id="topicAnalysis">
-                <a class="nav-link">
-                    <i class="fas fa-chart-pie"></i>
-                    <span>Themen Analyse</span>
-                </a>
-            </li>
-
-            <!-- Nav Item - topic map -->
-            <li class="nav-item active nav-item-switcher" data-id="topicMapContent">
-                <a class="nav-link">
-                    <i class="fas fa-globe"></i>
-                    <span>Themen Landkarte</span>
-                </a>
-            </li>
-
-            <!-- Nav Item - topic bar race -->
-            <li class="nav-item active nav-item-switcher" data-id="topicRaceContent">
-                <a class="nav-link">
-                    <i class="fas fa-flag-checkered"></i>
-                    <span>Themen Rennen</span>
-                </a>
-            </li>
-
-            <!-- Nav Item - Utilities Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link nav-item" data-toggle="collapse" data-target="#collapseUtilities"
-                   aria-expanded="true" aria-controls="collapseUtilities">
-                    <i class="fas fa-network-wired"></i>
-                    <span>Netzwerke</span>
-                </a>
-                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" style="z-index:99 !important"
-                     data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Netzwerke</h6>
-                        <a class="collapse-item nav-item-switcher" data-id="networkContent">Kommentare Netzwerk</a>
-                    </div>
+                <div class="link-container">
+                    <!-- Sidebar - Brand -->
+                    <a class="sidebar-brand p-2 d-flex align-items-center selected-nav-item justify-content-center nav-item nav-item-switcher" data-id="homeContent">
+                        <img src="~/img/logo/Logo_schwarz_transparent_RGB_534x512.png" class="menu-icon" />
+                        <span class="display-none">Bundestags-Mine</span>
+                    </a>
                 </div>
-            </li>
 
-            <!-- Nav Item - Download Center -->
-            <li class="nav-item active nav-item-switcher" data-id="downloadCenterContent">
-                <a class="nav-link">
-                    <i class="fas fa-cloud-download-alt"></i>
-                    <span>Download Center</span>
-                </a>
-            </li>
+                <!-- Heading -->
+                <div class="text-center mb-0 sidebar-heading mt-3 text-dark">
+                    Funktionen
+                </div>
 
-            <!-- Nav Item - Info -->
-            <li class="nav-item active nav-item-switcher" data-id="faqContent">
-                <a class="nav-link">
-                    <i class="fas fa-question"></i>
-                    <span>FAQ</span>
-                </a>
-            </li>
-        </ul>
+                <div class="link-container">
+
+                    <!-- Nav Item - Daily Paper -->
+                    <li class="nav-item active nav-item-switcher" data-id="dailyPaperContent">
+                        <a class="nav-link">
+                            <i class="fas fa-newspaper"></i>
+                            <span>Neues vom Schürfer</span>
+                        </a>
+                    </li>
+
+                    <!-- Nav Item - Global Search -->
+                    <li class="nav-item active nav-item-switcher" data-id="globalSearchContent">
+                        <a class="nav-link">
+                            <i class="fas fa-search"></i>
+                            <span>Suche</span>
+                        </a>
+                    </li>
+
+                    <!-- Nav Item - text analysis -->
+                    <li class="nav-item active nav-item-switcher" data-id="speechContent">
+                        <a class="nav-link">
+                            <i class="fas fa-comments"></i>
+                            <span>Text Analyse</span>
+                        </a>
+                    </li>
+
+                    <!-- Nav Item - topic analysis-->
+                    <li class="nav-item active nav-item-switcher" data-id="topicAnalysis">
+                        <a class="nav-link">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>Themen Analyse</span>
+                        </a>
+                    </li>
+
+                    <!-- Nav Item - parliament panorama-->
+                    <li class="nav-item active nav-item-switcher" data-id="parliamentPanorama">
+                        <a class="nav-link">
+                            <i class="fas fa-mountain"></i>
+                            <span>Parlaments-Panorama</span>
+                        </a>
+                    </li>
+
+                    <!-- Nav Item - topic map -->
+                    <li class="nav-item active nav-item-switcher" data-id="topicMapContent">
+                        <a class="nav-link">
+                            <i class="fas fa-globe"></i>
+                            <span>Themen Landkarte</span>
+                        </a>
+                    </li>
+
+                    <!-- Nav Item - topic bar race -->
+                    <li class="nav-item active nav-item-switcher" data-id="topicRaceContent">
+                        <a class="nav-link">
+                            <i class="fas fa-flag-checkered"></i>
+                            <span>Themen Rennen</span>
+                        </a>
+                    </li>
+
+                    <!-- Nav Item - comment network -->
+                    <li class="nav-item active nav-item-switcher" data-id="networkContent">
+                        <a class="nav-link">
+                            <i class="fas fa-network-wired"></i>
+                            <span>Kommentar-Netzwerk</span>
+                        </a>
+                    </li>
+
+                    <!-- Nav Item - Dashboard -->
+                    <li class="nav-item active nav-item-switcher" data-id="dashboardsContent">
+                        <a class="nav-link">
+                            <i class="fas fa-fw fa-tachometer-alt"></i>
+                            <span>Dashboards</span>
+                        </a>
+                    </li>
+
+                    <!-- Nav Item - Download Center -->
+                    <li class="nav-item active nav-item-switcher" data-id="downloadCenterContent">
+                        <a class="nav-link">
+                            <i class="fas fa-cloud-download-alt"></i>
+                            <span>Download Center</span>
+                        </a>
+                    </li>
+
+                    <!-- Nav Item - Info -->
+                    <li class="nav-item active nav-item-switcher" data-id="faqContent">
+                        <a class="nav-link">
+                            <i class="fas fa-question"></i>
+                            <span>FAQ</span>
+                        </a>
+                    </li>
+
+                    <!-- Nav Item - Support -->
+                    <li class="nav-item active nav-item-switcher" data-id="supportContent">
+                        <a class="nav-link">
+                            <i class="fab fa-paypal"></i>
+                            <span>Support</span>
+                        </a>
+                    </li>
+                </div>
+
+
+                <!-- Heading -->
+                <div class="text-center mb-0 mt-2 sidebar-heading text-dark">
+                    Seiten
+                </div>
+
+                <div class="link-container">
+                    <!-- Nav Item - Research Center -->
+                    <li class="nav-item active">
+                        <a class="nav-link" asp-page="/ResearchCenter/Index" target="_blank">
+                            <i class="fas fa-university"></i>
+                            <span>Research Center</span>
+                        </a>
+                    </li>
+                </div>
+
+            </div>
+        </div>
+
+        @*helper for the current view*@
+        <a class="view-helper-tooltip" data-expanded="true" data-toggle="popover" data-content="Erklärung zur jetzigen Ansicht" data-trigger="hover">
+            <i class="mt-1 ml-1 text-dark large-font fas fa-question"></i>
+        </a>
+
+        @*the video explaing each view when clicked*@
+        <div class="view-helper-video-box" onclick="$(this).fadeOut(250)">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/8MT0CRn-WE8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
 
         <!--main content-->
-        <div class="d-flex flex-column w-100 main-content-shadow">
-
+        <div class="d-flex flex-column w-100 main-content-shadow min-vh-100">
             @*nav burger*@
-            <nav class="navbar navbar-expand bg-warning static-top justify-content-between">
-                <!-- Sidebar Toggle (Topbar) -->
-                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3"
-                        onclick="if ($('#accordionSidebar').hasClass('toggled')){ $('#accordionSidebar').removeClass('toggled'); } else { $('#accordionSidebar').addClass('toggled'); }">
-                    <i class="fa fa-bars"></i>
-                </button>
-            </nav>
+            <div class="w-100 bg-darkprime-gradient flexed justify-content-center main-content-header">
+                <nav class="navbar row m-0 p-0 container">
+
+                    <div class="col-4">
+                        <button id="sidebarToggleTop" class="nav-button btn" data-toggle="popover" data-content="Navigation öffnen" data-trigger="hover"
+                                onclick="openOrCloseNavigation()">
+                            <i class="fas fa-compass large-font mb-0 text-light"></i>
+                        </button>
+                    </div>
+
+                    <h5 class="mb-0 text-light col-4 text-center" id="currentViewTitle">Bundestags-Mine</h5>
+
+                    <div class="flexed text-light align-items-center col-4 justify-content-end text-right right"
+                    data-toggle="popover" data-content="Die Bundestags-Mine befindet sich in einem frühen und andauerndem Entwicklungs-Zustand, weshalb Fehler oder Ungereimtheiten entstehen können. Ich bitte diese zu entschuldigen und bitte weiterhin: melden Sie diese direkt via Kontakt-Formular im Footer oder an info@bundestag-mine.de, danke!" data-trigger="hover">
+                        <p class="mb-0 text-warning">Early Version</p>
+                    </div>
+
+@*                    <div class="flexed text-light align-items-center col-4 justify-content-end text-right right">
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <a asp-page="/AdminCockpit/Index" target="_blank" class="text-light"><span>Login</span> <i class="ml-1 fas fa-user"></i>  </a>
+                        }
+                        else
+                        {
+                            <p class="mb-0 text-light">Hi @(User.Identity.Name)!</p>
+                        }
+                    </div>*@
+                </nav>
+            </div>
 
             @*HOME*@
             <div id="homeContent" class="h-100 position-relative">
-                <partial name="~/Pages/Shared/_Home.cshtml" />
+                <partial name="~/Pages/Shared/_HomeNew.cshtml" />
             </div>
 
             @*GLOBAL SEARCH*@
@@ -164,7 +241,7 @@
             </div>
 
             <!--SPEECHES AND SPEAKER-->
-            <div id="speechContent" class="h-100 display-none position-relative">
+            <div id="speechContent" class="h-100 position-relative display-none">
                 <div class="flexed m-0 p-0 w-100 h-100">
                     <!--protocol tree-->
                     <div class="protocol-tree-content h-100 pl-0 pr-0">
@@ -177,22 +254,26 @@
                             <h2>Protokolle</h2>
                         </div>
 
+                        @*actual protocols*@
                         <div class="protocol-tree mt-2">
                         </div>
                     </div>
 
                     <!--right contetn-->
-                    <div class="w-100 mt-3 pl-3 pr-3">
-                        <hr class="mt-3 fancy-hr bg-lightgray" />
-                        <h2>Rede Volltext Analyse</h2>
-
+                    <div class="position-relative w-100 pl-3 pr-3">
                         <div class="flexed justify-content-center align-items-center">
                             <div class="fulltext-analysis-div mt-2">
+
                                 <!--loader-->
-                                <div class="loader display-none"><p>Analyse wird generiert</p><div class="lds-ripple"><div></div><div></div></div></div>
+                                <div class="loader fulltext-loader display-none">
+                                    <p>
+                                        Rede wird geladen...
+                                    </p>
+                                    <div class="lds-ripple"><div></div><div></div></div>
+                                </div>
                                 <!--empty message-->
                                 <div class="empty-message">
-                                    <h5>Wählen Sie eine Rede aus, damit diese analysiert werden kann.</h5>
+                                    <h5>Wählen Sie eine Rede aus, um diese zu untersuchen.</h5>
                                 </div>
                                 <!--the actual content-->
                                 <div class="analysis-wrapper display-none">
@@ -207,23 +288,23 @@
                                                 <div class="expanded">
                                                     <div class="flexed justify-content-between">
                                                         <label class="m-0 p-0">Name: </label>
-                                                        <label class="m-0 p-0 ml-1 name">Günther Schlierkamp</label>
+                                                        <label class="m-0 p-0 ml-1 name"></label>
                                                     </div>
                                                     <div class="flexed justify-content-between">
                                                         <label class="m-0 p-0">Geschlecht: </label>
-                                                        <label class="m-0 p-0 ml-1 gender">Männlich</label>
+                                                        <label class="m-0 p-0 ml-1 gender"></label>
                                                     </div>
                                                     <div class="flexed justify-content-between">
                                                         <label class="m-0 p-0">Geburtstag: </label>
-                                                        <label class="m-0 p-0 ml-1 bday">05.04.1977</label>
+                                                        <label class="m-0 p-0 ml-1 bday"></label>
                                                     </div>
                                                     <div class="flexed justify-content-between">
                                                         <label class="m-0 p-0">Religion: </label>
-                                                        <label class="m-0 p-0 ml-1 religion">ohne Angaben</label>
+                                                        <label class="m-0 p-0 ml-1 religion"></label>
                                                     </div>
                                                     <div class="flexed justify-content-between">
                                                         <label class="m-0 p-0">Familienstand: </label>
-                                                        <label class="m-0 p-0 ml-1 family">verheiratet, 2 Kinder</label>
+                                                        <label class="m-0 p-0 ml-1 family"></label>
                                                     </div>
                                                 </div>
                                                 <div class="not-expanded">
@@ -269,9 +350,9 @@
                                         <div class="ml-2 flexed align-items-center">
                                             <span class="period"></span>
                                             <i class="ml-2 mr-2 fas fa-angle-double-right"></i>
-                                            <span class="protocol">P</span>
+                                            <span class="protocol"></span>
                                             <i class="ml-2 mr-2 fas fa-angle-double-right"></i>
-                                            <span class="agenda clickable text-warning font-weight-bold read-more-agenda"></span>
+                                            <span class="agenda clickable text-underlined read-more-agenda"></span>
                                         </div>
                                         <!--choose some options-->
                                         <div class="dropdown no-arrow small-options-menu">
@@ -290,43 +371,90 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!--topic header-->
-                                    <div class="topic-header">
-                                        <div class="flexed align-items-center">
-                                            <h4 class="mb-0 mt-0 mr-1 font-weight-bold">#</h4>
-                                            <h6 class="topic-1 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
+
+                                    @*action buttons*@
+                                    <div class="analysis-menu-header">
+                                        <button class="btn selected-btn" data-tab="speech-view">
+                                            <i class="fas fa-comments"></i>
+                                        </button>
+                                        <button class="btn" data-tab="english-speech-view">
+                                            <i class="fas fa-globe-americas"></i>
+                                        </button>
+                                        <button class="btn" data-tab="speech-statistics-view">
+                                            <i class="fas fa-chart-pie"></i>
+                                        </button>
+                                        <button class="btn" data-toggle="popover" data-trigger="hover" data-html='true'
+                                                data-content="Der PDF-Export ist noch im Aufbau und momentan nicht funktionsfähig.">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </button>
+                                    </div>
+
+                                    @*english speech tab view*@
+                                    <div class="english-speech-view display-none tab-view">
+                                        <div class="card-shadow-light bg-dark p-2 w-100">
+                                            <h5 class="pb-1 text-center text-light mb-0 pb-2 font-weight-bold">Englische Übersetzung der Rede</h5>
+                                            <p class="text-center mb-0 text-light">
+                                                generiert durch OPUS-MT. Die Übersetzung hat eine Genauigkeit von <span class="score font-weight-bold"></span> nach LaBSE.
+                                                <i class="far fa-question-circle" data-toggle="popover" data-trigger="hover" data-html='true'
+                                                   data-content='OPUS-MT ist ein state-of-the-art transformer-based neural machine translation (NMT) Modell, welches für die Übersetzungen genutzt wurde. LaBSE ist ein Language-agnostic BERT Sentence Embedding Modell, welches auf das Erkennen von semantischen Ähnlichkeiten zwischen bilingualen Texten trainiert wurde.<br/><br/> Mehr dazu im Research Center <i class="fas fa-university"></i>.'></i>
+                                            </p>
                                         </div>
-                                        <div class="flexed align-items-center">
-                                            <h4 class="mb-0 mt-0 mr-1 font-weight-bold">#</h4>
-                                            <h6 class="topic-2 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
-                                        </div>
-                                        <div class="flexed align-items-center">
-                                            <h4 class="mb-0 mt-0 mr-1 font-weight-bold">#</h4>
-                                            <h6 class="topic-3 m-0 p-0" data-expanded="true" data-toggle="popover" data-trigger="hover" data-placement="top"></h6>
+                                        <p class="english-speech text-dark mt-2">
+
+                                        </p>
+                                    </div>
+
+                                    @*statistics tab view*@
+                                    <div class="speech-statistics-view display-none tab-view position-relative">
+                                        @*loader*@
+                                        <div class="loader statistics-loader display-none"><div class="lds-ripple"><div></div><div></div></div></div>
+                                        <div class="content">
                                         </div>
                                     </div>
-                                    <!--analysis content-->
-                                    <div class="analysis-content">
-                                    </div>
-                                    <!--legend-->
-                                    <div class="legend">
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle" style="color:orange"></i> Person
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle" style="color:steelblue"></i> Organisation
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle" style="color:green"></i> Ort
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle" style="color:gray"></i> MISC
-                                        </span>
+
+                                    <!--speech tab view-->
+                                    <div class="speech-view tab-view">
+                                        @*analysis content*@
+                                        <div class="analysis-content">
+                                        </div>
+
+                                        <!--legend-->
+                                        <div class="legend">
+                                            <span class="mr-2">
+                                                <i class="fas fa-circle" style="color:orange"></i> Person
+                                            </span>
+                                            <span class="mr-2">
+                                                <i class="fas fa-circle" style="color:steelblue"></i> Organisation
+                                            </span>
+                                            <span class="mr-2">
+                                                <i class="fas fa-circle" style="color:green"></i> Ort
+                                            </span>
+                                            <span class="mr-2">
+                                                <i class="fas fa-circle" style="color:gray"></i> MISC
+                                            </span>
+                                        </div>
+
+                                        @*analysis is being calculated*@
+                                        <div class="analysis-loading-div">
+                                            <div class="progress">
+                                                <div class="progress-bar progress-bar-striped bg-warning progress-bar-animated"
+                                                     role="progressbar" aria-valuenow="75" aria-valuemin="0"
+                                                     aria-valuemax="100" style="width: 0%">
+                                                    @*some text*@
+                                                    <p>Volltext Analyse lädt...</p>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                @*template file for the summary popovers*@
+                <div class="display-none">
+                    <partial name="~/Pages/Shared/_SpeechSummaryPopoverView.cshtml" />
                 </div>
             </div>
 
@@ -334,6 +462,11 @@
             <div id="topicAnalysis" class="h-100 position-relative display-none">
                 <partial name="~/Pages/Shared/TopicAnalysis/_TopicAnalysisView.cshtml" />
                 <partial name="~/Pages/Shared/TopicAnalysis/_TopicAnalysisConfiguratorModal.cshtml" />
+            </div>
+
+            @*parliament panorama*@
+            <div id="parliamentPanorama" class="h-100 position-relative display-none">
+                <partial name="~/Pages/Shared/ParliamentPanorama/_ParliamentPanoramaView.cshtml" />
             </div>
 
             <!-- DASHBOARDS -->
@@ -365,7 +498,7 @@
                             <div class="flexed justify-content-between">
                                 <h4 class="d-title font-weight-bold mb-0">
                                     <i class="fas fa-fw fa-tachometer-alt text-dark"></i>
-                                    <span class="ml-2 header-name">None</span>
+                                    <a class="ml-2 header-name open-speaker-inspector clickable">None</a>
                                 </h4>
                                 <h4>
                                     <i class="fas fa-database text-dark"></i>
@@ -389,14 +522,14 @@
                                                 <!-- Card Header - Dropdown -->
                                                 <div class="card-header border-0 rounded-0 py-2 bg-transparent d-flex flex-row align-items-center justify-content-between">
                                                     <p class="m-0 font-weight-bold text-black-50 small-font">
-                                                        Top <span class="minimum"></span> Token nach Häufigkeit.
+                                                        Top <span class="minimum"></span> Token nach Häufigkeit.<br />[GRADE NICHT VERFÜGBAR - SIEHE FAQ]
                                                     </p>
                                                 </div>
                                                 <!-- Card Body -->
                                                 <div class="position-relative">
                                                     <div>
                                                         <canvas class="w-100 p-0 m-0 token-chart"></canvas>
-                                                        <div class="chart-loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                                                        <div class="chart-loader display-none"><div class="lds-ripple"><div></div><div></div></div></div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -415,14 +548,14 @@
                                                 <!-- Card Header - Dropdown -->
                                                 <div class="card-header rounded-0 bg-transparent border-0 py-2 d-flex flex-row align-items-center justify-content-between">
                                                     <p class="m-0 font-weight-bold text-black-50 small-font">
-                                                        Top <span class="minimum"></span> POS nach Häufigkeit.
+                                                        Top <span class="minimum"></span> POS nach Häufigkeit.<br />[GRADE NICHT VERFÜGBAR - SIEHE FAQ]
                                                     </p>
                                                 </div>
                                                 <!-- Card Body -->
                                                 <div class="position-relative">
                                                     <div>
                                                         <canvas class="w-100 p-0 m-0 pos-chart h-100"></canvas>
-                                                        <div class="chart-loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                                                        <div class="chart-loader display-none"><div class="lds-ripple"><div></div><div></div></div></div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -471,7 +604,7 @@
                                                 <!-- Card Header - Dropdown -->
                                                 <div class="card-header rounded-0 bg-transparent border-0 py-2 d-flex flex-row align-items-center justify-content-between">
                                                     <p class="m-0 font-weight-bold text-black-50 small-font">
-                                                        Top 20 Named Entity nach Häufigkeit.
+                                                        Top 10 Named Entity nach Häufigkeit.
                                                     </p>
                                                 </div>
                                                 <!-- Card Body -->
@@ -624,6 +757,8 @@
                         <a class="btn w-100 btn-dark p-0 rounded-0 text-light switch-year-btn">2020</a>
                         <a class="btn w-100 btn-dark p-0 rounded-0 text-light switch-year-btn">2021</a>
                         <a class="btn w-100 btn-dark p-0 rounded-0 text-light switch-year-btn">2022</a>
+                        <a class="btn w-100 btn-dark p-0 rounded-0 text-light switch-year-btn">2023</a>
+                        <a class="btn w-100 btn-dark p-0 rounded-0 text-light switch-year-btn">2024</a>
                         <a class="btn w-100 btn-dark p-0 rounded-0 text-light switch-year-btn">Gesamt</a>
                     </div>
                 </div>
@@ -647,7 +782,7 @@
                             <!--comment threshhold-->
                             <div class="flexed justify-content-between align-items-center">
                                 <label class="m-0 text-weight-bold">MW </label>
-                                <input type="range" min="0" max="100" class="w-100 comment-threshold-input ml-1 mr-1" value="30"
+                                <input type="range" min="10" max="100" class="w-100 comment-threshold-input ml-1 mr-1" value="30"
                                        data-toggle="popover" data-trigger="hover" data-content="15" />
                                 <i class="far fa-question-circle" data-toggle="popover" data-trigger="hover"
                                    data-content="Stellen Sie einen Mindestwert für die Anzahl der Kommentare ein.
@@ -726,10 +861,59 @@
                 <partial name="~/Pages/Shared/_FAQView.cshtml" />
             </div>
 
+            @*support*@
+            <div id="supportContent" class="h-100 position-relative display-none">
+                <partial name="~/Pages/Shared/_Support.cshtml" />
+            </div>
+
+            @*daily paper*@
+            <div id="dailyPaperContent" class="h-100 position-relative display-none">
+                @*top navbar selector*@
+                <div class="selector">
+                    <div class="flexed align-items-center justify-content-between">
+                        <select class="form-select form-control rounded-0 daily-papers-select">
+                            @foreach (var tuple in Model.ProtocolNumbers)
+                            {
+                                <option data-param="@(tuple.Item1),@(tuple.Item2)">
+                                    @(tuple.Item1). LP, @(tuple.Item2). Sitzung - (@tuple.Item3)
+                                </option>
+                            }
+                        </select>
+                        <div class="flexed align-items-center bg-light">
+                            @*mailing list*@
+                            <button class="btn btn-light rounded-0 mail-list-btn"
+                                    data-toggle="popover" data-content="Neues vom Schürfer abonnieren" data-trigger="hover">
+                                <i class="fas fa-envelope-open-text"></i>
+                            </button>
+                            @*adjust font-size*@
+                            <div class="flexed align-items-center justify-content-center pl-1 pr-1"
+                                 data-toggle="popover" data-content="Textgröße anpassen" data-trigger="hover">
+                                <i class="fas fa-text-height"></i>
+                                <input type="range" class="form-range font-size-range" min="10" max="25" value="14">
+                            </div>
+                            @*expand*@
+@*                            <button class="btn btn-light rounded-0 fullscreen-btn"
+                                    data-toggle="popover" data-content="Vollbild Lesemodus an/aus" data-trigger="hover">
+                                <i class="fas fa-expand"></i>
+                            </button>*@
+                        </div>
+                    </div>
+                </div>
+
+                @*the actual paper*@
+                <div class="position-relative min-vh-100">
+                    @*the loader*@
+                    <div class="loader"><div class="lds-ripple"><div></div><div></div></div></div>
+                    <div class="actual-paper-container">
+                        <partial name="~/Pages/Shared/DailyPaper/_DailyPaperView.cshtml" model="@Model.DailyPaper" />
+                    </div>
+                </div>
+            </div>
+
             @*a modal that shows the details of an agenda item when clicked*@
             <div class="agenda-item-inspector">
                 <div class="flexed justify-content-between align-items-center">
-                    <p class="mr-5 mb-0 text-dark">Detailansicht</p>
+                    <p class="mr-5 mb-0 text-dark title">Detailansicht</p>
                     <i class="fas fa-times mr-1 close small-font" onclick="$('.agenda-item-inspector').hide(100);"></i>
                 </div>
                 <div class="content">
@@ -751,7 +935,7 @@
     <div class="left-layer left-layer--4"></div>
 
     <!-- Information toast-->
-    <div class="position-fixed bottom-0 right-0 p-3" style="z-index: 999; right: 0; bottom: 0;">
+    <div class="position-fixed bottom-0 right-0 pointer-events-none p-3" style="z-index: 999; right: 0; bottom: 0;">
         <div class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="12000">
             <div class="toast-header">
                 <strong class="mr-auto title">Titel</strong>
@@ -845,9 +1029,40 @@
         </div>
     </div>
 
+    @*daily paper mailing list modal*@
+    <div class="modal fade bg-gradient-light p-0" id="dailyPaperMailingListModal" tabindex="-1" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content w-100 rounded-0 card-shadow">
+                @*header*@
+                <div class="modal-header bg-transparent rounded-0 text-dark pl-3 pr-3 pb-1 pt-1 text-center ">
+                    <h5 class="modal-title text-dark font-weight-bold w-100">
+                        Neues vom Schürfer abonnieren
+                    </h5>
+                    <button type="button" class="close text-black" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">-</span>
+                    </button>
+                </div>
+                @*body*@
+                <div class="modal-body">
+                    <p class="text-center">
+                        Hinterlegen Sie jetzt Ihre E-Mail Adresse, um sofort informiert zu werden, sobald es Neues vom
+                        Schürfer gibt!
+                    </p>
+                    <input type="email" class="form-control rounded-0 w-100 mail-input" placeholder="Email..." />
+                    <i class="text-danger small-font error-message mr-1"></i>
+                    <i class="small-font">Sie können das Abo jederzeit beenden. Wir senden Ihnen keine Werbung.</i>
+                    <button class="btn btn-warning rounded-0 mt-3 mb-2 float-right submit-mail-btn">
+                        Abonnieren
+                    </button>
+                    <p class="text-warning info-message"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @*show this when the speak inspector is not opened*@
     <div id="speakerInspectorButton" data-expanded="true" data-toggle="popover" data-content="Redner(innen) öffnen" data-trigger="hover">
-        <i class="fas fa-users"></i>
+        <i class="fas fa-users pointer-events-none"></i>
     </div>
 
     @section scripts{
@@ -874,6 +1089,7 @@
         <!--my scripts-->
         <script src="./js/REST-dataaccess.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/site.js" charset="utf-8" type="text/javascript"></script>
+        <script src="./js/graphs.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/dashboard.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/dashboard-create.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/utility.js" charset="utf-8" type="text/javascript"></script>
@@ -881,6 +1097,8 @@
         <script src="./js/global-search.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/speaker-inspector.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/download-center.js" charset="utf-8" type="text/javascript"></script>
+        <script src="./js/daily-paper.js" charset="utf-8" type="text/javascript"></script>
+        <script src="./js/parliament-panorama.js" charset="utf-8" type="text/javascript"></script>
         <!--charts-->
         <script src="./js/charts/token-chart.js" charset="utf-8" type="text/javascript"></script>
         <script src="./js/charts/pos-chart.js" charset="utf-8" type="text/javascript"></script>

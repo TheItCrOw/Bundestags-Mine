@@ -1,4 +1,5 @@
-﻿using BundestagMine.Models.Database.MongoDB;
+﻿using BundestagMine.Models.Database;
+using BundestagMine.Models.Database.MongoDB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,6 @@ namespace BundestagMine.Models
         public Protocol Protocol { get; set; }
         public List<AgendaItem> AgendaItems { get; set; }
         public List<NLPSpeech> NLPSpeeches { get; set; }
+        public List<Category> SpeechCategories { get; set; }
     }
 }

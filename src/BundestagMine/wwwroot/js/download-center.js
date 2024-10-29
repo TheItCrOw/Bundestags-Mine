@@ -7,7 +7,7 @@ var DownloadCenterHandler = (function () {
     // Constructor
     function DownloadCenterHandler() { }
 
-    // Starts a global search for shouts, fetches the returned html view and puts it into UI
+    // Inits the download center
     DownloadCenterHandler.prototype.init = async function (fractions, parties, speakers) {
         // We need to fill the filters dynamically
         // fractions

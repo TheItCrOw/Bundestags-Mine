@@ -17,19 +17,6 @@
                     </p>
                 </div>
             </div>
-            @*Was ist NLP*@
-            <div class="col-lg-4 m-0 p-2 question-container">
-                <div class="card p-3">
-                    <h5>Was bedeutet "Natural Language Processing" (NLP)?</h5>
-                    <hr class="mt-0 mb-2" />
-                    <p>
-                        Das "Natural Language Processing" ist ein Bereich der Computerlinguistik. Mithilfe von künstlicher Intelligenz wird versucht,
-                        dass ein Computer den Inhalt eines Textes "versteht". Der Computer kann den Text dann sortieren und kategorisieren, Verbindungen
-                        herstellen und auf verschiedenste Weise auswerten. Wir nutzen diese Technologie, indem wir alle Plenarprokolle ab der 19. Legislaturperiode
-                        auswerten lassen. Die Ergebnisse werden dann hier, auf dieser Website, aufbereitet.
-                    </p>
-                </div>
-            </div>
             @*Woher Idee*@
             <div class="col-lg-4 m-0 p-2 question-container">
                 <div class="card p-3">
@@ -54,19 +41,6 @@
                     </p>
                 </div>
             </div>
-            @*Webcrawler*@
-            <div class="col-lg-4 m-0 p-2 question-container">
-                <div class="card p-3">
-                    <h5>Was ist ein Webcrawler?</h5>
-                    <hr class="mt-0 mb-2" />
-                    <p>
-                        Ein Webcrawler ist ein Computerprogramm, welches das Internet automatisch nach bestimmten Informationen durchsucht.
-                        Google benutzt dies zB. für ihre Suchmaschine. Wir benutzen es, um die Seite des Bundestags nach Informationen (Abstimmungen, Protokolle, Portraits etc.)
-                        zu durchsuchen und diese gegebenenfalls runterzuladen. Wir automatisieren also den Prozess, mühsam durch die Bundestags-Seite
-                        zu navigieren, und die Informationen klickweise runterzuladen, mit einem Programm.
-                    </p>
-                </div>
-            </div>
             @*Technologie?*@
             <div class="col-lg-4 m-0 p-2 question-container">
                 <div class="card p-3">
@@ -78,6 +52,32 @@
                     </p>
                 </div>
             </div>
+            @*Token? Langsam*@
+            <div class="col-lg-4 m-0 p-2 question-container">
+                <div class="card p-3">
+                    <h5>Warum sind die Token und POS außer Betrieb?</h5>
+                    <hr class="mt-0 mb-2" />
+                    <p>
+                        Die Token und POS-Charts in der Dashboard-Ansicht sind grade außer Betrieb, da ich dank fehlender
+                        Lizenzen und einem Budget-Mangel, erfinderisch mit meiner Datenbank umgehen muss. Meine Haupt-Datenbank
+                        ist voll und mehr Speicher kostet Geld. Also muss ich auf mehrere Datenbanken verteilen, was stark
+                        die Performance beeinträchtigt und manche Funktionen nicht wirklich erlaubt. Deshalb fallen leider
+                        die beiden Charts aus und die Text Analyse benötigt länger zum Berechnen.
+                    </p>
+                </div>
+            </div>
+            @*Text analyse*@
+            <div class="col-lg-4 m-0 p-2 question-container">
+                <div class="card p-3">
+                    <h5>Wieso lädt die Text-Analyse so lange?</h5>
+                    <hr class="mt-0 mb-2" />
+                    <p>
+                        Auch dies ist darauf zurückzuführen, dass ich mir keine weitere Lizenzen für Datenbanken leisten kann. 
+                        Dadurch muss ich auf Tricks umsteigen, was unteranderem die Anbindung 2 verschiedener Datenbanken bedeutet. 
+                        Das zehrt an der Performance, speziell bei den Token. Unter dem Support-Tab können Sie Entwicklung unterstützen!
+                    </p>
+                </div>
+            </div>
             @*Kann ich selbst Daten abfragen und aufbereiten?*@
             <div class="col-lg-4 m-0 p-2 question-container">
                 <div class="card p-3">
@@ -85,8 +85,8 @@
                     <hr class="mt-0 mb-2" />
                     <p>
                         Es ist eine API in Planung, welche es Besuchern der Seite erlaubt, sowohl Roh-Daten als auch ausgewertete Datensätze
-                        abzufragen und für eigene Auswertungen zu nutzen. Im Moment gibt es dies nicht explizit - auf Nachfrage hin kann dies jedoch bestimmt 
-                        möglich gemacht werden. Nutzen Sie dazu das Kontakt-Feld unten im Footer.
+                        dynamisch abzufragen und für eigene Auswertungen zu nutzen. Im Moment gibt es dies nicht explizit - daher verweise
+                        ich bis dahin auf das Download Center.
                     </p>
                 </div>
             </div>
@@ -97,7 +97,7 @@
                     <hr class="mt-0 mb-2" />
                     <p>
                         Plenarprotokolle, Tagesordnungspunkte, Reden, Kommentare, Drucksachen, Abstimmungen und Abgeordnete. Wir haben ca.
-                        26.000 Reden bei 250 Protokollen mit 14.000.000 Token.
+                        26.000 Reden bei >300 Protokollen mit über 20.000.000 Token.
                     </p>
                 </div>
             </div>
@@ -129,7 +129,7 @@
                     <p>
                         Natürlich! Feedback und Weiterempfehlung ist die einfachste Form der Unterstützung. Ansonsten kannst du dir gern
                         den Source-Code auf GitHub anschauen und dort programmatisch mitwirken. Über Geld-Spenden, um die Hostingkosten
-                        vielleicht auszugleichen, freuen wir uns genauso.
+                        vielleicht auszugleichen, freuen wir uns genauso. Hierfür verweise ich auf den Support-Tab!
                     </p>
                 </div>
             </div>

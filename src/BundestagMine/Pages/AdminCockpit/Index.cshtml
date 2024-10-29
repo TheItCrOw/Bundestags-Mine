@@ -22,6 +22,10 @@
                 <input type="password" asp-for="LoginInput.Password" class="form-control rounded-0" placeholder="Password" />
                 <span asp-validation-for="LoginInput.Password" class="text-danger"></span>
             </div>
+            <p class="text-danger text-center">
+                Login und Registrierung sind noch im Aufbau und werden bald hinzugefügt.
+                Bis dahin können Sie dieses Fenster wieder schließen.
+            </p>
             <button type="submit" class="w-100 btn btn-warning rounded-0">Log in</button>
         </form>
     </div>
@@ -38,6 +42,31 @@ else
                 </a>
             </div>
             <hr class="mt-2" />
+            <h5>Daily Paper Abonnements (@Model.AllDailyPaperSubscriptions.Count):</h5>
+            @*daily paper subs*@
+            <div class="import-list">
+                @foreach (var sub in Model.AllDailyPaperSubscriptions)
+                {
+                    <div class="flexed align-items-center justify-content-between">
+                        <label>@sub.Email</label>
+                        <label>@sub.GetStatus()</label>
+                    </div>
+                }
+            </div>
+            <hr class="mt-2" />
+            <h5>"Not up to date"-Daily Paper Abonnements (@Model.NotUpToDateSubscriptions.Count):</h5>
+            @*daily paper subs*@
+            <div class="import-list">
+                @foreach (var sub in Model.NotUpToDateSubscriptions)
+                {
+                    <div class="flexed align-items-center justify-content-between">
+                        <label>@sub.Email</label>
+                        <label>@sub.GetStatus()</label>
+                    </div>
+                }
+            </div>
+            <button class="btn btn-warning rounded-0 send-sub-mails-btn">Mails versenden</button>
+            <hr class="mt-2" />
             <h5>Import-Logs (@Model.ImportLogsList.Count):</h5>
             @*Imports*@
             <div class="import-list">
@@ -49,15 +78,15 @@ else
                             <label class="m-0 font-weight-bold text-dark">@importLog.Name</label>
                         </div>
                         <label class="ml-1 mb-0 mt-0 mr-3">@importLog.FullFilePath</label>
-                        @if (importLog.Status == ViewModels.Import.Status.Success)
+                        @if (importLog.Status == Logic.ViewModels.Import.Status.Success)
                         {
                             <i class="large-font text-success fas fa-check"></i>
                         }
-                        else if (importLog.Status == ViewModels.Import.Status.Warning)
+                        else if (importLog.Status == Logic.ViewModels.Import.Status.Warning)
                         {
                             <i class="large-font text-warning fas fa-exclamation-triangle"></i>
                         }
-                        else if (importLog.Status == ViewModels.Import.Status.Error)
+                        else if (importLog.Status == Logic.ViewModels.Import.Status.Error)
                         {
                             <i class="large-font text-danger fas fa-bug"></i>
                         }
@@ -100,4 +129,22 @@ else
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Send the news mails
+        $('body').on('click', '.send-sub-mails-btn', async function() {
+            const result = await $.ajax({
+                url: "/api/DailyPaperController/SendNewDailyPaperMails/",
+                type: "GET",
+                dataType: "json",
+                accepts: {
+                    text: "application/json"
+                },
+            });
+
+            if (result.status == 200) alert("Alle Emails versandt: " + result.message);
+            else if (result.status == 300) alert("Nicht alle Mails versandt: " + result.message);
+            else alert("Etwas ist schief geladen: " + result.message);
+        });
+    </script>
 }

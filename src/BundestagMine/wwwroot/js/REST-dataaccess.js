@@ -234,6 +234,40 @@ async function getNLPSpeechById(id) {
     }
 }
 
+// Gets the nlp annotations of a speech by the speechid
+async function getNLPAnnotationsOfSpeech(id) {
+    try {
+        const result = await $.ajax({
+            url: "/api/DashboardController/GetNLPAnnotationsOfSpeech/" + id,
+            type: "GET",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result.result;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+// Gets the nlp speech statitics view
+async function getNLPSpeechStatisticsView(id) {
+    try {
+        const result = await $.ajax({
+            url: "/api/DashboardController/GetNLPSpeechStatisticsView/" + id,
+            type: "GET",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result.result;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 //============================================== Networks ===============================================
 async function getCommentNetworkData() {
     // Else fetch it from api
@@ -789,6 +823,102 @@ async function downloadDataZip(filename, callback) {
                 callback();
             }
         });
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+}
+// ============================================== Daily Paper ======================================
+
+// Gets a daily paper view by period and number
+async function getDailyPaper(period, number) {
+    try {
+        var param = period + ',' + number;
+        const result = await $.ajax({
+            url: "/api/DailyPaperController/GetDailyPaperOfProtocol/" + param,
+            type: "GET",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result.result;
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+}
+
+// Posts a subscription
+async function postDailyPaperSubscription(mail) {
+    try {
+        const result = await $.ajax({
+            url: "/api/DailyPaperController/PostSubscription/" + escapeMail(mail),
+            type: "POST",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result;
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+}
+
+
+// ============================================== Parliament Panorama ======================================
+// Gets the main category panorama view
+async function getCategoriesPanoramaView() {
+    try {
+        const result = await $.ajax({
+            url: "/api/ParliamentPanoramaController/GetCategoriesPanoramaView/",
+            type: "GET",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result.result;
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+}
+
+// Gets the data required for the category line chart
+async function getCategoryLineChartData(categoryName, subcategoryName) {
+    try {
+        var params = cleanParameter(categoryName + ',' + subcategoryName);
+        const result = await $.ajax({
+            url: "/api/ParliamentPanoramaController/GetCategoryLineChartData/" + params,
+            type: "GET",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result.result;
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+}
+
+// Gets speeches fitting to a category!
+async function getSpeechesViewForCategory(categoryName, subcategoryName, skip) {
+    try {
+        var params = cleanParameter(categoryName + ',' + subcategoryName + ',' + skip);
+        const result = await $.ajax({
+            url: "/api/ParliamentPanoramaController/GetSpeechesViewForCategory/" + params,
+            type: "GET",
+            dataType: "json",
+            accepts: {
+                text: "application/json"
+            },
+        });
+        return result.result;
     } catch (error) {
         console.error(error);
         return undefined;

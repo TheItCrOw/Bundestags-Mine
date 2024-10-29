@@ -1,5 +1,6 @@
+using BundestagMine.Logic.Services;
+using BundestagMine.Logic.ViewModels.DownloadCenter;
 using BundestagMine.Services;
-using BundestagMine.ViewModels.DownloadCenter;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 

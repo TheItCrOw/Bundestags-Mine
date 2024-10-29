@@ -287,5 +287,8 @@ $('body').on('click', '.topic-race-options-container .forward', function () {
 })
 
 $(document).ready(async function () {
-    await initTopicRaceChart(await getTopicBarRaceChartData());
+    if (!window.mobileCheck())
+        await initTopicRaceChart(await getTopicBarRaceChartData());
+    else
+        console.log("Not initing the bar race due to mobile device");
 })

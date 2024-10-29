@@ -1,4 +1,4 @@
-﻿@using BundestagMine.ViewModels
+﻿@using BundestagMine.Logic.ViewModels
 @model ReportPageViewModel
 
 <div class="mt-3">
@@ -453,7 +453,6 @@
 </div>
 
 <script>
-
     // Build the charts.
     $(document).ready(function() {
         buildSentimentChartForPage('@(Model.Id)', '@(Html.Raw(Json.Serialize(Model.SentimentGraphData)))');

@@ -1,0 +1,62 @@
+﻿@using BundestagMine.Logic.ViewModels.DailyPaper
+@using BundestagMine.Logic.Services
+@using BundestagMine.Extensions
+@model SpeechPartViewModel
+@inject BundestagScraperService BundestagScraperService
+
+@{
+    var imgSrc = BundestagScraperService.GetDeputyPortraitFromImageDatabase(Model.Speaker.SpeakerId);
+    if (string.IsNullOrEmpty(imgSrc)) imgSrc = "./img/Unbekannt.jpg";
+    <img src="@imgSrc" class="open-speaker-inspector clickable" data-id="@Model.Speaker.SpeakerId" />
+    //info text
+    var speech = Model;
+    var name = speech.Speaker.FirstName + " " + speech.Speaker.LastName;
+    var orga = speech.Speaker.Fraction;
+    if (orga == string.Empty) orga = speech.Speaker.Party;
+    if (orga == string.Empty) orga = "Plos";
+    // The segment we want to show as an example
+    var segment = speech.Speech.Segments.OrderByDescending(ss => ss.Shouts.Where(sh => !sh.Text.ToLower().Contains("befaill")).Count()).First();
+    @if (speech.SpeechPartType == SpeechPartType.MostCommented)
+    {
+        <p class="mt-2">
+            <b>@name</b> von der <b>@orga</b> hat eine Rede zum Tagesordnungspunkt
+            <b>@speech.AgendaItem?.Title</b> gehalten und dafür die meisten Kommentare erhalten. Insgesamt
+            <b>@speech.ActualCommentsAmount</b> mal wurde reingerufen; die Rede hatte einen average Sentiment von
+            <b>@speech.Sentiment.ToString("0.##")</b>.
+            <b>@name</b> hat dabei häufig im Kontext von
+            <b>@speech.MostTwoUsedNamedEntity?.FirstOrDefault()</b> und <b>@(speech.MostTwoUsedNamedEntity?.Count > 1 ? speech.MostTwoUsedNamedEntity[1] : "")</b>
+            gesprochen:<br />
+        </p>
+    }
+    else if (speech.SpeechPartType == SpeechPartType.MostNegative)
+    {
+        <p class="mt-2">
+            Die negativste Rede mit einem Sentiment von <b>@speech.Sentiment.ToString("0.##")</b> wurde dieses mal von
+            <b>@name</b> <b>(@orga)</b> gehalten. In der Rede zum Tagesordungspunkt <b>@speech.AgendaItem.Title</b>
+            lag der Fokus vorallem auf <b>@speech.MostTwoUsedNamedEntity?.FirstOrDefault()</b> und
+            <b>@(speech.MostTwoUsedNamedEntity?.Count > 1 ? speech.MostTwoUsedNamedEntity[1] : "")</b>.
+        </p>
+    }
+    else if (speech.SpeechPartType == SpeechPartType.MostPositive)
+    {
+        <p class="mt-2">
+            Die positivste Rede hingegen mit einem Sentiment von <b>@speech.Sentiment.ToString("0.##")</b> wurde von
+            <b>@name</b> <b>(@orga)</b> gehalten. In der Rede zum Tagesordungspunkt <b>@speech.AgendaItem.Title</b>
+            lag der Fokus vorallem auf <b>@speech.MostTwoUsedNamedEntity?.FirstOrDefault()</b> und
+            <b>@(speech.MostTwoUsedNamedEntity?.Count > 1 ? speech.MostTwoUsedNamedEntity[1] : "")</b>.
+        </p>
+    }
+    <p class="mb-1">
+        <i>"</i><i>@segment.Text</i><i>"</i>
+    </p>
+    // add the shouts to the segment
+    <div class="mb-1 shouts">
+        @foreach (var shout in segment.Shouts)
+        {
+            <div class="flexed align-items-center mb-1 text-left">
+                <p class="mb-0"><i class="fas fa-comment"></i></p>
+                <p class="mb-0 ml-2">@shout.Text</p>
+            </div>
+        }
+    </div>
+}

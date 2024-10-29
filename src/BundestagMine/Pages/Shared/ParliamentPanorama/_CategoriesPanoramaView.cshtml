@@ -1,0 +1,95 @@
+﻿@using BundestagMine.Logic.ViewModels.ParliamentPanorama
+@using System.Text
+@model List<CategoryViewModel>
+
+<div class="position-relative">
+
+    <img class="bg-image" src="~/img/ARTLAS/Atlas_transparent.png" />
+
+    <div class="row m-0 p-0 w-100 categories-div">
+        @foreach (var category in Model)
+        {
+            var categoryAsBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(category.Name));
+            <div class="col-md-4 m-0 p-2 transition category-container" data-id="@Guid.NewGuid().ToString()">
+                <div class="category-card p-2" data-id="@categoryAsBase64">
+                    <h5 class="mb-0 clickable card-t">@category.Name</h5>
+                    @*expanded content from here*@
+                    <div class="mt-1 display-none expanded-content">
+                        <p class="mb-1 small-font text-center font-italic">
+                            Reden im Bundestag innerhalb der Kategorie
+                            <b class="title">@category.Name</b> nach Jahren.
+                        </p>
+                        <div class="w-100 mb-2 line-chart-container position-relative" style="height:150px">
+                            @*loader*@
+                            <div class="loader display-none"><div class="lds-ripple"><div></div><div></div></div></div>
+                            <canvas class="line-chart w-100"></canvas>
+                        </div>
+                        <div class="flexed align-items-center w-100 justify-content-center">
+                            <h6 class="mb-0 text-center clickable-category selected-category" data-id="@categoryAsBase64">
+                                @category.Name
+                            </h6>
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <a class="ml-2 clickable bookmark" data-marked="false">
+                                    <i class="far fa-bookmark"></i>
+                                </a>
+                            }
+                        </div>
+
+                        @*subcategories*@
+                        <div>
+                            @*listing subcategories*@
+                            @if (category.SubCategories.Count > 0)
+                            {
+                                <div class="subcategory-container">
+                                    <div class="flexed flex-wrap justify-content-around m-0 p-0">
+                                        @foreach (var subcategory in category.SubCategories)
+                                        {
+                                            <div class="flexed">
+                                                <div class="subcategory clickable-category pl-2 pb-2 pr-2 pt-3 m-0 " data-id="@Convert.ToBase64String(Encoding.UTF8.GetBytes(subcategory))">
+                                                    @subcategory
+                                                </div>
+                                                @if (User.Identity.IsAuthenticated)
+                                                {
+                                                    <a class="ml-0 clickable bookmark" data-marked="false">
+                                                        <i class="far fa-bookmark"></i>
+                                                    </a>
+                                                }
+                                            </div>
+
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="small-font font-italic text-center mb-1 mt-1">Diese Kategorie hat keine Unterkategorien.</p>
+                            }
+                        </div>
+
+                        @*More content for the selected category*@
+                        <div class="category-speeches-div mt-2">
+                            @*small header*@
+                            <div class="flexed justify-content-between align-items-baseline">
+                                <h6 class="text-dark font-weight-bold mr-2"><i class="fas fa-comments mr-1"></i> Reden</h6>
+                                @*<input class="form-control w-auto speeches-date-input" value="today" type="date"/>*@
+                            </div>
+                            <hr class="mt-0 mb-2" />
+
+                            @*progress bar loader*@
+                            <div class="speeches-loader display-none">
+                                <div class="progress" style="height:6px">
+                                    <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+                                </div>
+                            </div>
+
+                            @*list speeches here*@
+                            <div class="category-speeches">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+#nullable disable
+
 namespace BundestagMine.SqlDatabase.Migrations
 {
     [DbContext(typeof(BundestagMineDbContext))]
@@ -15,9 +17,85 @@ namespace BundestagMine.SqlDatabase.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.10")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "6.0.8")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("BundestagMine.Models.Database.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("NLPSpeechId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubCategory")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("BundestagMine.Models.Database.DailyPaper", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("JsonDataString")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("LegislaturePeriod")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ProtocolDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProtocolNumber")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DailyPapers");
+                });
+
+            modelBuilder.Entity("BundestagMine.Models.Database.DailyPaperSubscription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("InitialSubscriptionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LastSendTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("LastSentDailyPaperId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DailyPaperSubscriptions");
+                });
 
             modelBuilder.Entity("BundestagMine.Models.Database.ImportedEntity", b =>
                 {
@@ -40,6 +118,23 @@ namespace BundestagMine.SqlDatabase.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ImportedEntities");
+                });
+
+            modelBuilder.Entity("BundestagMine.Models.Database.LaTeXChunk", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ChunkType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LaTeX")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LaTeXChunks");
                 });
 
             modelBuilder.Entity("BundestagMine.Models.Database.MongoDB.AgendaItem", b =>
@@ -105,7 +200,7 @@ namespace BundestagMine.SqlDatabase.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("NetworkDataId")
+                    b.Property<Guid>("NetworkDataId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<double>("Sentiment")
@@ -135,7 +230,7 @@ namespace BundestagMine.SqlDatabase.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("NetworkDataId")
+                    b.Property<Guid>("NetworkDataId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Party")
@@ -554,9 +649,62 @@ namespace BundestagMine.SqlDatabase.Migrations
                     b.ToTable("PollEntries");
                 });
 
+            modelBuilder.Entity("BundestagMine.Models.Database.TextSummarizationEvaluationScore", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AverageWordsPerSentence")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LevenstheinSimilaritiesOfSentences")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("NamedEntityDistance")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ScoreExplanation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("SpeechId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("SummaryCompressionRate")
+                        .HasColumnType("float");
+
+                    b.Property<int>("SummaryScore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TextSummarizationMethod")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TextSummarizationEvaluationScores");
+                });
+
             modelBuilder.Entity("BundestagMine.Models.Database.MongoDB.NLPSpeech", b =>
                 {
                     b.HasBaseType("BundestagMine.Models.Database.MongoDB.Speech");
+
+                    b.Property<string>("AbstractSummary")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AbstractSummaryPEGASUS")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EnglishTranslationOfSpeech")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("EnglishTranslationScore")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ExtractiveSummary")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasDiscriminator().HasValue("NLPSpeech");
                 });
@@ -574,14 +722,18 @@ namespace BundestagMine.SqlDatabase.Migrations
                 {
                     b.HasOne("BundestagMine.Models.Database.MongoDB.NetworkData", null)
                         .WithMany("Links")
-                        .HasForeignKey("NetworkDataId");
+                        .HasForeignKey("NetworkDataId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BundestagMine.Models.Database.MongoDB.CommentNetworkNode", b =>
                 {
                     b.HasOne("BundestagMine.Models.Database.MongoDB.NetworkData", null)
                         .WithMany("Nodes")
-                        .HasForeignKey("NetworkDataId");
+                        .HasForeignKey("NetworkDataId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BundestagMine.Models.Database.MongoDB.NamedEntity", b =>

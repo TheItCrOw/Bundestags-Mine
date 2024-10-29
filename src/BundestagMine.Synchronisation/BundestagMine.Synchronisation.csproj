@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BundestagMine.Logic\BundestagMine.Logic.csproj" />
     <ProjectReference Include="..\BundestagMine.Models\BundestagMine.Models.csproj" />
     <ProjectReference Include="..\BundestagMine.MongoDB\BundestagMine.MongoDB.csproj" />
     <ProjectReference Include="..\BundestagMine.SqlDatabase\BundestagMine.SqlDatabase.csproj" />
