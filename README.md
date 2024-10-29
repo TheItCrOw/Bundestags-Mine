@@ -51,6 +51,7 @@ Within the Bundestags-Mine, we use a list of NLP techniques through pipelines to
 - Sentiment Analysis
 - Automatic Text Summarization
 - Translation
+- Topic Modelling
 
 # Citation
 
