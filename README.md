@@ -10,7 +10,7 @@
 <div align="center">
   <a href="https://bundestag-mine.de/"><img src="https://img.shields.io/static/v1?label=Live%3A&message=Website&color=2ea44f&style=for-the-badge" alt="Live: - Website"></a>
   <a href="https://bundestag-mine.de/"><img src="https://img.shields.io/static/v1?label=Languages%3A&message=German&color=informational&style=for-the-badge" alt="Languages: - German"></a><a href="https://www.paypal.com/donate/?hosted_button_id=3HC4L477XZRXU">
-  <img src="https://img.shields.io/static/v1?label=Paper%3A&message=Coming+soon&color=important&style=for-the-badge&logo=researchgate" alt="Paper: - Coming soon">
+  <a href="https://ebooks.iospress.nl/doi/10.3233/FAIA230996"> <img src="https://img.shields.io/static/v1?label=Paper%3A&message=IOS+Press&color=important&style=for-the-badge&logo=researchgate" alt="Paper: - IOS Press"></a>
   <a href="https://bundestag-mine.de/researchcenter"><img src="https://img.shields.io/static/v1?label=&message=Research+Center&color=blueviolet&style=for-the-badge&logo=internetarchive" alt="Research Center"></a>
   <a href="https://www.paypal.com/donate/?hosted_button_id=3HC4L477XZRXU"><img src="https://img.shields.io/static/v1?label=Support%3A&message=Donate&color=green&style=for-the-badge&logo=paypal" alt="Support: - Donate"></a>
   <br/>
