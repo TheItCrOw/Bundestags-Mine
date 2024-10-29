@@ -4,11 +4,11 @@
 cff-version: 1.2.0
 title: >-
   Bundestags-Mine: Natural Language Processing for
-  Extracting Key Information from Government Documents.
+  Extracting Key Information from Government Documents
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
-type: software
+type: inproceedings
 authors:
   - given-names: Kevin
     email: k.boenisch@outlook.com
@@ -43,7 +43,7 @@ abstract: >-
   natural language processing, and then displays the results
   in a web application that is publicly accessible.
   Bundestag-Mine helps to extract key information from
-  parliamentary documents in a visually appealing matter for
+  parliamentary documents in a visually appealing manner for
   many use cases. For instance, the tool can be leveraged by
   journalists for news detection, lawyers for compliance
   checking, linguists for discourse analysis, and the broad
@@ -55,3 +55,8 @@ keywords:
   - sentiment analysis
   - named entity recognition
   - information retrieval
+isbn: '9781643684734'
+issn: '1879-8314'
+doi: '10.3233/faia230996'
+publisher: 'IOS Press'
+year: 2023
