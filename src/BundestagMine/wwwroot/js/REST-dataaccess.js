@@ -90,9 +90,6 @@ async function getSpeakerPortrait(speakerId) {
     } catch (error) {
         console.error(error);
     }
-    return "https://picsum.photos/536/354";
-    var img = baseURL + '/speakerportait?speakerid=' + speakerId;
-    return img;
 }
 
 // Gets all fractions

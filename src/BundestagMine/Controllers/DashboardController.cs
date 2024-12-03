@@ -207,8 +207,21 @@ namespace BundestagMine.Controllers
                 var legislaturePeriod = int.Parse(splited[0]);
                 var protocolNumber = int.Parse(splited[1]);
                 response.status = "200";
-                response.result = _db.Polls.Where(p => p.LegislaturePeriod == legislaturePeriod && p.ProtocolNumber == protocolNumber)
+                var polls = _db.Polls
+                    .Where(p => p.LegislaturePeriod == legislaturePeriod && p.ProtocolNumber == protocolNumber)
                     .ToList();
+                // There are some werid HTML leftovers at some polls since they are scraped. Try if this fixes
+                // the problem and if so, rewrite it better. This sucks.
+                foreach(var poll in polls)
+                {
+                    poll.Title = poll.Title
+                        .Replace("__span__", "")
+                        .Replace("_span_", "")
+                        .Replace("_span__", "")
+                        .Replace("_.", "")
+                        .Replace("__span_", "");
+                }
+                response.result = polls;
             }
             catch (Exception ex)
             {
@@ -236,7 +249,7 @@ namespace BundestagMine.Controllers
                 var pollId = Guid.Parse(pollIdAsString);
                 var poll = await _db.Polls.FindAsync(pollId);
                 response.status = "200";
-                response.result = _bundestagScraperService.GetBundestagUrlOfPoll(poll);
+                response.result = await _bundestagScraperService.GetBundestagUrlOfPoll(poll);
             }
             catch (Exception ex)
             {

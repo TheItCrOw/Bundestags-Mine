@@ -1,0 +1,187 @@
+﻿<div class="fulltext-analysis-div mt-2">
+
+    <!--loader-->
+    <div class="loader fulltext-loader display-none">
+        <p>
+            Rede wird geladen...
+        </p>
+        <div class="lds-ripple"><div></div><div></div></div>
+    </div>
+    <!--empty message-->
+    <div class="empty-message">
+        <h5>Wählen Sie eine Rede aus, um diese zu untersuchen.</h5>
+    </div>
+
+    <!--the actual content-->
+    <div class="analysis-wrapper display-none">
+        <!--header-->
+        <div class="header p-2">
+            <!--name of the speaker-->
+            <div class="name-badge">Rede vom 00.00.0000</div>
+            <!--content-->
+            <div class="flexed t justify-content-between">
+                <!--header card-->
+                <div class="w-100 header-content header-card">
+                    <div class="expanded">
+                        <div class="flexed justify-content-between">
+                            <label class="m-0 p-0">Name: </label>
+                            <label class="m-0 p-0 ml-1 name"></label>
+                        </div>
+                        <div class="flexed justify-content-between">
+                            <label class="m-0 p-0">Geschlecht: </label>
+                            <label class="m-0 p-0 ml-1 gender"></label>
+                        </div>
+                        <div class="flexed justify-content-between">
+                            <label class="m-0 p-0">Geburtstag: </label>
+                            <label class="m-0 p-0 ml-1 bday"></label>
+                        </div>
+                        <div class="flexed justify-content-between">
+                            <label class="m-0 p-0">Religion: </label>
+                            <label class="m-0 p-0 ml-1 religion"></label>
+                        </div>
+                        <div class="flexed justify-content-between">
+                            <label class="m-0 p-0">Familienstand: </label>
+                            <label class="m-0 p-0 ml-1 family"></label>
+                        </div>
+                    </div>
+                    <div class="not-expanded">
+                        <div class="flexed align-items-center justify-content-between"><i class="large-font fas fa-angle-up mr-2"></i> Redner(in) Persönlich</div>
+                    </div>
+                </div>
+                <!--portrait-->
+                <img class="portrait open-speaker-inspector" />
+                <!--second header card-->
+                <div class="w-100 header-content header-card">
+                    <div class="expanded">
+                        <div class="flexed justify-content-between">
+                            <label class="m-0 p-0">Fraktion: </label>
+                            <label class="m-0 p-0 ml-1 fraction"></label>
+                        </div>
+                        <div class="flexed justify-content-between">
+                            <label class="m-0 p-0">Partei: </label>
+                            <label class="m-0 p-0 ml-1 party"></label>
+                        </div>
+                        <div class="flexed justify-content-between">
+                            <label class="m-0 p-0">Im Bundestag seit: </label>
+                            <label class="m-0 p-0 ml-1 since"></label>
+                        </div>
+                        <div class="flexed justify-content-between">
+                            <label class="m-0 p-0">Beruf: </label>
+                            <label class="m-0 p-0 ml-1 job"></label>
+                        </div>
+                        <div class="flexed justify-content-between">
+                            <label class="m-0 p-0">Akademischer Grad: </label>
+                            <label class="m-0 p-0 ml-1 title"></label>
+                        </div>
+                    </div>
+                    <div class="not-expanded">
+                        <div class="flexed align-items-center justify-content-between">Redner(in) Beruflich<i class="large-font fas fa-angle-up ml-2"></i></div>
+                    </div>
+                </div>
+            </div>
+            <!--for design puprosess-->
+            <div class="design-div"></div>
+        </div>
+        <!--breadcrumbs-->
+        <div class="breadcrumbs card-shadow">
+            <div class="ml-2 flexed align-items-center">
+                <span class="period"></span>
+                <i class="ml-2 mr-2 fas fa-angle-double-right"></i>
+                <span class="protocol"></span>
+                <i class="ml-2 mr-2 fas fa-angle-double-right"></i>
+                <span class="agenda clickable text-underlined read-more-agenda"></span>
+            </div>
+            <!--choose some options-->
+            <div class="dropdown no-arrow small-options-menu">
+                <a class="dropdown-toggle" href="#" role="button" id="fulltextOptions"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-light"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in pl-2 pr-2"
+                     aria-labelledby="fulltextOptions">
+                    <p class="mb-0 font-weight-bold text-dark">Einstellungen:</p>
+                    <hr class="bg-lightgray mb-2 mt-0" />
+                    <div class="flexed justify-content-between align-items-center">
+                        <label class="dropdown-item m-0 p-0" href="#">Farbliche Hervorhebung der Sätze</label>
+                        <input type="checkbox" class="ml-3 sentiment-color-cb" checked />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*action buttons*@
+        <div class="analysis-menu-header">
+            <button class="btn selected-btn" data-tab="speech-view">
+                <i class="fas fa-comments"></i>
+            </button>
+            <button class="btn" data-tab="english-speech-view">
+                <i class="fas fa-globe-americas"></i>
+            </button>
+            <button class="btn" data-tab="speech-statistics-view">
+                <i class="fas fa-chart-pie"></i>
+            </button>
+            <button class="btn" data-toggle="popover" data-trigger="hover" data-html='true'
+                    data-content="Der PDF-Export ist noch im Aufbau und momentan nicht funktionsfähig.">
+                <i class="fas fa-file-pdf"></i>
+            </button>
+        </div>
+
+        @*english speech tab view*@
+        <div class="english-speech-view display-none tab-view">
+            <div class="card-shadow-light bg-dark p-2 w-100">
+                <h5 class="pb-1 text-center text-light mb-0 pb-2 font-weight-bold">Englische Übersetzung der Rede</h5>
+                <p class="text-center mb-0 text-light">
+                    generiert durch OPUS-MT. Die Übersetzung hat eine Genauigkeit von <span class="score font-weight-bold"></span> nach LaBSE.
+                    <i class="far fa-question-circle" data-toggle="popover" data-trigger="hover" data-html='true'
+                       data-content='OPUS-MT ist ein state-of-the-art transformer-based neural machine translation (NMT) Modell, welches für die Übersetzungen genutzt wurde. LaBSE ist ein Language-agnostic BERT Sentence Embedding Modell, welches auf das Erkennen von semantischen Ähnlichkeiten zwischen bilingualen Texten trainiert wurde.<br/><br/> Mehr dazu im Research Center <i class="fas fa-university"></i>.'></i>
+                </p>
+            </div>
+            <p class="english-speech text-dark mt-2">
+
+            </p>
+        </div>
+
+        @*statistics tab view*@
+        <div class="speech-statistics-view display-none tab-view position-relative">
+            @*loader*@
+            <div class="loader statistics-loader display-none"><div class="lds-ripple"><div></div><div></div></div></div>
+            <div class="content">
+            </div>
+        </div>
+
+        <!--speech tab view-->
+        <div class="speech-view tab-view">
+            @*analysis content*@
+            <div class="analysis-content">
+            </div>
+
+            <!--legend-->
+            <div class="legend">
+                <span class="mr-2">
+                    <i class="fas fa-circle" style="color:orange"></i> Person
+                </span>
+                <span class="mr-2">
+                    <i class="fas fa-circle" style="color:steelblue"></i> Organisation
+                </span>
+                <span class="mr-2">
+                    <i class="fas fa-circle" style="color:green"></i> Ort
+                </span>
+                <span class="mr-2">
+                    <i class="fas fa-circle" style="color:gray"></i> MISC
+                </span>
+            </div>
+
+            @*analysis is being calculated*@
+            <div class="analysis-loading-div">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped bg-warning progress-bar-animated"
+                         role="progressbar" aria-valuenow="75" aria-valuemin="0"
+                         aria-valuemax="100" style="width: 0%">
+                        @*some text*@
+                        <p>Volltext Analyse lädt...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

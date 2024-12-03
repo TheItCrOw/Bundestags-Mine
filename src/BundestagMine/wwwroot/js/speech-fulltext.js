@@ -1,4 +1,3 @@
-// Author Kevin B�nisch
 // In here we store whether we have already added a divider for a new period
 var periodToAdded = {};
 var showSentimentColors = true;
@@ -704,7 +703,7 @@ async function buildHtmlOfFulltextAnalysis(speech) {
 
 // Builds the html for a shout from a shout
 async function buildShoutHtmlFromShout(shout) {
-    var shoutImage = 'img/Unbekannt.jpg';
+    var shoutImage = '/img/Unbekannt.jpg';
     var shoutName = 'Unbekannt';
     var shoutClass = '';
 
@@ -716,7 +715,7 @@ async function buildShoutHtmlFromShout(shout) {
 
     var shoutHtml = `<div class="shout">
                                 <span class="m-0 p-0 ${shoutClass}" data-id="${shout.speakerId}">
-                                <img class="shout-img" src=\"${shoutImage}\" onerror="$(this).attr('src', 'img/Unbekannt.jpg')"/>
+                                <img class="shout-img" src=\"${shoutImage}\"/>
                                 <i class="ml-2 mr-1 fas fa-comment-dots"></i>
                                 ${shoutName}:
                                 </span>

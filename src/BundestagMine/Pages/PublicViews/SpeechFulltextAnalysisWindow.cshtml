@@ -1,0 +1,90 @@
+﻿@page
+@model BundestagMine.Pages.PublicViews.SpeechFulltextAnalysisWindowModel
+@{
+    ViewData["Title"] = "Rede-Ansicht";
+}
+
+<head>
+    <link href="~/css/sb-admin-2.min.css" rel="stylesheet">
+    <!--my css files-->
+    <link href="~/css/site.css" rel="stylesheet">
+    <link href="~/css/speech-fulltext.css" rel="stylesheet">
+    <link href="~/css/pages/research-center.css" rel="stylesheet">
+</head>
+
+<nav class="bg-darkprime-gradient card-shadow">
+    <div class="container flexed justify-content-between align-items-center">
+        <a class="btn rounded-0" asp-page="/Index">
+            <div>
+                <img class="logo" src="/img/logo/Logo_weiß_transparent_RGB_534x512.png" />
+                <h5 class="ml-2 mb-0 text-light small-font">Bundestags-Mine</h5>
+            </div>
+        </a>
+        <div class="ml-2 mr-2">
+            <h5 class="m-0 font-weight-bold text-light text-center">
+                Reden-Ansicht
+            </h5>
+            <p class="mb-0 small text-secondary mt-1 text-center">
+                Für die volle Reden-Ansicht, besuchen Sie die <a asp-page="/Index" target="_blank">Bundestags-Mine</a>.
+            </p>
+        </div>
+        <a class="btn rounded-0 hidden">
+            <div>
+                <img class="logo" src="/img/Logo_weiß_transparent_RGB_534x512.png" />
+                <h5 class="ml-2 mb-0 text-light small-font">Bundestags-Mine</h5>
+            </div>
+        </a>
+    </div>
+</nav>
+
+@if (Model.Speech == null)
+{
+    <div class="w-100 text-center flexed align-items-center justify-content-center" style="height:100vh">
+        <p class="text-danger mb-0">Rede konnte nicht gefunden werden, möglicherweise ist die Id falsch?</p>
+    </div>
+}
+else
+{
+    <input id="speech-id-input" value="@Model.Speech.Id" class="display-none" />
+    <div class="h-100 w-100 flexed justify-content-center mb-5 mt-4">
+        <partial name="~/Pages/Shared/FulltextAnalysis/_SpeechAnalysisView.cshtml" />
+    </div>
+}
+
+
+@section scripts{
+    <!-- Chart js stuff -->
+    <!--<script src="vendor/chart.js/dist/chart.min.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js" integrity="sha512-TW5s0IT/IppJtu76UbysrBH9Hy/5X41OTAbQuffZFU6lQ1rdcLHzpU5BzVvr/YFykoiMYZVWlr/PX1mDcfM9Qg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!--For chart labeling-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.0.0/chartjs-plugin-datalabels.min.js" integrity="sha512-R/QOHLpV1Ggq22vfDAWYOaMd5RopHrJNMxi8/lJu8Oihwi4Ho4BRFeiMiCefn9rasajKjnx9/fTQ/xkWnkDACg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!--my scripts-->
+    <script src="~/js/REST-dataaccess.js" charset="utf-8" type="text/javascript"></script>
+
+    <script src="~/js/utility.js" charset="utf-8" type="text/javascript"></script>
+    <script src="~/js/speech-fulltext.js" charset="utf-8" type="text/javascript"></script>
+    <!--charts-->
+    <script src="~/js/graphs.js" charset="utf-8" type="text/javascript"></script>
+    <script src="~/js/charts/sentiment-radar-chart.js" charset="utf-8" type="text/javascript"></script>
+    <script src="~/js/charts/named-entity-chart.js" charset="utf-8" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(async function() {
+            $('.fulltext-loader').show();
+            $('.empty-message').hide();
+
+            // Setup all relevant data first
+            allSpeaker = await getSpeakers();
+            allFractions = await getFractions();
+            allParties = await getParties();
+            allProtocols = await getProtocols();
+
+            $('[data-toggle="popover"]').popover();
+
+            var speechId = $('#speech-id-input').val();
+            insertSpeechIntoFulltextAnalysis(speechId);
+        })
+    </script>
+}

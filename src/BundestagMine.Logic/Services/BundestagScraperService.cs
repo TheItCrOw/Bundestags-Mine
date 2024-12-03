@@ -3,6 +3,7 @@ using BundestagMine.Models.Database.MongoDB;
 using BundestagMine.SqlDatabase;
 using BundestagMine.Utility;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Supremes;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
@@ -37,7 +39,77 @@ namespace BundestagMine.Logic.Services
         /// <returns></returns>
         private string ToCleanTitle(string s) => Regex.Replace(RemoveWhitespaces(HttpUtility.HtmlDecode(s).ToLower()), @"<[^>]*>", String.Empty);
 
-        public string GetBundestagUrlOfPoll(Poll poll)
+        public async Task<string> GetBundestagUrlOfPoll(Poll poll)
+        {
+            var url = ConfigManager.GetPollsQueryUrl();
+            // sample page:
+            // https://www.bundestag.de/ajax/filterlist/de/parlament/plenum/abstimmung/484422-484422?&offset=0&noFilterSet=false&view=resultjson&startdate=1729202400000&enddate=1734476400000&startfield=date&endfield=date
+
+            // The Date in the poll can differ from the protocol which fucks up the search.
+            // So take the protocols date instead of the polls date.
+            var protocol = _db.Protocols.FirstOrDefault(p => p.LegislaturePeriod == poll.LegislaturePeriod && p.Number == poll.ProtocolNumber);
+
+            var from = poll.Date;
+            var to = poll.Date;
+            if (protocol?.Date > poll.Date) to = protocol.Date;
+            else if (protocol?.Date < poll.Date) from = protocol.Date;
+
+            // We need the date as milliseconds as the from and to date for the url.
+            var curUrl = url.Replace("%ENDDATE%", ((long)(to - new DateTime(1970, 1, 1)).TotalMilliseconds).ToString());
+            curUrl = curUrl.Replace("%STARTDATE%", ((long)(from - new DateTime(1970, 1, 1)).TotalMilliseconds).ToString());
+            var levenshtein = new Levenshtein();
+            var editToSites = new List<(int, string)>();
+
+            using HttpClient client = new()
+            {
+                BaseAddress = new Uri(curUrl)
+            };
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await client.GetAsync(curUrl);
+            if (response.IsSuccessStatusCode)
+            {
+                // Parse the response body.
+                // Ik we could use a dto but hell, this API returns the most nested arrays I've ever seen.
+                // Lets just do it this way...
+                var content = await response.Content.ReadAsStringAsync();
+                var answer = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+                if (answer == null) return string.Empty;
+
+                var possiblePolls = answer.items;
+                foreach (var possiblePoll in possiblePolls)
+                {
+                    var name = (string)possiblePoll["teaser-title"];
+                    if (name == null) continue;
+                    try
+                    {
+                        var title = DateHelper.ReplaceInvalidPathChars(ToCleanTitle(name));
+                        var edits = levenshtein.Compute(title, ToCleanTitle(poll.Title));
+                        // Lets just take all polls into consideration and take the one, which is closest...
+                        // Now get the href.
+                        var href = ConfigManager.GetBundestagUrl() + possiblePoll.href;
+                        editToSites.Add((edits, href));
+                    }
+                    catch(Exception ex)
+                    {
+                        var xd = ex;
+                    }
+                }
+            }
+
+            // If there are multiple hits, we want the hit with the least edits required. Thats the nearest we get.
+            if (editToSites.Count > 0) return editToSites.OrderBy(e => e.Item1).First().Item2;
+
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// This was the old way, before the Bundestag changed that poll endpoint to a json return type.
+        /// </summary>
+        /// <param name="poll"></param>
+        /// <returns></returns>
+        [Obsolete]
+        public string GetBundestagUrlOfPollOld(Poll poll)
         {
             var url = ConfigManager.GetPollsQueryUrl();
             // sample page:
@@ -124,6 +196,7 @@ namespace BundestagMine.Logic.Services
                 _logger.LogError(ex, "Error while trying to fetch portraits from harddrive.");
             }
 
+            // If we reach here, we didn't fetch any deputy images. In that case, return a hardcoded default image
             return string.Empty;
         }
 

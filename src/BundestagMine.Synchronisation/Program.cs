@@ -323,101 +323,101 @@ namespace BundestagMine.Synchronisation
         [Obsolete]
         private static void CalculateExperimentValues()
         {
-            //using (var db = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
-            //{
-            //    var averageTextRankWords = db.NLPSpeeches
-            //        .Where(s => !string.IsNullOrEmpty(s.ExtractiveSummary) && db.TextSummarizationEvaluationScores
-            //            .Any(t => t.SpeechId == s.Id && t.TextSummarizationMethod == TextSummarizationMethods.TextRank))
-            //        .AsEnumerable()
-            //        .Average(s => s.ExtractiveSummary.Split(" ")?.Length);
-            //    Console.WriteLine(averageTextRankWords);
+            using (var db = new BundestagMineDbContext(ConfigManager.GetDbOptions()))
+            {
+                var averageTextRankWords = db.NLPSpeeches
+                    .Where(s => !string.IsNullOrEmpty(s.ExtractiveSummary) && db.TextSummarizationEvaluationScores
+                        .Any(t => t.SpeechId == s.Id && t.TextSummarizationMethod == TextSummarizationMethods.TextRank))
+                    .AsEnumerable()
+                    .Average(s => s.ExtractiveSummary.Split(" ")?.Length);
+                Console.WriteLine(averageTextRankWords);
 
-            //    var averageBARTWords = db.NLPSpeeches
-            //        .Where(s => !string.IsNullOrEmpty(s.AbstractSummary) && db.TextSummarizationEvaluationScores
-            //            .Any(t => t.SpeechId == s.Id && t.TextSummarizationMethod == TextSummarizationMethods.BARTSamSum))
-            //        .AsEnumerable()
-            //        .Average(s => s.AbstractSummary.Split(" ")?.Length);
-            //    Console.WriteLine(averageBARTWords);
+                var averageBARTWords = db.NLPSpeeches
+                    .Where(s => !string.IsNullOrEmpty(s.AbstractSummary) && db.TextSummarizationEvaluationScores
+                        .Any(t => t.SpeechId == s.Id && t.TextSummarizationMethod == TextSummarizationMethods.BARTSamSum))
+                    .AsEnumerable()
+                    .Average(s => s.AbstractSummary.Split(" ")?.Length);
+                Console.WriteLine(averageBARTWords);
 
-            //    var averagePEGASUSWords = db.NLPSpeeches
-            //        .Where(s => !string.IsNullOrEmpty(s.AbstractSummaryPEGASUS) && db.TextSummarizationEvaluationScores
-            //            .Any(t => t.SpeechId == s.Id && t.TextSummarizationMethod == TextSummarizationMethods.PEGASUSSamSum))
-            //        .AsEnumerable()
-            //        .Average(s => s.AbstractSummaryPEGASUS.Split(" ")?.Length);
-
-
-            //    var averageTextRankSentenceLength = db.NLPSpeeches
-            //        .Where(s => !string.IsNullOrEmpty(s.ExtractiveSummary) && db.TextSummarizationEvaluationScores
-            //            .Any(t => t.SpeechId == s.Id && t.TextSummarizationMethod == TextSummarizationMethods.TextRank))
-            //        .AsEnumerable()
-            //        .Average(s => s.ExtractiveSummary.Split(" ")?.Length / Regex.Split(s.ExtractiveSummary, @"(?<=[\.!\?])\s+").Length);
-            //    Console.WriteLine(averageTextRankSentenceLength);
-
-            //    var averageBARTSentenceLength = db.NLPSpeeches
-            //        .Where(s => !string.IsNullOrEmpty(s.AbstractSummary) && db.TextSummarizationEvaluationScores
-            //            .Any(t => t.SpeechId == s.Id && t.TextSummarizationMethod == TextSummarizationMethods.BARTSamSum))
-            //        .AsEnumerable()
-            //        .Average(s => s.AbstractSummary.Split(" ")?.Length / Regex.Split(s.AbstractSummary, @"(?<=[\.!\?])\s+").Length);
-            //    Console.WriteLine(averageBARTSentenceLength);
-
-            //    var averagePEGASUSSentenceLength = db.NLPSpeeches
-            //        .Where(s => !string.IsNullOrEmpty(s.AbstractSummaryPEGASUS) && db.TextSummarizationEvaluationScores
-            //            .Any(t => t.SpeechId == s.Id && t.TextSummarizationMethod == TextSummarizationMethods.PEGASUSSamSum))
-            //        .AsEnumerable()
-            //        .Average(s => s.AbstractSummaryPEGASUS.Split(" ")?.Length / Regex.Split(s.AbstractSummaryPEGASUS, @"(?<=[\.!\?])\s+").Length);
-            //    Console.WriteLine(averagePEGASUSSentenceLength);
+                var averagePEGASUSWords = db.NLPSpeeches
+                    .Where(s => !string.IsNullOrEmpty(s.AbstractSummaryPEGASUS) && db.TextSummarizationEvaluationScores
+                        .Any(t => t.SpeechId == s.Id && t.TextSummarizationMethod == TextSummarizationMethods.PEGASUSSamSum))
+                    .AsEnumerable()
+                    .Average(s => s.AbstractSummaryPEGASUS.Split(" ")?.Length);
 
 
-            //    var averageTextRankNEDistance = db.NLPSpeeches
-            //        .Where(s => !string.IsNullOrEmpty(s.ExtractiveSummary))
-            //        .SelectMany(s => db.TextSummarizationEvaluationScores
-            //            .Where(t => t.SpeechId == s.Id && t.TextSummarizationMethod == TextSummarizationMethods.TextRank))
-            //        .AsEnumerable()
-            //        .Average(t => t.LevenstheinSimilaritiesOfSentences
-            //            .Split(";").Select(l => double.TryParse(l, out var d) ? d : 0).Average());
-            //    Console.WriteLine(averageTextRankNEDistance);
+                var averageTextRankSentenceLength = db.NLPSpeeches
+                    .Where(s => !string.IsNullOrEmpty(s.ExtractiveSummary) && db.TextSummarizationEvaluationScores
+                        .Any(t => t.SpeechId == s.Id && t.TextSummarizationMethod == TextSummarizationMethods.TextRank))
+                    .AsEnumerable()
+                    .Average(s => s.ExtractiveSummary.Split(" ")?.Length / Regex.Split(s.ExtractiveSummary, @"(?<=[\.!\?])\s+").Length);
+                Console.WriteLine(averageTextRankSentenceLength);
 
-            //    var averageBARTNEDistance = db.NLPSpeeches
-            //        .Where(s => !string.IsNullOrEmpty(s.AbstractSummary))
-            //        .SelectMany(s => db.TextSummarizationEvaluationScores
-            //            .Where(t => t.SpeechId == s.Id && t.TextSummarizationMethod == TextSummarizationMethods.BARTSamSum))
-            //        .AsEnumerable()
-            //        .Average(t => t.LevenstheinSimilaritiesOfSentences
-            //            .Split(";").Select(l => double.TryParse(l, out var d) ? d : 0).Average());
-            //    Console.WriteLine(averageBARTNEDistance);
+                var averageBARTSentenceLength = db.NLPSpeeches
+                    .Where(s => !string.IsNullOrEmpty(s.AbstractSummary) && db.TextSummarizationEvaluationScores
+                        .Any(t => t.SpeechId == s.Id && t.TextSummarizationMethod == TextSummarizationMethods.BARTSamSum))
+                    .AsEnumerable()
+                    .Average(s => s.AbstractSummary.Split(" ")?.Length / Regex.Split(s.AbstractSummary, @"(?<=[\.!\?])\s+").Length);
+                Console.WriteLine(averageBARTSentenceLength);
 
-            //    var averagePEGASUSNEDistance = db.NLPSpeeches
-            //        .Where(s => !string.IsNullOrEmpty(s.AbstractSummaryPEGASUS))
-            //        .SelectMany(s => db.TextSummarizationEvaluationScores
-            //            .Where(t => t.SpeechId == s.Id && t.TextSummarizationMethod == TextSummarizationMethods.PEGASUSSamSum))
-            //        .AsEnumerable()
-            //        .Average(t => t.LevenstheinSimilaritiesOfSentences
-            //            .Split(";").Select(l => double.TryParse(l, out var d) ? d : 0).Average());
-            //    Console.WriteLine(averagePEGASUSNEDistance);
+                var averagePEGASUSSentenceLength = db.NLPSpeeches
+                    .Where(s => !string.IsNullOrEmpty(s.AbstractSummaryPEGASUS) && db.TextSummarizationEvaluationScores
+                        .Any(t => t.SpeechId == s.Id && t.TextSummarizationMethod == TextSummarizationMethods.PEGASUSSamSum))
+                    .AsEnumerable()
+                    .Average(s => s.AbstractSummaryPEGASUS.Split(" ")?.Length / Regex.Split(s.AbstractSummaryPEGASUS, @"(?<=[\.!\?])\s+").Length);
+                Console.WriteLine(averagePEGASUSSentenceLength);
 
 
-            //    Console.WriteLine(db.Protocols
-            //        .Where(p => p.LegislaturePeriod == 20 && (p.Number < 13 || p.Number > 58))
-            //                            .SelectMany(p => db.NLPSpeeches
-            //            .Where(s => s.LegislaturePeriod == p.LegislaturePeriod && p.Number == s.ProtocolNumber
-            //                    && string.IsNullOrEmpty(s.ExtractiveSummary)
-            //                    && s.Text.Length > 0)).Count());
+                var averageTextRankNEDistance = db.NLPSpeeches
+                    .Where(s => !string.IsNullOrEmpty(s.ExtractiveSummary))
+                    .SelectMany(s => db.TextSummarizationEvaluationScores
+                        .Where(t => t.SpeechId == s.Id && t.TextSummarizationMethod == TextSummarizationMethods.TextRank))
+                    .AsEnumerable()
+                    .Average(t => t.LevenstheinSimilaritiesOfSentences
+                        .Split(";").Select(l => double.TryParse(l, out var d) ? d : 0).Average());
+                Console.WriteLine(averageTextRankNEDistance);
 
-            //    Console.WriteLine(db.Protocols
-            //        .Where(p => p.LegislaturePeriod == 20 && (p.Number < 13 || p.Number > 58))
-            //                            .SelectMany(p => db.NLPSpeeches
-            //            .Where(s => s.LegislaturePeriod == p.LegislaturePeriod && p.Number == s.ProtocolNumber
-            //                    && string.IsNullOrEmpty(s.AbstractSummary)
-            //                    && s.Text.Length > 0)).Count());
+                var averageBARTNEDistance = db.NLPSpeeches
+                    .Where(s => !string.IsNullOrEmpty(s.AbstractSummary))
+                    .SelectMany(s => db.TextSummarizationEvaluationScores
+                        .Where(t => t.SpeechId == s.Id && t.TextSummarizationMethod == TextSummarizationMethods.BARTSamSum))
+                    .AsEnumerable()
+                    .Average(t => t.LevenstheinSimilaritiesOfSentences
+                        .Split(";").Select(l => double.TryParse(l, out var d) ? d : 0).Average());
+                Console.WriteLine(averageBARTNEDistance);
+
+                var averagePEGASUSNEDistance = db.NLPSpeeches
+                    .Where(s => !string.IsNullOrEmpty(s.AbstractSummaryPEGASUS))
+                    .SelectMany(s => db.TextSummarizationEvaluationScores
+                        .Where(t => t.SpeechId == s.Id && t.TextSummarizationMethod == TextSummarizationMethods.PEGASUSSamSum))
+                    .AsEnumerable()
+                    .Average(t => t.LevenstheinSimilaritiesOfSentences
+                        .Split(";").Select(l => double.TryParse(l, out var d) ? d : 0).Average());
+                Console.WriteLine(averagePEGASUSNEDistance);
 
 
-            //    Console.WriteLine(db.Protocols
-            //        .Where(p => p.LegislaturePeriod == 20 && (p.Number < 13 || p.Number > 58))
-            //                            .SelectMany(p => db.NLPSpeeches
-            //            .Where(s => s.LegislaturePeriod == p.LegislaturePeriod && p.Number == s.ProtocolNumber
-            //                    && string.IsNullOrEmpty(s.AbstractSummaryPEGASUS)
-            //                    && s.Text.Length > 0)).Count());
-            //}
+                Console.WriteLine(db.Protocols
+                    .Where(p => p.LegislaturePeriod == 20 && (p.Number < 13 || p.Number > 58))
+                                        .SelectMany(p => db.NLPSpeeches
+                        .Where(s => s.LegislaturePeriod == p.LegislaturePeriod && p.Number == s.ProtocolNumber
+                                && string.IsNullOrEmpty(s.ExtractiveSummary)
+                                && s.Text.Length > 0)).Count());
+
+                Console.WriteLine(db.Protocols
+                    .Where(p => p.LegislaturePeriod == 20 && (p.Number < 13 || p.Number > 58))
+                                        .SelectMany(p => db.NLPSpeeches
+                        .Where(s => s.LegislaturePeriod == p.LegislaturePeriod && p.Number == s.ProtocolNumber
+                                && string.IsNullOrEmpty(s.AbstractSummary)
+                                && s.Text.Length > 0)).Count());
+
+
+                Console.WriteLine(db.Protocols
+                    .Where(p => p.LegislaturePeriod == 20 && (p.Number < 13 || p.Number > 58))
+                                        .SelectMany(p => db.NLPSpeeches
+                        .Where(s => s.LegislaturePeriod == p.LegislaturePeriod && p.Number == s.ProtocolNumber
+                                && string.IsNullOrEmpty(s.AbstractSummaryPEGASUS)
+                                && s.Text.Length > 0)).Count());
+            }
         }
     }
 }
